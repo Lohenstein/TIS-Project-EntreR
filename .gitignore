@@ -3,3 +3,11 @@
 ################################################################################
 
 /.vs/ReTIS/v14
+/Debug
+/ReTIS/Debug/ReTIS.tlog
+/ReTIS/Debug
+/ReTIS.sln
+/ReTIS.VC.db
+/ReTIS.VC.VC.opendb
+/ReTIS/ReTIS.vcxproj
+/ReTIS/ReTIS.vcxproj.filters
