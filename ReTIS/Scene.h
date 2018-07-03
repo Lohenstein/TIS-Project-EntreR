@@ -31,8 +31,9 @@ public:
 		delete character;
 		character = nullptr;
 	}
-	virtual void Init();
-	virtual void Collision();
-	virtual void Update();
-	virtual void Render();
+	void	Init();
+	void	Collision();
+	void	Update();
+	void	Render();
+	VECTOR	GetFocusPos();
 };
