@@ -26,4 +26,5 @@ void	cGame::Update() {
 void	cGame::Render() {
 	stage->Render();
 	character->Render();
+	DrawFormatString(10, 10, 0xFFFFFF, "‘€ìƒLƒƒƒ‰‚ÌÀ•W:x=%d, y=%d", (int)FocusPos.x, (int)FocusPos.y);
 }

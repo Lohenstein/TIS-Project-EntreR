@@ -1,5 +1,6 @@
 
 #include "Main.h"
+VECTOR FocusPos;
 /*------------------------------------------------------------------------------*
 | <<< cCharacterBase >>>
 *------------------------------------------------------------------------------*/
@@ -39,6 +40,7 @@ void	cCharacterBase::Physical() {
 void	cCharacterBase::Update() {
 	if (possess) {
 		MoveByPlayer();		// æ‚èˆÚ‚Á‚Ä‚¢‚½‚çŽè“®‘€ì
+		FocusPos = pos;
 	}
 	else {
 		MoveByAutomation();	// ‚»‚Ì‘¼‚ÍŽ©“®
@@ -125,18 +127,6 @@ void	cCharacterManager::Update() {
 }
 
 
-
-void cEnemyJumpman::Update()
-{
-	if (possess) {
-		MoveByPlayer();		// æ‚èˆÚ‚Á‚Ä‚¢‚½‚çŽè“®‘€ì
-	}
-	else {
-		MoveByAutomation();	// ‚»‚Ì‘¼‚ÍŽ©“®
-	}
-	Physical();
-}
-
 void cEnemyJumpman::MoveByAutomation()
 {
 	if (move_dir > 0) {
@@ -166,17 +156,12 @@ void cEnemyJumpman::MoveByAutomation()
 
 
 // ƒKƒ“ƒ}ƒ“‚Ìˆ—
-void cEnemyGunman::Update() 
-{
-	if (possess) {
-		MoveByPlayer();		// æ‚èˆÚ‚Á‚Ä‚¢‚½‚çŽè“®‘€ì
-	}
-	else {
-		MoveByAutomation();	// ‚»‚Ì‘¼‚ÍŽ©“®
-	}
-	Physical();
-}
+
 void cEnemyGunman::MoveByAutomation()
 {
 	pos.x++;
+}
+
+VECTOR	GetObjectPos(cCharacterBase *character) {
+	return character->GetPos();
 }

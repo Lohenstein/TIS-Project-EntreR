@@ -1,5 +1,7 @@
 #pragma once
 
+extern VECTOR FocusPos;
+
 class cCharacterBase : public cObject{
 protected:
 	VECTOR	old;	// ç∑ï™ópâﬂãéç¿ïW
@@ -82,7 +84,6 @@ public:
 		bullet = nullptr;
 	}
 	
-	void Update();
 	void move();
 	void MoveByAutomation();
 };
@@ -105,7 +106,6 @@ public:
 		attack_count = 0;
 	}
 
-	void Update();
 	void move();
 	void MoveByAutomation();
 };
@@ -128,7 +128,6 @@ public:
 		attack_count = 0;
 	}
 
-	void Update();
 	void move();
 	void MoveByAutomation();
 };
