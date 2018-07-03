@@ -80,6 +80,9 @@ void	cCharacterBase::HitAction(cObject *hit) {
 		case 4: // top
 			pos.y = hit->GetPos().y - hit->GetSize().y / 2.f - GetSize().y / 2.f - 1.f;
 			jump = 0.f;
+
+			// 着地判定---------------------
+			landing = true;
 			break;
 		default:
 			break;
@@ -94,21 +97,86 @@ void	cPlayer::Render() {
 	DrawBoxAA(GetPos().x - GetSize().x / 2.f, GetPos().y - GetSize().y / 2.f,
 		GetPos().x + GetSize().x / 2.f, GetPos().y + GetSize().y / 2.f,
 		0xFF0000, true);
+
+
 }
-/*------------------------------------------------------------------------------*
+/*---------------------------------------
+---------------------------------------*
 | <<< cEnemy >>>
 *------------------------------------------------------------------------------*/
 void	cEnemy::Render() {
 	DrawBoxAA(GetPos().x - GetSize().x / 2.f, GetPos().y - GetSize().y / 2.f,
 		GetPos().x + GetSize().x / 2.f, GetPos().y + GetSize().y / 2.f,
 		0xFFFF00, true);
+
 }
 /*------------------------------------------------------------------------------*
 | <<< cCharacterManager >>>
 *------------------------------------------------------------------------------*/
 void	cCharacterManager::Render() {
 	player->Render();
+	jumpman->Render();
+	gunman->Render();
 }
 void	cCharacterManager::Update() {
 	player->Update();
+	jumpman->Update();
+	gunman->Update();
+}
+
+
+
+void cEnemyJumpman::Update()
+{
+	if (possess) {
+		MoveByPlayer();		// 乗り移っていたら手動操作
+	}
+	else {
+		MoveByAutomation();	// その他は自動
+	}
+	Physical();
+}
+
+void cEnemyJumpman::MoveByAutomation()
+{
+	if (move_dir > 0) {
+		pos.x++;
+	}
+	else {
+		pos.x--;
+	}
+
+	if (landing == true && jump_count != 3) {
+		jump = 20.f;
+		jump_count++;
+		landing = false;
+	}
+	if (landing == true &&jump_count == 3) {
+		jump = 40.f;
+		jump_count = 0;
+		move_dir *= -1;
+	}
+	if (CheckHitKey(KEY_INPUT_X) == 1) {
+		bullet->Render();
+	}
+
+	
+					// 重力計算の書き方の例
+}
+
+
+// ガンマンの処理
+void cEnemyGunman::Update() 
+{
+	if (possess) {
+		MoveByPlayer();		// 乗り移っていたら手動操作
+	}
+	else {
+		MoveByAutomation();	// その他は自動
+	}
+	Physical();
+}
+void cEnemyGunman::MoveByAutomation()
+{
+	pos.x++;
 }

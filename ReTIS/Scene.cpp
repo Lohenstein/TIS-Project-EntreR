@@ -11,6 +11,9 @@ void	cGame::Collision() {
 		for (int j = 0; j < stage->GetStageSizeY(); j++) {
 			if (stage->GetTile(i, j) != 0) {
 				CheckHitRectAndRect(character->GetPlayer(), stage->GetMapTile(i, j));
+				CheckHitRectAndRect(character->GetEnemyJumpman(), stage->GetMapTile(i, j));
+				CheckHitRectAndRect(character->GetEnemyGunman(), stage->GetMapTile(i, j));
+
 			}
 		}
 	}
