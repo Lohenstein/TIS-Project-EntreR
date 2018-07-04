@@ -13,6 +13,7 @@
 #include "Easing.h"
 #include "Camera.h"
 #include "Collision.h"
+#include "Entity.h"
 #include "Input.h"
 #include "Bullet.h"
 #include "Character.h"

@@ -5,7 +5,7 @@ extern VECTOR FocusOld;
 
 class cCharacterBase : public cObject{
 protected:
-	VECTOR	old;	// ç∑ï™ópâﬂãéç¿ïW
+
 	float	speed;
 	float	jump = 0.f, gravity = 1.f , inertia = 0; // èdóÕÇ∆äµê´
 	bool	possess;	// èÊÇËà⁄ÇÁÇÍÇƒÇ¢ÇÈÇ©
@@ -18,11 +18,11 @@ public:
 	cCharacterBase() {};
 	~cCharacterBase() {};
 	void	HitAction(cObject *hit);
+	void	Collision(cObject *hit);
 	void	MoveByAutomation();
 	void	MoveByPlayer();
 	void	Update();
 	void	Render();
-	VECTOR  GetOldPos() { return old; }
 };
 
 class cPlayer : public cCharacterBase {
@@ -96,12 +96,12 @@ public:
 
 
 	cEnemyGunman(float x, float y, float w, float h, float s, bool p) {
-		pos = { x, y, 0.f };
-		size = { w, h, 0.f };
-		speed = s;
+		pos		= { x, y, 0.f };
+		size	= { w, h, 0.f };
+		speed	= s;
 		possess = p;
-		bullet = new cBulletManager();
-		type = Enemy;
+		bullet	= new cBulletManager();
+		type	= Enemy;
 		landing = false;
 
 		attack_count = 0;
@@ -118,12 +118,12 @@ public:
 
 
 	cEnemyCannon(float x, float y, float w, float h, float s, bool p) {
-		pos = { x, y, 0.f };
-		size = { w, h, 0.f };
-		speed = s;
+		pos		= { x, y, 0.f };
+		size	= { w, h, 0.f };
+		speed	= s;
 		possess = p;
-		bullet = new cBulletManager();
-		type = Enemy;
+		bullet	= new cBulletManager();
+		type	= Enemy;
 		landing = false;
 
 		attack_count = 0;
@@ -140,16 +140,16 @@ public:
 	int stop_time;
 
 	cEnemyHardBody(float x, float y, float w, float h, float s, bool p) {
-		pos = { x, y, 0.f };
-		size = { w, h, 0.f };
-		speed = s;
-		possess = p;
-		bullet = new cBulletManager();
-		landing = false;
-		type = Enemy;
-		move_speed = 0.8f;
-		life = 100;
-		stop_time = 0;
+		pos			= { x, y, 0.f };
+		size		= { w, h, 0.f };
+		speed		= s;
+		possess		= p;
+		bullet		= new cBulletManager();
+		landing		= false;
+		type		= Enemy;
+		move_speed	= 0.8f;
+		life		= 100;
+		stop_time	= 0;
 	}
 
 	void Update();
@@ -163,12 +163,12 @@ public:
 	float wire_length;
 
 	cEnemyWireman(float x, float y, float w, float h, float s, bool p) {
-		pos = { x, y, 0.f };
-		size = { w, h, 0.f };
-		speed = s;
+		pos		= { x, y, 0.f };
+		size	= { w, h, 0.f };
+		speed	= s;
 		possess = p;
-		bullet = new cBulletManager();
-		type = Enemy;
+		bullet	= new cBulletManager();
+		type	= Enemy;
 		landing = false;
 		wirepos = { x + w / 2,y + w / 2,0.f };
 	}

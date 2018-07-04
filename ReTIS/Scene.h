@@ -27,7 +27,8 @@ public:
 		stage	  = new cStageManager("mapdata.csv"); 
 		character = new cCharacterManager();
 		camera	  = new cCamera();
-		bghandle  = MakeScreen(stage->GetStageSizeX()*bsize, stage->GetStageSizeY()*bsize, false);
+		bghandle  = MakeScreen(stage->GetStageSizeX()*(int)bsize, stage->GetStageSizeY()*(int)bsize, false);
+		camera->SetStageSize(stage->GetStageSizeX(), stage->GetStageSizeY());
 	}
 	~cGame() { 
 		delete stage;
@@ -42,5 +43,4 @@ public:
 	void	Collision();
 	void	Update();
 	void	Render();
-	VECTOR	GetFocusPos();
 };

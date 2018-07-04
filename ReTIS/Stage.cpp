@@ -40,7 +40,7 @@ void	cStageManager::LoadStageData(char name[]) {
 		else {
 			for (unsigned int i = 0; i < str.size(); i++) {
 				// マップタイル情報を書き込む
-				VECTOR pos  = { (float)i * bsize, (float)(count - 1) * bsize, NULL };
+				VECTOR pos  = { (float)i * bsize + bsize / 2.f, (float)(count - 1) * bsize + bsize / 2.f, NULL };
 				VECTOR size = { bsize, bsize, NULL };
 				stage[i][count - 1].SetData(pos, size, stoi(str.at(i)));
 			}

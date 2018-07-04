@@ -59,37 +59,47 @@ void	cCharacterBase::HitAction(cObject *hit) {
 
 	switch (hit->GetType()) {
 	// ----マップタイルとの当たり判定-----------------------------------------------------------
-	case MapTile:
-		// プレイヤーがチップからみてどの方向にいるのかを過去の座標の差分から求める
-		float rad = col_CheckRadian(hit->GetSize(), GetSize());
-		int	  dir = col_HitRadian(GetPos(), hit->GetPos(), rad);
-		//int   o_dir = col_HitRadian(GetOldPos(), hit->GetPos(), rad);
-
-		// 方向毎に処理
-		// *引っかかる不具合がある
-		switch (dir) {
-		case 1: // right
-			pos.x = hit->GetPos().x + hit->GetSize().x / 2.f + GetSize().x / 2.f + 1.f;
-			inertia = 0;
-			break;
-		case 2: // bottom
-			pos.y = hit->GetPos().y + hit->GetSize().y / 2.f + GetSize().y / 2.f + 1.f;
-			jump = 0.f;
-			break;
-		case 3: // left
-			pos.x = hit->GetPos().x - hit->GetSize().x / 2.f - GetSize().x / 2.f - 1.f;
-			inertia = 0;
-			break;
-		case 4: // top
-			pos.y = hit->GetPos().y - hit->GetSize().y / 2.f - GetSize().y / 2.f - 1.f;
-			jump = 0.f;
-
-			// 着地判定---------------------
-			landing = true;
-			break;
-		default:
-			break;
+	case MoveFloor:
+		Collision(hit);
+		if (landing) {
+			pos.x += hit->GetPos().x - hit->GetOld().x;
+			jump = -4.f;
 		}
+		break;
+	case MapTile:
+		Collision(hit);
+		break;
+	}
+}
+void	cCharacterBase::Collision(cObject *hit) {
+	// プレイヤーがチップからみてどの方向にいるのかを過去の座標の差分から求める
+	float rad = col_CheckRadian(hit->GetSize(), GetSize());
+	int	  dir = col_HitRadian(GetPos(), hit->GetPos(), rad);
+	//int   o_dir = col_HitRadian(GetOldPos(), hit->GetPos(), rad);
+	// 方向毎に処理
+	landing = false;
+	// *引っかかる不具合がある
+	switch (dir) {
+	case 1: // right
+		pos.x = hit->GetPos().x + hit->GetSize().x / 2.f + GetSize().x / 2.f + 1.f;
+		inertia = 0;
+		break;
+	case 2: // bottom
+		pos.y = hit->GetPos().y + hit->GetSize().y / 2.f + GetSize().y / 2.f + 1.f;
+		jump = 0.f;
+		break;
+	case 3: // left
+		pos.x = hit->GetPos().x - hit->GetSize().x / 2.f - GetSize().x / 2.f - 1.f;
+		inertia = 0;
+		break;
+	case 4: // top
+		pos.y = hit->GetPos().y - hit->GetSize().y / 2.f - GetSize().y / 2.f - 1.f;
+		jump = 0.f;
+
+		// 着地判定---------------------
+		landing = true;
+		break;
+	default:
 		break;
 	}
 }
@@ -162,12 +172,6 @@ void cEnemyGunman::MoveByAutomation()
 {
 	pos.x++;
 }
-
-VECTOR	GetObjectPos(cCharacterBase *character) {
-	return character->GetPos();
-}
-}
-
 
 void cEnemyHardBody::Update()
 {

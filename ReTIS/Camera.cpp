@@ -7,6 +7,7 @@ bool	camera_flag_x, camera_flag_y;
 bool	camera_flag_half_x, camera_flag_half_y;
 
 void cCamera::Update(VECTOR focus) {
+
 	window.left = (int)focus.x - WINDOW_SIZE_X / 2;
 	window.right = (int)focus.x + WINDOW_SIZE_X / 2;
 	window.top = (int)focus.y - WINDOW_SIZE_Y / 2;
@@ -73,13 +74,16 @@ void cCamera::Update(VECTOR focus) {
 		}
 	}
 	// ----イージング-------------------------------------------
-	px = Easing::InOutQuad(camera_time_x, 1.0, (double)FocusPos.x, (double)px);
-	py = Easing::InOutQuad(camera_time_y, 1.0, (double)FocusPos.y, (double)py);
+	px = (float)Easing::InOutQuad(camera_time_x, 1.0, (double)FocusPos.x, (double)px);
+	py = (float)Easing::InOutQuad(camera_time_y, 1.0, (double)FocusPos.y, (double)py);
 
 	camera_px = px - WINDOW_SIZE_X / 2.f;
 	camera_py = py - WINDOW_SIZE_Y / 2.f;
+
+	if (camera_px < 0.f) camera_px = 0.f;
+	if (camera_px > sx * bsize - WINDOW_SIZE_X) camera_px = sx * bsize - WINDOW_SIZE_X;
 }
 
 void cCamera::Render(int handle) {
-	DrawRectGraph(0, 0, camera_px, camera_py, WINDOW_SIZE_X, WINDOW_SIZE_Y, handle, false, false);
+	DrawRectGraph(0, 0, (int)camera_px, (int)camera_py, WINDOW_SIZE_X, WINDOW_SIZE_Y, handle, false, false);
 }
