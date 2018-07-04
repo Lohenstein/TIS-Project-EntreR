@@ -120,38 +120,44 @@ void	cCharacterManager::Render() {
 	jumpman->Render();
 	//nman->Render();
 	hardbody->Render();
+	wireman->Render();
+	fryingman->Render();
 }
 void	cCharacterManager::Update() {
 	player->Update();
 	jumpman->Update();
 	gunman->Update();
 	hardbody->Update();
+	wireman->Update();
+	fryingman->Update();
 }
 
+void cEnemyJumpman::Update()
+{
+		if (move_dir > 0) {
+			pos.x+=5;
+		}
+		else {
+			pos.x-=5;
+		}
+		if (landing == true && jump_count != 3) {
+			jump = 20.f;
+			jump_count++;
+			landing = false;
+		}
+		if (landing == true && jump_count == 3) {
+			jump = 40.f;
+			jump_count = 0;
+			move_dir *= -1;
+		}
+	Physical();
+
+	// 重力計算の書き方の例
+}
 
 void cEnemyJumpman::MoveByAutomation()
 {
-	if (move_dir > 0) {
-		pos.x++;
-	}
-	else {
-		pos.x--;
-	}
 
-	if (landing == true && jump_count != 3) {
-		jump = 20.f;
-		jump_count++;
-		landing = false;
-	}
-	if (landing == true &&jump_count == 3) {
-		jump = 40.f;
-		jump_count = 0;
-		move_dir *= -1;
-	}
-	if (CheckHitKey(KEY_INPUT_X) == 1) {
-		bullet->Render();
-	}
-					// 重力計算の書き方の例
 }
 
 
@@ -165,24 +171,12 @@ void cEnemyGunman::MoveByAutomation()
 VECTOR	GetObjectPos(cCharacterBase *character) {
 	return character->GetPos();
 }
-}
 
 
 void cEnemyHardBody::Update()
 {
-	if (possess) {
-		MoveByPlayer();		// 乗り移っていたら手動操作
-	}
-	else {
-		MoveByAutomation();	// その他は自動
-	}
-	Physical();
-	Physical();
-}
-void cEnemyHardBody::MoveByAutomation()
-{
 	if (landing == false) {
-		stop_time+=2;
+		stop_time += 2;
 	}
 	else if (landing == true && stop_time != 0) {
 		stop_time--;
@@ -190,4 +184,67 @@ void cEnemyHardBody::MoveByAutomation()
 	else {
 		pos.x += move_speed;
 	}
+	Physical();
+}
+
+void cEnemyHardBody::MoveByAutomation()
+{
+
+}
+
+
+void cEnemyWireman::Update()
+{
+
+}
+
+void cEnemyWireman::MoveByAutomation() 
+{
+
+}
+
+
+void cEnemyFryingman::Update()
+{
+	// プレイヤーがファンネルのセンサーに引っかかったとき
+	if (move_flow == -1) {
+		if (FocusPos.x >= pos.x) {
+			move_flow = 0;
+		}
+	}
+	// 降下開始
+	else if (move_flow == 0) {
+		pos.x = FocusPos.x + length;
+		pos.y+=5;
+		if (pos.y >= FocusPos.y) {
+			move_flow = 1;
+		}
+	}
+	//回転開始
+	else if (move_flow == 1){
+		rotation_time--;
+		angle+=10;
+		pos.x = FocusPos.x + cos(angle * PI / 180) * length;
+		pos.y = FocusPos.y + sin(angle * PI / 180) * length;
+		if (rotation_time <= 0) {
+			move_flow = 2;
+			rotation_time = 100;	// クールタイムに使用
+		}
+	}
+	// 弾発射
+	else if (move_flow == 2) {
+		// 弾発射の処理
+		rotation_time--;
+		if (rotation_time <= 0)
+			move_flow = 3;
+	}
+	// ファンネル撤退
+	else if (move_flow == 3) {
+		pos.y -= 5;
+	}
+
+}
+void cEnemyFryingman::MoveByAutomation()
+{
+
 }
