@@ -20,16 +20,23 @@ class cGame : public cBase
 private:
 	cStageManager *stage;
 	cCharacterManager *character;
+	cCamera *camera;
+	int bghandle;
 public:
 	cGame() { 
 		stage	  = new cStageManager("mapdata.csv"); 
 		character = new cCharacterManager();
+		camera	  = new cCamera();
+		bghandle  = MakeScreen(stage->GetStageSizeX()*bsize, stage->GetStageSizeY()*bsize, false);
 	}
 	~cGame() { 
 		delete stage;
-		stage = nullptr;
 		delete character;
+		delete camera;
+		stage     = nullptr;
 		character = nullptr;
+		camera	  = nullptr;
+		DeleteGraph(bghandle);
 	}
 	void	Init();
 	void	Collision();

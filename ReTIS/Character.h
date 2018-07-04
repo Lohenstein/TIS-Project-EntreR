@@ -1,6 +1,7 @@
 #pragma once
 
 extern VECTOR FocusPos;
+extern VECTOR FocusOld;
 
 class cCharacterBase : public cObject{
 protected:

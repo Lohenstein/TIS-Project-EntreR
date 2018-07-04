@@ -22,9 +22,19 @@ void	cGame::Update() {
 	input();
 	character->Update();
 	Collision();
+	camera->Update(FocusPos);
 }
 void	cGame::Render() {
+	// 描画先ウィンドウを変更
+	SetDrawScreen(bghandle);
+	ClearDrawScreen();
+	// 描画
 	stage->Render();
 	character->Render();
+	// 戻す
+	SetDrawScreen(DX_SCREEN_BACK);
+
+	camera->Render(bghandle);
+
 	DrawFormatString(10, 10, 0xFFFFFF, "操作キャラの座標:x=%d, y=%d", (int)FocusPos.x, (int)FocusPos.y);
 }

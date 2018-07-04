@@ -10,6 +10,8 @@
 #include <memory>
 
 // ƒwƒbƒ_
+#include "Easing.h"
+#include "Camera.h"
 #include "Collision.h"
 #include "Input.h"
 #include "Bullet.h"

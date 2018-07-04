@@ -28,6 +28,7 @@ void	game_main(void)
 	case mode_title:
 		break;
 	case mode_game:
+		scene->Update();
 		break;
 	case mode_over:
 		break;
@@ -39,7 +40,7 @@ void	game_main(void)
 	case mode_title:
 		break;
 	case mode_game:
-		scene->Show();
+		scene->Render();
 		break;
 	case mode_over:
 		break;
