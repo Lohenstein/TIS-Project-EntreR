@@ -119,12 +119,14 @@ void	cEnemy::Render() {
 void	cCharacterManager::Render() {
 	player->Render();
 	jumpman->Render();
-	gunman->Render();
+	//nman->Render();
+	hardbody->Render();
 }
 void	cCharacterManager::Update() {
 	player->Update();
 	jumpman->Update();
 	gunman->Update();
+	hardbody->Update();
 }
 
 
@@ -150,8 +152,6 @@ void cEnemyJumpman::MoveByAutomation()
 	if (CheckHitKey(KEY_INPUT_X) == 1) {
 		bullet->Render();
 	}
-
-	
 					// d—ÍŒvZ‚Ì‘‚«•û‚Ì—á
 }
 
@@ -165,4 +165,30 @@ void cEnemyGunman::MoveByAutomation()
 
 VECTOR	GetObjectPos(cCharacterBase *character) {
 	return character->GetPos();
+}
+}
+
+
+void cEnemyHardBody::Update()
+{
+	if (possess) {
+		MoveByPlayer();		// æ‚èˆÚ‚Á‚Ä‚¢‚½‚çè“®‘€ì
+	}
+	else {
+		MoveByAutomation();	// ‚»‚Ì‘¼‚Í©“®
+	}
+	Physical();
+	Physical();
+}
+void cEnemyHardBody::MoveByAutomation()
+{
+	if (landing == false) {
+		stop_time+=2;
+	}
+	else if (landing == true && stop_time != 0) {
+		stop_time--;
+	}
+	else {
+		pos.x += move_speed;
+	}
 }

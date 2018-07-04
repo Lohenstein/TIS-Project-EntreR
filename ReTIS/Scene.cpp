@@ -13,7 +13,7 @@ void	cGame::Collision() {
 				CheckHitRectAndRect(character->GetPlayer(), stage->GetMapTile(i, j));
 				CheckHitRectAndRect(character->GetEnemyJumpman(), stage->GetMapTile(i, j));
 				CheckHitRectAndRect(character->GetEnemyGunman(), stage->GetMapTile(i, j));
-
+				CheckHitRectAndRect(character->GetEnemyHardBody(), stage->GetMapTile(i, j));
 			}
 		}
 	}

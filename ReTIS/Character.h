@@ -133,6 +133,55 @@ public:
 	void MoveByAutomation();
 };
 
+class cEnemyHardBody : public cEnemy{
+public:
+	float move_speed;
+	int life;
+	int stop_time;
+
+	cEnemyHardBody(float x, float y, float w, float h, float s, bool p) {
+		pos = { x, y, 0.f };
+		size = { w, h, 0.f };
+		speed = s;
+		possess = p;
+		bullet = new cBulletManager();
+		landing = false;
+		type = Enemy;
+		move_speed = 0.8f;
+		life = 100;
+		stop_time = 0;
+	}
+
+	void Update();
+	void move();
+	void MoveByAutomation();
+};
+
+class cEnemyWireman : public cEnemy {
+public:
+	VECTOR  wirepos;
+	float wire_length;
+
+	cEnemyWireman(float x, float y, float w, float h, float s, bool p) {
+		pos = { x, y, 0.f };
+		size = { w, h, 0.f };
+		speed = s;
+		possess = p;
+		bullet = new cBulletManager();
+		type = Enemy;
+		landing = false;
+		wirepos = { x + w / 2,y + w / 2,0.f };
+	}
+
+	void Update();
+	void move();
+	void MoveByAutomation();
+};
+
+class cEnemyFryingman : public cEnemy {
+public:
+};
+//ワイヤーアクションする敵
 
 class cCharacterManager {
 protected:
@@ -141,12 +190,15 @@ public:
 	cEnemyJumpman *jumpman;
 	cEnemyGunman *gunman;
 	cEnemyCannon * cannon;
+	cEnemyHardBody * hardbody;
+	cEnemyWireman *wireman;
 	cCharacterManager() {
 		player = new cPlayer(400.f, 100.f, 90.f, 120.f, 6.f, true);
 		jumpman = new cEnemyJumpman(300.f, 100.f, 90.f,120.f, 2.f, false);
 		gunman = new cEnemyGunman(200.f, 100.f, 90.f, 120.f, 2.f, false);
 		cannon = new cEnemyCannon(200.f, 100.f, 90.f, 120.f, 2.f, false);
-
+		hardbody = new cEnemyHardBody(200.f, 100.f, 90.f, 120.f, 2.f, false);
+		wireman = new cEnemyWireman(200.f, 100.f, 90.f, 120.f, 2.f, false);
 	}
 	~cCharacterManager() {
 		delete player;
@@ -158,4 +210,6 @@ public:
 	cObject *GetEnemyJumpman() { return (cObject*)jumpman; }
 	cObject *GetEnemyGunman() { return (cObject*)gunman; }
 	cObject *GetEnemyCannon() { return (cObject*)cannon; }
+	cObject *GetEnemyHardBody() { return (cObject*)hardbody; }
+	cObject *GetEnemyWirean() { return (cObject*)wireman; }
 };
