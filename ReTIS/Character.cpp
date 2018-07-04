@@ -1,6 +1,6 @@
 
 #include "Main.h"
-VECTOR FocusPos;
+VECTOR FocusPos, FocusOld;
 /*------------------------------------------------------------------------------*
 | <<< cCharacterBase >>>
 *------------------------------------------------------------------------------*/
@@ -40,6 +40,7 @@ void	cCharacterBase::Physical() {
 void	cCharacterBase::Update() {
 	if (possess) {
 		MoveByPlayer();		// æ‚èˆÚ‚Á‚Ä‚¢‚½‚çè“®‘€ì
+		FocusOld = FocusPos;
 		FocusPos = pos;
 	}
 	else {
