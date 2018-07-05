@@ -176,19 +176,56 @@ void cEnemyJumpman::MoveByAutomation()
 
 void cEnemyGunman::MoveByAutomation()
 {
-	pos.x++;
+	
 }
 
 void cEnemyHardBody::Update()
 {
-	if (landing == false) {
-		stop_time += 2;
+	if (pos.x - 300 <= FocusPos.x && pos.x + 300 >= FocusPos.x && attack_flag == false) {
+		attack_flag = true;
 	}
-	else if (landing == true && stop_time != 0) {
-		stop_time--;
-	}
-	else {
-		pos.x += move_speed;
+	
+	switch (attack_time)
+	{
+	case 0:
+		if (attack_flag == true) {
+			attack_time = 1;
+		}
+		break;
+	case 1:
+		if (landing == true && jump_count != 3) {
+			jump = 15.f;
+			jump_count++;
+			landing = false;
+		}
+		else if (jump_count == 3) {
+			jump = 30.f;
+			landing = false;
+			attack_time = 2;
+			jump_count = 0;
+		}
+		
+		break;
+	case 2:
+		if (landing == false) {
+			if (pos.x < FocusPos.x)
+				pos.x += 2;
+			else pos.x -= 2;
+		}
+		else if (landing == true) {
+			cool_time++;
+			if (cool_time = 100) {
+				attack_time = 3;
+				cool_time = 0;
+			}
+		}
+		break;
+	case 3:
+		attack_flag = false;
+		attack_time = 0;
+		break;
+	default:
+		break;
 	}
 	Physical();
 }
@@ -196,12 +233,96 @@ void cEnemyHardBody::Update()
 void cEnemyHardBody::MoveByAutomation()
 {
 
+
 }
 
 
 void cEnemyWireman::Update()
 {
+	if (action_count >= 0 && start_wire == false) {
+		if (dir == -1)
+			pos.x += 10;
+		else if (dir == 1)
+			pos.x -= 10;
+		action_count--;
+		wirepos.x = pos.x;
+		wirepos.y = pos.y;
+	}
+	else if (action_count <= 0 && start_wire == false) {
+		if (dir == -1)
+			wirepos.x += cos(filing_angle) * 5;
+		else if (dir == 1)
+			wirepos.x -= cos(filing_angle) * 5;
+		wirepos.y -= sin(filing_angle) * 5;
+		DrawLine(pos.x, pos.y, wirepos.x, wirepos.y, 0xffffff);
+		action_count--;
+		if (action_count <= -10) {
+			wirepos.y -= 100;
+			start_wire = true;
+			action_count = 100;
+		}
+	}
+	if (start_wire == true) {
+		float rad = rot * PI / 180;
+		float px = wirepos.x + cos(rad) * wire_length;			// U‚èŽq–{‘Ì‚ÌÀ•W
+		float py = wirepos.y + sin(rad) * wire_length;			// 
 
+																// d—ÍˆÚ“®—Ê‚ð”½‰f‚µ‚½d‚è‚ÌˆÊ’u
+		float vx = px - wirepos.x;								// Žx“_‚©‚çd‚è‚Ü‚Å‚ÌƒxƒNƒgƒ‹‚ðo‚·
+		float vy = py - wirepos.y;								//
+		float t = -(vy * wire_gravity) / (vx * vx + vy * vy);	//  
+		float gx = px + t * vx;
+		float gy = py + wire_gravity + t * vy;
+
+		// ‚Q‚Â‚Ìd‚è‚ÌˆÊ’u‚ÌŠp“x·
+		float r = atan2(gy - wirepos.y, gx - wirepos.x) * 180 / PI;
+		
+		
+		rad = rot * PI / 180;
+
+			pos.x = wirepos.x + cos(rad) * wire_length;
+			pos.y = wirepos.y + sin(rad) * wire_length;
+
+		// Šp“x·‚ðŠp‘¬“x‚É‰ÁŽZ
+		float sub = r - rot;
+
+		sub -= floor(sub / 360.0) * 360.0;
+		if (sub < 0.0) {
+			sub += 360.0;
+			
+		}
+		else if (sub > 180.0) {
+			sub -= 360.0;
+		}
+
+		move_speed += sub;
+
+		// Šp“x‚ÉŠp‘¬“x‚ð‰ÁŽZ
+		rot += move_speed;
+
+		if (dir == 1 && rot > 170)
+			start_wire = false;
+		if (dir == -1 && rot < 10)
+			start_wire = false;
+
+		// V‚µ‚¢d‚è‚ÌˆÊ’u
+		// d‚è‚ÌÀ•W
+		vx = px;
+		vy = py;
+		if (start_wire == false) {
+			jump = 20.f;
+			dir *= -1;
+			move_speed = -4;
+			if (dir == -1)
+				move_speed = 4;
+			rot = 45.f;
+			if (dir == -1)
+				rot = 135.f;
+		}
+	}
+	else {
+		Physical();
+	}
 }
 
 void cEnemyWireman::MoveByAutomation() 

@@ -14,6 +14,9 @@ protected:
 	// 着地した時の判定 ------------------
 	bool	landing;
 
+	// ワイヤーが触れた時の判定-----------
+	bool	wirehit;
+
 public:
 	cCharacterBase() {};
 	~cCharacterBase() {};
@@ -135,7 +138,10 @@ class cEnemyHardBody : public cEnemy{
 public:
 	float move_speed;
 	int life;
-	int stop_time;
+	int attack_time;
+	bool attack_flag;
+	int jump_count;
+	int cool_time;
 
 	cEnemyHardBody(float x, float y, float w, float h, float s, bool p) {
 		pos			= { x, y, 0.f };
@@ -147,7 +153,10 @@ public:
 		type		= Enemy;
 		move_speed	= 0.8f;
 		life		= 100;
-		stop_time	= 0;
+		attack_time = 0;
+		attack_flag = false;
+		jump_count  = 0;
+		cool_time	= 0;
 	}
 	void Update();
 	void move();
@@ -157,7 +166,15 @@ public:
 class cEnemyWireman : public cEnemy {
 public:
 	VECTOR  wirepos;
-	float wire_length;
+	float move_speed;		// ワイヤーを伸ばしているときのキャラのスピード
+	float wire_length;		// ワイヤーの長さ
+	float wire_gravity;		// ワイヤーを伸ばしているときの重力
+	float rot;				// 初期プレイヤー角度
+	float filing_angle;		// ワイヤー発射角度（45度）
+	bool start_wire;		// ワイヤーで動いているか
+	int action_count;
+	int dir;				// 1,右 -1,左
+
 
 	cEnemyWireman(float x, float y, float w, float h, float s, bool p) {
 		pos		= { x, y, 0.f };
@@ -167,7 +184,16 @@ public:
 		bullet	= new cBulletManager();
 		type	= Enemy;
 		landing = false;
-		wirepos = { x + w / 2,y + w / 2,0.f };
+		
+		wirepos = { x,y,0.f };
+		rot = 135.f;
+		filing_angle = 45 * PI / 180;
+		wire_gravity = 0.2f;
+		wire_length = 100;
+		move_speed = 4;
+		start_wire = false;
+		action_count = 100;
+		dir = -1;
 	}
 	void Update();
 	void move();
@@ -221,8 +247,8 @@ public:
 		jumpman = new cEnemyJumpman(300.f, 100.f, 90.f,120.f, 2.f, false);
 		gunman = new cEnemyGunman(200.f, 100.f, 90.f, 120.f, 2.f, false);
 		cannon = new cEnemyCannon(200.f, 100.f, 90.f, 120.f, 2.f, false);
-		hardbody = new cEnemyHardBody(200.f, 100.f, 90.f, 120.f, 2.f, false);
-		wireman = new cEnemyWireman(200.f, 100.f, 90.f, 120.f, 2.f, false);
+		hardbody = new cEnemyHardBody(1000.f, 100.f, 90.f, 120.f, 2.f, false);
+		wireman = new cEnemyWireman(200.f, 100.f, 100.f, 100.f, 2.f, false);
 		fryingman = new cEnemyFryingman(500.f, -100.f, 90.f, 90.f, 2.f, false);
 	}
 	~cCharacterManager() {
@@ -236,7 +262,7 @@ public:
 	cObject *GetEnemyGunman() { return (cObject*)gunman; }
 	cObject *GetEnemyCannon() { return (cObject*)cannon; }
 	cObject *GetEnemyHardBody() { return (cObject*)hardbody; }
-	cObject *GetEnemyWirean() { return (cObject*)wireman; }
+	cObject *GetEnemyWireman() { return (cObject*)wireman; }
 	cObject *GetEnemyFryingman() { return (cObject*)fryingman; }
 
 };
