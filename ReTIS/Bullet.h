@@ -15,7 +15,7 @@ public:
 		rad   = r;
 		flag  = true;
 	}
-	~cBullet() {};
+	~cBullet() {}; 
 	void	Update();
 	void	Render();
 	void	HitAction(cObject *hit);

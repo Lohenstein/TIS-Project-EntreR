@@ -8,6 +8,7 @@
 #include <string>
 #include <cmath>
 #include <memory>
+#include <random>
 
 // ƒwƒbƒ_
 #include "Easing.h"
