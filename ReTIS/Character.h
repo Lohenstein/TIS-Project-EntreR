@@ -9,6 +9,8 @@ protected:
 	float	speed;
 	float	jump = 0.f, gravity = 1.f , inertia = 0; // 重力と慣性
 	bool	possess;	// 乗り移られているか
+	int		hp = 5, invincible_time = 0;
+	bool	invincible = false;
 	void	Physical();	// ジャンプとかの計算
 
 	// 着地した時の判定 ------------------
@@ -26,6 +28,7 @@ public:
 	void	MoveByPlayer();
 	void	Update();
 	void	Render();
+	int		GetHp() { return hp; }
 };
 
 class cPlayer : public cCharacterBase {
@@ -236,17 +239,13 @@ protected:
 public:
 	cPlayer *player;
 	cEnemyJumpman *jumpman;
-	cEnemyGunman *gunman;
-	cEnemyCannon * cannon;
-	cEnemyHardBody * hardbody;
+	cEnemyHardBody *hardbody;
 	cEnemyWireman *wireman;
 	cEnemyFryingman *fryingman;
 
 	cCharacterManager() {
 		player = new cPlayer(400.f, 100.f, 90.f, 120.f, 6.f, true);
 		jumpman = new cEnemyJumpman(300.f, 100.f, 90.f,120.f, 2.f, false);
-		gunman = new cEnemyGunman(200.f, 100.f, 90.f, 120.f, 2.f, false);
-		cannon = new cEnemyCannon(200.f, 100.f, 90.f, 120.f, 2.f, false);
 		hardbody = new cEnemyHardBody(1000.f, 100.f, 90.f, 120.f, 2.f, false);
 		wireman = new cEnemyWireman(200.f, 100.f, 100.f, 100.f, 2.f, false);
 		fryingman = new cEnemyFryingman(500.f, -100.f, 90.f, 90.f, 2.f, false);
@@ -259,10 +258,10 @@ public:
 	void	Render();
 	cObject *GetPlayer() { return (cObject*)player; }
 	cObject *GetEnemyJumpman() { return (cObject*)jumpman; }
-	cObject *GetEnemyGunman() { return (cObject*)gunman; }
-	cObject *GetEnemyCannon() { return (cObject*)cannon; }
 	cObject *GetEnemyHardBody() { return (cObject*)hardbody; }
 	cObject *GetEnemyWireman() { return (cObject*)wireman; }
 	cObject *GetEnemyFryingman() { return (cObject*)fryingman; }
+
+	int		GetPlayerHp() { return player->GetHp(); }
 
 };

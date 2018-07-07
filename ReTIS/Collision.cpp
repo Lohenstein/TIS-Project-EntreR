@@ -14,8 +14,6 @@ void CheckHitRectAndRect(cObject *obj1, cObject *obj2) {
 	}
 }
 
-
-
 // ã‚ÉÚ‚Á‚Ä‚¢‚ç‚ê‚é–ÊÏ‚ğ”»•Ê‚·‚é
 float	col_CheckRadian(VECTOR p1, VECTOR p2) {
 	float x = (p1.x / 2.f) + (p2.x / 2.f);

@@ -11,6 +11,7 @@
 
 // ƒwƒbƒ_
 #include "Easing.h"
+#include "Gui.h"
 #include "Camera.h"
 #include "Collision.h"
 #include "Entity.h"

@@ -38,6 +38,7 @@ void	cCharacterBase::Physical() {
 }
 
 void	cCharacterBase::Update() {
+	// 乗り移る
 	if (possess) {
 		MoveByPlayer();		// 乗り移っていたら手動操作
 		FocusOld = FocusPos;
@@ -46,6 +47,12 @@ void	cCharacterBase::Update() {
 	else {
 		MoveByAutomation();	// その他は自動
 	}
+	// 無敵時間
+	if (invincible) {
+		invincible_time++;
+		if (invincible_time >= 100) invincible = false;
+	}
+	// 重力
 	Physical();
 }
 
@@ -64,6 +71,16 @@ void	cCharacterBase::HitAction(cObject *hit) {
 		if (landing) {
 			pos.x += hit->GetPos().x - hit->GetOld().x;
 			jump = -4.f;
+		}
+		break;
+	case Enemy:
+		if (invincible == false) {
+			invincible = true;
+			invincible_time = 0;
+			hp--;
+			if (hp <= 0) {
+				// GameOver
+			}
 		}
 		break;
 	case MapTile:
@@ -107,14 +124,20 @@ void	cCharacterBase::Collision(cObject *hit) {
 | <<< cPlayer >>>
 *------------------------------------------------------------------------------*/
 void	cPlayer::Render() {
-	DrawBoxAA(GetPos().x - GetSize().x / 2.f, GetPos().y - GetSize().y / 2.f,
-		GetPos().x + GetSize().x / 2.f, GetPos().y + GetSize().y / 2.f,
-		0xFF0000, true);
-
-
+	if (invincible) {
+		if (invincible_time % 3 == 0) {
+			DrawBoxAA(GetPos().x - GetSize().x / 2.f, GetPos().y - GetSize().y / 2.f,
+				GetPos().x + GetSize().x / 2.f, GetPos().y + GetSize().y / 2.f,
+				0xFF0000, true);
+		}
+	}
+	else {
+		DrawBoxAA(GetPos().x - GetSize().x / 2.f, GetPos().y - GetSize().y / 2.f,
+			GetPos().x + GetSize().x / 2.f, GetPos().y + GetSize().y / 2.f,
+			0xFF0000, true);
+	}
 }
-/*---------------------------------------
----------------------------------------*
+/*------------------------------------------------------------------------------*
 | <<< cEnemy >>>
 *------------------------------------------------------------------------------*/
 void	cEnemy::Render() {
@@ -129,7 +152,6 @@ void	cEnemy::Render() {
 void	cCharacterManager::Render() {
 	player->Render();
 	jumpman->Render();
-	//nman->Render();
 	hardbody->Render();
 	wireman->Render();
 	fryingman->Render();
@@ -137,48 +159,59 @@ void	cCharacterManager::Render() {
 void	cCharacterManager::Update() {
 	player->Update();
 	jumpman->Update();
-	gunman->Update();
 	hardbody->Update();
 	wireman->Update();
 	fryingman->Update();
 }
 
+/*------------------------------------------------------------------------------*
+| <<< cEnemyJumpman >>>
+*------------------------------------------------------------------------------*/
 void cEnemyJumpman::Update()
 {
-		if (move_dir > 0) {
-			pos.x+=5;
-		}
-		else {
-			pos.x-=5;
-		}
-		if (landing == true && jump_count != 3) {
-			jump = 20.f;
-			jump_count++;
-			landing = false;
-		}
-		if (landing == true && jump_count == 3) {
-			jump = 40.f;
-			jump_count = 0;
-			move_dir *= -1;
-		}
+	if (possess) {
+		MoveByPlayer();		// 乗り移っていたら手動操作
+		FocusOld = FocusPos;
+		FocusPos = pos;
+	}
+	else {
+		MoveByAutomation();	// その他は自動
+	}
 	Physical();
-
-	// 重力計算の書き方の例
 }
 
 void cEnemyJumpman::MoveByAutomation()
 {
-
+	if (move_dir > 0) {
+		pos.x += 5;
+	}
+	else {
+		pos.x -= 5;
+	}
+	if (landing == true && jump_count != 3) {
+		jump = 20.f;
+		jump_count++;
+		landing = false;
+	}
+	if (landing == true && jump_count == 3) {
+		jump = 40.f;
+		jump_count = 0;
+		move_dir *= -1;
+	}
 }
 
 
-// ガンマンの処理
-
+/*------------------------------------------------------------------------------*
+| <<< cEnemyGunman >>>
+*------------------------------------------------------------------------------*/
 void cEnemyGunman::MoveByAutomation()
 {
 	
 }
 
+/*------------------------------------------------------------------------------*
+| <<< cEnemyHardbody >>>
+*------------------------------------------------------------------------------*/
 void cEnemyHardBody::Update()
 {
 	if (pos.x - 300 <= FocusPos.x && pos.x + 300 >= FocusPos.x && attack_flag == false) {
@@ -236,7 +269,9 @@ void cEnemyHardBody::MoveByAutomation()
 
 }
 
-
+/*------------------------------------------------------------------------------*
+| <<< cEnemyWireman >>>
+*------------------------------------------------------------------------------*/
 void cEnemyWireman::Update()
 {
 	if (action_count >= 0 && start_wire == false) {
@@ -330,7 +365,9 @@ void cEnemyWireman::MoveByAutomation()
 
 }
 
-
+/*------------------------------------------------------------------------------*
+| <<< cEnemyFryingman >>>
+*------------------------------------------------------------------------------*/
 void cEnemyFryingman::Update()
 {
 	// プレイヤーがファンネルのセンサーに引っかかったとき

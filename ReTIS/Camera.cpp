@@ -8,9 +8,9 @@ bool	camera_flag_half_x, camera_flag_half_y;
 
 void cCamera::Update(VECTOR focus) {
 
-	window.left = (int)focus.x - WINDOW_SIZE_X / 2;
-	window.right = (int)focus.x + WINDOW_SIZE_X / 2;
-	window.top = (int)focus.y - WINDOW_SIZE_Y / 2;
+	window.left   = (int)focus.x - WINDOW_SIZE_X / 2;
+	window.right  = (int)focus.x + WINDOW_SIZE_X / 2;
+	window.top    = (int)focus.y - WINDOW_SIZE_Y / 2;
 	window.bottom = (int)focus.y + WINDOW_SIZE_Y / 2;
 
 	// -----カメライージング横軸-------------------------------------------
