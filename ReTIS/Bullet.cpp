@@ -1,6 +1,8 @@
 
 #include "Main.h"
 
+cBulletManager bullet;
+
 void cBullet::Update() {
 
 	pos.x = sin(rad) * speed;

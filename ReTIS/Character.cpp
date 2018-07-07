@@ -10,11 +10,11 @@ void	cCharacterBase::MoveByAutomation() {
 void	cCharacterBase::MoveByPlayer() {
 	old = pos;	// ‰ß‹ŽÀ•W
 
-	if (key[KEY_INPUT_A] == 2 || key[KEY_INPUT_D] == 2) {
-		if (key[KEY_INPUT_A] == 2) {
+	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
+		if (key[KEY_INPUT_LEFT] == 2) {
 			inertia -= 4;				// ˆÚ“®—ÊƒÆ‚ðŒ¸­
 		}
-		if (key[KEY_INPUT_D] == 2) {
+		if (key[KEY_INPUT_RIGHT] == 2) {
 			inertia += 4;				// ˆÚ“®—ÊƒÆ‚ð‘‰Á
 		}
 	}
@@ -23,7 +23,13 @@ void	cCharacterBase::MoveByPlayer() {
 		if (inertia > 0) inertia -= 2;
 		if (inertia < 0) inertia += 2;
 	}
-	if (key[KEY_INPUT_SPACE] == 1) jump = 20.f;
+	if (key[KEY_INPUT_SPACE] == 1 && jump_count < 2) {
+		jump = 20.f;
+		++jump_count;
+	}
+	if (key[KEY_INPUT_X] == 1) {
+
+	}
 }
 
 void	cCharacterBase::Physical() {
@@ -49,8 +55,10 @@ void	cCharacterBase::Update() {
 	}
 	// –³“GŽžŠÔ
 	if (invincible) {
-		invincible_time++;
-		if (invincible_time >= 100) invincible = false;
+		const int invicible_time_max = 200;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
 	}
 	// d—Í
 	Physical();
@@ -125,6 +133,7 @@ void	cCharacterBase::Collision(cObject *hit) {
 
 		// ’…’n”»’è---------------------
 		landing = true;
+		jump_count = 0;
 		break;
 	default:
 		break;
@@ -466,6 +475,6 @@ void cEnemyFryingman::MoveByAutomation()
 		pos.y -= 5;
 	}
 	if (firing == true) {
-		bullet->Shot(pos,bulletsize, 10,tan(30*PI/180));
+		bullet.Shot(pos,bulletsize, 10,tan(30*PI/180));
 	}
 }

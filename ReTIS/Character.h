@@ -5,11 +5,11 @@ extern VECTOR FocusOld;
 
 class cCharacterBase : public cObject{
 protected:
-
 	float	speed;
 	float	jump = 0.f, gravity = 1.f , inertia = 0; // 重力と慣性
 	bool	possess;	// 乗り移られているか
 	int		hp = 5, invincible_time = 0;
+	int		jump_count = 0;
 	bool	invincible = false;
 	void	Physical();	// ジャンプとかの計算
 
@@ -24,7 +24,8 @@ protected:
 
 public:
 	cCharacterBase() {};
-	~cCharacterBase() {};
+	~cCharacterBase() {
+	};
 	void	HitAction(cObject *hit);
 	void	Collision(cObject *hit);
 	void	MoveByAutomation();
@@ -50,7 +51,6 @@ public:
 
 class cEnemy : public cCharacterBase {
 protected:
-	cBulletManager *bullet;
 public:
 	/*cEnemy(float x, float y, float w, float h, float s, bool p) {
 		pos     = { x, y, 0.f };
@@ -60,17 +60,13 @@ public:
 		bullet  = new cBulletManager();
 		type    = Enemy;
 	}*/
-	~cEnemy() {
-		delete bullet;
-		bullet = nullptr;
-	}
+	~cEnemy() {}
 	void	Render();
 };
 
 class cEnemyJumpman : public cEnemy 
 {
 protected:
-	cBulletManager *bullet;
 public:
 
 	float rad;
@@ -83,17 +79,13 @@ public:
 		size = { w, h, 0.f };
 		speed = s;
 		possess = p;
-		bullet = new cBulletManager();
 		type = Enemy;
 		landing = false;
 		move_flag = false;
 		jump_count = 0;
 		move_dir = 1;
 	}
-	~cEnemyJumpman() {
-		delete bullet;
-		bullet = nullptr;
-	}
+	~cEnemyJumpman() {}
 	void Update();
 	void move();
 	void MoveByAutomation();
@@ -102,7 +94,6 @@ public:
 class cEnemyGunman : public cEnemy
 {
 protected:
-	cBulletManager *bullet;
 public:
 	int attack_count;
 
@@ -112,16 +103,12 @@ public:
 		size	= { w, h, 0.f };
 		speed	= s;
 		possess = p;
-		bullet	= new cBulletManager();
 		type	= Enemy;
 		landing = false;
 
 		attack_count = 0;
 	}
-	~cEnemyGunman() {
-		delete bullet;
-		bullet = nullptr;
-	}
+	~cEnemyGunman() {}
 
 	void move();
 	void MoveByAutomation();
@@ -138,7 +125,6 @@ public:
 		size	= { w, h, 0.f };
 		speed	= s;
 		possess = p;
-		bullet	= new cBulletManager();
 		type	= Enemy;
 		landing = false;
 
@@ -162,7 +148,6 @@ public:
 		size		= { w, h, 0.f };
 		speed		= s;
 		possess		= p;
-		bullet		= new cBulletManager();
 		landing		= false;
 		type		= Enemy;
 		move_speed	= 0.8f;
@@ -195,7 +180,6 @@ public:
 		size	= { w, h, 0.f };
 		speed	= s;
 		possess = p;
-		bullet	= new cBulletManager();
 		type	= Enemy;
 		landing = false;
 		
@@ -218,7 +202,6 @@ public:
 
 class cEnemyFryingman : public cEnemy {
 protected:
-	cBulletManager *bullet;
 public:
 
 	VECTOR bulletpos;
@@ -240,7 +223,6 @@ public:
 		size = { w, h, 0.f };
 		speed = s;
 		possess = p;
-		bullet = new cBulletManager();
 		landing = false;
 		type = Enemy;
 		move_speed = 0.8f;

@@ -39,3 +39,5 @@ public:
 	void	Render();
 	void	Shot(VECTOR p, VECTOR s, float sp, float r);
 };
+
+extern cBulletManager bullet;
