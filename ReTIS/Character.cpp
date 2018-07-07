@@ -95,19 +95,29 @@ void	cCharacterBase::Collision(cObject *hit) {
 	//int   o_dir = col_HitRadian(GetOldPos(), hit->GetPos(), rad);
 	// 方向毎に処理
 	landing = false;
+	ceiling = false;
 	// *引っかかる不具合がある
 	switch (dir) {
 	case 1: // right
 		pos.x = hit->GetPos().x + hit->GetSize().x / 2.f + GetSize().x / 2.f + 1.f;
 		inertia = 0;
+
+		// 衝突判定---------------------
+		ceiling = true;
 		break;
 	case 2: // bottom
 		pos.y = hit->GetPos().y + hit->GetSize().y / 2.f + GetSize().y / 2.f + 1.f;
 		jump = 0.f;
+
+		// 衝突判定---------------------
+		ceiling = true;
 		break;
 	case 3: // left
 		pos.x = hit->GetPos().x - hit->GetSize().x / 2.f - GetSize().x / 2.f - 1.f;
 		inertia = 0;
+
+		// 衝突判定---------------------
+		ceiling = true;
 		break;
 	case 4: // top
 		pos.y = hit->GetPos().y - hit->GetSize().y / 2.f - GetSize().y / 2.f - 1.f;
@@ -155,6 +165,7 @@ void	cCharacterManager::Render() {
 	hardbody->Render();
 	wireman->Render();
 	fryingman->Render();
+	wireman->WireRender();
 }
 void	cCharacterManager::Update() {
 	player->Update();
@@ -214,6 +225,21 @@ void cEnemyGunman::MoveByAutomation()
 *------------------------------------------------------------------------------*/
 void cEnemyHardBody::Update()
 {
+	if (possess) {
+		MoveByAutomation();
+		FocusOld = FocusPos;
+		FocusPos = pos;
+	}
+	else {
+		MoveByAutomation();
+	}
+
+	Physical();
+
+}
+
+void cEnemyHardBody::MoveByAutomation()
+{
 	if (pos.x - 300 <= FocusPos.x && pos.x + 300 >= FocusPos.x && attack_flag == false) {
 		attack_flag = true;
 	}
@@ -260,25 +286,38 @@ void cEnemyHardBody::Update()
 	default:
 		break;
 	}
+
+}
+
+
+void cEnemyWireman::Update()
+{
+	if (possess) {
+		MoveByAutomation();
+		FocusOld = FocusPos;
+		FocusPos = pos;
+	}
+	else {
+		MoveByAutomation();
+	}
+
 	Physical();
 }
 
-void cEnemyHardBody::MoveByAutomation()
+void cEnemyWireman::WireRender()
 {
-
-
+	if (start_wire == true) {
+		DrawLine(pos.x, pos.y, wirepos.x, wirepos.y, 0xffffff);
+	}
 }
 
-/*------------------------------------------------------------------------------*
-| <<< cEnemyWireman >>>
-*------------------------------------------------------------------------------*/
-void cEnemyWireman::Update()
+void cEnemyWireman::MoveByAutomation() 
 {
 	if (action_count >= 0 && start_wire == false) {
 		if (dir == -1)
-			pos.x += 10;
+			pos.x += 8;
 		else if (dir == 1)
-			pos.x -= 10;
+			pos.x -= 8;
 		action_count--;
 		wirepos.x = pos.x;
 		wirepos.y = pos.y;
@@ -289,7 +328,6 @@ void cEnemyWireman::Update()
 		else if (dir == 1)
 			wirepos.x -= cos(filing_angle) * 5;
 		wirepos.y -= sin(filing_angle) * 5;
-		DrawLine(pos.x, pos.y, wirepos.x, wirepos.y, 0xffffff);
 		action_count--;
 		if (action_count <= -10) {
 			wirepos.y -= 100;
@@ -324,7 +362,6 @@ void cEnemyWireman::Update()
 		sub -= floor(sub / 360.0) * 360.0;
 		if (sub < 0.0) {
 			sub += 360.0;
-			
 		}
 		else if (sub > 180.0) {
 			sub -= 360.0;
@@ -347,28 +384,42 @@ void cEnemyWireman::Update()
 		if (start_wire == false) {
 			jump = 20.f;
 			dir *= -1;
-			move_speed = -4;
+			move_speed = -6;
 			if (dir == -1)
-				move_speed = 4;
-			rot = 45.f;
+				move_speed = 6;
+			rot = 90.f;
 			if (dir == -1)
-				rot = 135.f;
+				rot = 90.f;
+
+		}
+		if (ceiling == true) {
+			start_wire = false;
+			dir *= -1;
+			move_speed = -6;
+			if (dir == -1)
+				move_speed = 6;
+			rot = 90.f;
+			if (dir == -1)
+				rot = 90.f;
 		}
 	}
-	else {
-		Physical();
-	}
-}
-
-void cEnemyWireman::MoveByAutomation() 
-{
-
 }
 
 /*------------------------------------------------------------------------------*
 | <<< cEnemyFryingman >>>
 *------------------------------------------------------------------------------*/
 void cEnemyFryingman::Update()
+{
+	if (possess) {
+		MoveByAutomation();
+		FocusOld = FocusPos;
+		FocusPos = pos;
+	}
+	else {
+		MoveByAutomation();
+	}
+}
+void cEnemyFryingman::MoveByAutomation()
 {
 	// プレイヤーがファンネルのセンサーに引っかかったとき
 	if (move_flow == -1) {
@@ -382,9 +433,13 @@ void cEnemyFryingman::Update()
 		pos.y+=5;
 		if (pos.y >= FocusPos.y) {
 			move_flow = 1;
+			std::random_device rnd;
+			std::mt19937 mt(rnd());
+			std::uniform_int_distribution<int> rand5(0, 36);
+			rotation_time -= rand5(mt);
 		}
 	}
-	//回転開始
+	// 回転開始
 	else if (move_flow == 1){
 		rotation_time--;
 		angle+=10;
@@ -393,11 +448,15 @@ void cEnemyFryingman::Update()
 		if (rotation_time <= 0) {
 			move_flow = 2;
 			rotation_time = 100;	// クールタイムに使用
+			bulletpos = pos;
 		}
 	}
 	// 弾発射
 	else if (move_flow == 2) {
-		// 弾発射の処理
+		firing = true;
+
+		bulletpos = pos;
+
 		rotation_time--;
 		if (rotation_time <= 0)
 			move_flow = 3;
@@ -406,9 +465,7 @@ void cEnemyFryingman::Update()
 	else if (move_flow == 3) {
 		pos.y -= 5;
 	}
-
-}
-void cEnemyFryingman::MoveByAutomation()
-{
-
+	if (firing == true) {
+		bullet->Shot(pos,bulletsize, 10,tan(30*PI/180));
+	}
 }

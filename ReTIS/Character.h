@@ -19,6 +19,9 @@ protected:
 	// ÉèÉCÉÑÅ[Ç™êGÇÍÇΩéûÇÃîªíË-----------
 	bool	wirehit;
 
+	// âΩÇ©Ç…Ç†ÇΩÇ¡ÇΩÇ∆Ç´-----------------
+	bool	ceiling;
+
 public:
 	cCharacterBase() {};
 	~cCharacterBase() {};
@@ -66,8 +69,9 @@ public:
 
 class cEnemyJumpman : public cEnemy 
 {
-public:
+protected:
 	cBulletManager *bullet;
+public:
 
 	float rad;
 	bool move_flag;
@@ -97,6 +101,8 @@ public:
 
 class cEnemyGunman : public cEnemy
 {
+protected:
+	cBulletManager *bullet;
 public:
 	int attack_count;
 
@@ -112,6 +118,11 @@ public:
 
 		attack_count = 0;
 	}
+	~cEnemyGunman() {
+		delete bullet;
+		bullet = nullptr;
+	}
+
 	void move();
 	void MoveByAutomation();
 };
@@ -189,11 +200,11 @@ public:
 		landing = false;
 		
 		wirepos = { x,y,0.f };
-		rot = 135.f;
+		rot = 90.f;
 		filing_angle = 45 * PI / 180;
-		wire_gravity = 0.2f;
+		wire_gravity = 0.5f;
 		wire_length = 100;
-		move_speed = 4;
+		move_speed = 6;
 		start_wire = false;
 		action_count = 100;
 		dir = -1;
@@ -201,11 +212,17 @@ public:
 	void Update();
 	void move();
 	void MoveByAutomation();
+	void WireRender();
 };
 
 
 class cEnemyFryingman : public cEnemy {
+protected:
+	cBulletManager *bullet;
 public:
+
+	VECTOR bulletpos;
+	VECTOR bulletsize;
 
 	float move_speed;
 	float angle;
@@ -213,6 +230,10 @@ public:
 	int length;
 	int move_flow;		// 0,ç~â∫ 1,âÒì] 2,î≠ñC 3,è„è∏Åiè¡Ç¶ÇÈÅj
 	int rotation_time;	// Ç«ÇÃÇ≠ÇÁÇ¢âÒÇ¡ÇƒÇ¢ÇÈÇ©
+	bool firing;		
+	int time_sub;
+
+
 
 	cEnemyFryingman(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
@@ -228,6 +249,8 @@ public:
 		length = 180;
 		move_flow = -1;
 		rotation_time = 200;
+		firing = false;
+		bulletsize = {50,50,0};
 	}
 	void Update();
 	void move();
