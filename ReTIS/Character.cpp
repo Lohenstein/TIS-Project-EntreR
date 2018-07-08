@@ -216,6 +216,28 @@ void cEnemyJumpman::Update()
 	Physical();
 }
 
+void	cEnemyJumpman::MoveByPlayer() {
+	old = pos;	// 過去座標
+
+	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
+		if (key[KEY_INPUT_LEFT] == 2) {
+			inertia -= 4;				// 移動量θを減少
+		}
+		if (key[KEY_INPUT_RIGHT] == 2) {
+			inertia += 4;				// 移動量θを増加
+		}
+	}
+	else {
+		// キー押し下げ時以外は収束する
+		if (inertia > 0) inertia -= 2;
+		if (inertia < 0) inertia += 2;
+	}
+	if (key[KEY_INPUT_SPACE] == 1 && jump_count < 2) {
+		jump = 20.f;
+		++jump_count;
+	}
+}
+
 void cEnemyJumpman::MoveByAutomation()
 {
 	if (move_dir > 0) {

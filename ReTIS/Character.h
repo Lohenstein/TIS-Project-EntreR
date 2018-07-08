@@ -111,7 +111,6 @@ public:
 	}
 	~cEnemyGunman() {}
 
-	void MoveByPlayer();
 	void MoveByAutomation();
 };
 
@@ -131,7 +130,6 @@ public:
 
 		attack_count = 0;
 	}
-	void MoveByPlayer();
 	void MoveByAutomation();
 };
 
