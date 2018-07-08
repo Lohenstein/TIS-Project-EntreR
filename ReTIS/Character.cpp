@@ -82,18 +82,29 @@ void	cCharacterBase::HitAction(cObject *hit) {
 		}
 		break;
 	case Enemy:
-		if (invincible == false) {
-			invincible = true;
-			invincible_time = 0;
-			hp--;
-			if (hp <= 0) {
-				// GameOver
-			}
+		Damaged();
+		break;
+	case EnemyBullet:
+		if (possess) {
+			Damaged();
 		}
+		break;
+	case PlayerBullet:
+		possess = true;
 		break;
 	case MapTile:
 		Collision(hit);
 		break;
+	}
+}
+void	cCharacterBase::Damaged() {
+	if (invincible == false) {
+		invincible = true;
+		invincible_time = 0;
+		hp--;
+		if (hp <= 0) {
+			// GameOver
+		}
 	}
 }
 void	cCharacterBase::Collision(cObject *hit) {
@@ -240,7 +251,7 @@ void cEnemyGunman::MoveByAutomation()
 void cEnemyHardBody::Update()
 {
 	if (possess) {
-		MoveByAutomation();
+		MoveByPlayer();
 		FocusOld = FocusPos;
 		FocusPos = pos;
 	}
@@ -250,6 +261,28 @@ void cEnemyHardBody::Update()
 
 	Physical();
 
+}
+
+void	cEnemyHardBody::MoveByPlayer() {
+	old = pos;	// 過去座標
+
+	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
+		if (key[KEY_INPUT_LEFT] == 2) {
+			inertia -= 4;				// 移動量θを減少
+		}
+		if (key[KEY_INPUT_RIGHT] == 2) {
+			inertia += 4;				// 移動量θを増加
+		}
+	}
+	else {
+		// キー押し下げ時以外は収束する
+		if (inertia > 0) inertia -= 2;
+		if (inertia < 0) inertia += 2;
+	}
+	if (key[KEY_INPUT_SPACE] == 1 && jump_count < 2) {
+		jump = 20.f;
+		++jump_count;
+	}
 }
 
 void cEnemyHardBody::MoveByAutomation()
@@ -307,7 +340,7 @@ void cEnemyHardBody::MoveByAutomation()
 void cEnemyWireman::Update()
 {
 	if (possess) {
-		MoveByAutomation();
+		MoveByPlayer();
 		FocusOld = FocusPos;
 		FocusPos = pos;
 	}
@@ -322,6 +355,28 @@ void cEnemyWireman::WireRender()
 {
 	if (start_wire == true) {
 		DrawLine(pos.x, pos.y, wirepos.x, wirepos.y, 0xffffff);
+	}
+}
+
+void	cEnemyWireman::MoveByPlayer() {
+	old = pos;	// 過去座標
+
+	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
+		if (key[KEY_INPUT_LEFT] == 2) {
+			inertia -= 4;				// 移動量θを減少
+		}
+		if (key[KEY_INPUT_RIGHT] == 2) {
+			inertia += 4;				// 移動量θを増加
+		}
+	}
+	else {
+		// キー押し下げ時以外は収束する
+		if (inertia > 0) inertia -= 2;
+		if (inertia < 0) inertia += 2;
+	}
+	if (key[KEY_INPUT_SPACE] == 1 && jump_count < 2) {
+		jump = 20.f;
+		++jump_count;
 	}
 }
 
@@ -433,6 +488,29 @@ void cEnemyFryingman::Update()
 		MoveByAutomation();
 	}
 }
+
+void	cEnemyFryingman::MoveByPlayer() {
+	old = pos;	// 過去座標
+
+	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
+		if (key[KEY_INPUT_LEFT] == 2) {
+			inertia -= 4;				// 移動量θを減少
+		}
+		if (key[KEY_INPUT_RIGHT] == 2) {
+			inertia += 4;				// 移動量θを増加
+		}
+	}
+	else {
+		// キー押し下げ時以外は収束する
+		if (inertia > 0) inertia -= 2;
+		if (inertia < 0) inertia += 2;
+	}
+	if (key[KEY_INPUT_SPACE] == 1 && jump_count < 2) {
+		jump = 20.f;
+		++jump_count;
+	}
+}
+
 void cEnemyFryingman::MoveByAutomation()
 {
 	// プレイヤーがファンネルのセンサーに引っかかったとき

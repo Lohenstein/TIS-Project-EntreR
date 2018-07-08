@@ -6,13 +6,12 @@
 void	cGame::Init() {
 
 }
-
 void	cGame::Collision() {
 	// マップチップとキャラクタ
 	for (int i = 0; i < stage->GetStageSizeX(); i++) {
 		for (int j = 0; j < stage->GetStageSizeY(); j++) {
 			if (stage->GetTile(i, j) != 0) {
-				CheckHitRectAndRect(character->GetPlayer(),        stage->GetMapTile(i, j));
+				CheckHitRectAndRect(character->GetPlayer(), stage->GetMapTile(i, j));
 				for (int k = 0; k < ENEMY_MAX; k++) {
 					if (character->GetEnemyJumpman(k)  != nullptr) CheckHitRectAndRect(character->GetEnemyJumpman(k),  stage->GetMapTile(i, j));
 					if (character->GetEnemyHardBody(k) != nullptr) CheckHitRectAndRect(character->GetEnemyHardBody(k), stage->GetMapTile(i, j));
@@ -30,6 +29,11 @@ void	cGame::Collision() {
 	for (int i = 0; i < BULLET_MAX; i++) {
 		if (bullet.GetBullet(i) != nullptr) {
 			CheckHitRectAndRect(character->GetPlayer(), bullet.GetBullet(i));
+			for (int j = 0; j < ENEMY_MAX; j++) {
+				if (character->GetEnemyJumpman(j)  != nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyJumpman(j));
+				if (character->GetEnemyHardBody(j) != nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyHardBody(j));
+				if (character->GetEnemyWireman(j)  != nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyWireman(j));
+			}
 		}
 	}
 	// キャラクタ同士

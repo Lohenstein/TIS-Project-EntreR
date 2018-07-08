@@ -30,6 +30,7 @@ public:
 	void	Collision(cObject *hit);
 	void	MoveByAutomation();
 	void	MoveByPlayer();
+	void	Damaged();
 	void	Update();
 	void	Render();
 	int		GetHp() { return hp; }
@@ -87,7 +88,7 @@ public:
 	}
 	~cEnemyJumpman() {}
 	void Update();
-	void move();
+	void MoveByPlayer();
 	void MoveByAutomation();
 };
 
@@ -110,7 +111,7 @@ public:
 	}
 	~cEnemyGunman() {}
 
-	void move();
+	void MoveByPlayer();
 	void MoveByAutomation();
 };
 
@@ -130,7 +131,7 @@ public:
 
 		attack_count = 0;
 	}
-	void move();
+	void MoveByPlayer();
 	void MoveByAutomation();
 };
 
@@ -158,7 +159,7 @@ public:
 		cool_time	= 0;
 	}
 	void Update();
-	void move();
+	void MoveByPlayer();
 	void MoveByAutomation();
 };
 
@@ -194,7 +195,7 @@ public:
 		dir = -1;
 	}
 	void Update();
-	void move();
+	void MoveByPlayer();
 	void MoveByAutomation();
 	void WireRender();
 };
@@ -235,7 +236,7 @@ public:
 		bulletsize = {50,50,0};
 	}
 	void Update();
-	void move();
+	void MoveByPlayer();
 	void MoveByAutomation();
 };
 
