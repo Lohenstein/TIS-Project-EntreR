@@ -28,7 +28,7 @@ void	cCharacterBase::MoveByPlayer() {
 		++jump_count;
 	}
 	if (key[KEY_INPUT_X] == 1) {
-
+		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, PI/2, PlayerBullet);
 	}
 }
 
@@ -170,18 +170,23 @@ void	cEnemy::Render() {
 *------------------------------------------------------------------------------*/
 void	cCharacterManager::Render() {
 	player->Render();
-	jumpman->Render();
-	hardbody->Render();
-	wireman->Render();
-	fryingman->Render();
-	wireman->WireRender();
+	for (int i = 0; i < ENEMY_MAX; i++) {
+		if (jumpman[i]	 != nullptr) jumpman[i]   ->Render();
+		if (hardbody[i]  != nullptr) hardbody[i]  ->Render();
+		if (wireman[i]	 != nullptr) wireman[i]   ->Render();
+		if (fryingman[i] != nullptr) fryingman[i] ->Render();
+		if (wireman[i]   != nullptr) wireman[i]   ->WireRender();
+	}
 }
 void	cCharacterManager::Update() {
 	player->Update();
-	jumpman->Update();
-	hardbody->Update();
-	wireman->Update();
-	fryingman->Update();
+	for (int i = 0; i < ENEMY_MAX; i++) {
+		if (jumpman[i]   != nullptr) jumpman[i]   ->Update();
+		if (hardbody[i]  != nullptr) hardbody[i]  ->Update();
+		if (wireman[i]   != nullptr) wireman[i]   ->Update();
+		if (fryingman[i] != nullptr) fryingman[i] ->Update();
+		if (wireman[i]   != nullptr) wireman[i]	  ->Update();
+	}
 }
 
 /*------------------------------------------------------------------------------*
@@ -475,6 +480,6 @@ void cEnemyFryingman::MoveByAutomation()
 		pos.y -= 5;
 	}
 	if (firing == true) {
-		bullet.Shot(pos,bulletsize, 10,tan(30*PI/180));
+		bullet.Shot(pos,bulletsize, 10,tan(30*PI/180), EnemyBullet);
 	}
 }

@@ -242,30 +242,40 @@ public:
 class cCharacterManager {
 protected:
 public:
-	cPlayer *player;
-	cEnemyJumpman *jumpman;
-	cEnemyHardBody *hardbody;
-	cEnemyWireman *wireman;
-	cEnemyFryingman *fryingman;
+	cPlayer			*player;
+	cEnemyJumpman	*jumpman[ENEMY_MAX];
+	cEnemyHardBody	*hardbody[ENEMY_MAX];
+	cEnemyWireman	*wireman[ENEMY_MAX];
+	cEnemyFryingman *fryingman[ENEMY_MAX];
 
 	cCharacterManager() {
-		player = new cPlayer(400.f, 100.f, 90.f, 120.f, 6.f, true);
-		jumpman = new cEnemyJumpman(300.f, 100.f, 90.f,120.f, 2.f, false);
-		hardbody = new cEnemyHardBody(1000.f, 100.f, 90.f, 120.f, 2.f, false);
-		wireman = new cEnemyWireman(200.f, 100.f, 100.f, 100.f, 2.f, false);
-		fryingman = new cEnemyFryingman(500.f, -100.f, 90.f, 90.f, 2.f, false);
+		player		 = new cPlayer(400.f, 100.f, 90.f, 120.f, 6.f, true);
+		jumpman[0]	 = new cEnemyJumpman(300.f, 100.f, 90.f,120.f, 2.f, false);
+		hardbody[0]	 = new cEnemyHardBody(1000.f, 100.f, 90.f, 120.f, 2.f, false);
+		wireman[0]	 = new cEnemyWireman(200.f, 100.f, 100.f, 100.f, 2.f, false);
+		fryingman[0] = new cEnemyFryingman(500.f, -100.f, 90.f, 90.f, 2.f, false);
 	}
 	~cCharacterManager() {
 		delete player;
 		player = nullptr;
+		for (int i = 0; i < ENEMY_MAX; i++) {
+			delete jumpman[i];
+			delete hardbody[i];
+			delete wireman[i];
+			delete fryingman[i];
+			jumpman[i]   = nullptr;
+			hardbody[i]  = nullptr;
+			wireman[i]	 = nullptr;
+			fryingman[i] = nullptr;
+		}
 	}
 	void	Update();
 	void	Render();
-	cObject *GetPlayer() { return (cObject*)player; }
-	cObject *GetEnemyJumpman() { return (cObject*)jumpman; }
-	cObject *GetEnemyHardBody() { return (cObject*)hardbody; }
-	cObject *GetEnemyWireman() { return (cObject*)wireman; }
-	cObject *GetEnemyFryingman() { return (cObject*)fryingman; }
+	cObject *GetPlayer()                { return (cObject*)player; }
+	cObject *GetEnemyJumpman(int num)   { return (cObject*)jumpman[num];   }
+	cObject *GetEnemyHardBody(int num)  { return (cObject*)hardbody[num];  }
+	cObject *GetEnemyWireman(int num)   { return (cObject*)wireman[num];   }
+	cObject *GetEnemyFryingman(int num) { return (cObject*)fryingman[num]; }
 
 	int		GetPlayerHp() { return player->GetHp(); }
 

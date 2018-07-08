@@ -1,19 +1,18 @@
 #pragma once
 
-#define BULLET_MAX 100
-
 class cBullet : public cObject {
 protected:
 	float speed;
 	float rad;
 	bool  flag;
 public:
-	cBullet(VECTOR p, VECTOR s, float sp, float r){
+	cBullet(VECTOR p, VECTOR s, float sp, float r, eObjectType t){
 		pos   = p;
 		size  = s;
 		speed = sp;
 		rad   = r;
 		flag  = true;
+		type = t;
 	}
 	~cBullet() {}; 
 	void	Update();
@@ -37,7 +36,8 @@ public:
 	}
 	void	Update();
 	void	Render();
-	void	Shot(VECTOR p, VECTOR s, float sp, float r);
+	void	Shot(VECTOR p, VECTOR s, float sp, float r, eObjectType t);
+	cObject *GetBullet(int num) { return (cObject*)bullet[num]; }
 };
 
 extern cBulletManager bullet;

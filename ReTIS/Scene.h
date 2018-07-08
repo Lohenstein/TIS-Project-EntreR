@@ -47,4 +47,6 @@ public:
 	void	Collision();
 	void	Update();
 	void	Render();
+	int		StageSizeX() { return stage->GetStageSizeX(); }
+	int		StageSizeY() { return stage->GetStageSizeY(); }
 };

@@ -16,12 +16,15 @@ public:
 };
 
 enum eObjectType {
-	MapTile,
-	MoveFloor,
-	DropFloor,
-	Character,
-	Enemy,
-	Player
+	MapTile,		// マップ
+	MoveFloor,		// 動く床
+	DropFloor,		// 乗ったら落ちる床
+	Character,		// 敵かプレイヤー ※使わない
+	Enemy,			// 敵
+	Player,			// プレイヤー
+	PlayerBullet,	// プレイヤーキャラから発射される弾（乗り移り弾）
+	EnemyBullet,	// 敵から発射される弾
+	Bullet			// 弾 ※使わない
 };
 
 extern void		CheckHitRectAndRect(cObject *obj1, cObject *obj2);
