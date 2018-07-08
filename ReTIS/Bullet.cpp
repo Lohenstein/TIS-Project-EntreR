@@ -20,7 +20,19 @@ void cBullet::Render() {
 }
 
 void cBullet::HitAction(cObject *hit) {
-	//flag = false;
+	switch (hit->GetType()) {
+	case Enemy:
+		switch (this->GetType()) {
+		case PlayerBullet:
+			break;
+		case EnemyBullet:
+			break;
+		}
+		break;
+	case MapTile:
+		flag = false;
+		break;
+	}
 }
 
 void cBulletManager::Update() {
