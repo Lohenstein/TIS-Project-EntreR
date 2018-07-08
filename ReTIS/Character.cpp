@@ -233,7 +233,7 @@ void	cEnemyJumpman::MoveByPlayer() {
 		if (inertia < 0) inertia += 2;
 	}
 	if (key[KEY_INPUT_SPACE] == 1 && jump_count < 2) {
-		jump = 20.f;
+		jump = 30.f;
 		++jump_count;
 	}
 }
@@ -281,7 +281,7 @@ void cEnemyHardBody::Update()
 		MoveByAutomation();
 	}
 
-	Physical();
+	//Physical();
 
 }
 
@@ -369,8 +369,8 @@ void cEnemyWireman::Update()
 	else {
 		MoveByAutomation();
 	}
-
-	Physical();
+	if (start_wire == false)
+		Physical();
 }
 
 void cEnemyWireman::WireRender()
@@ -396,19 +396,87 @@ void	cEnemyWireman::MoveByPlayer() {
 		if (inertia > 0) inertia -= 2;
 		if (inertia < 0) inertia += 2;
 	}
-	if (key[KEY_INPUT_SPACE] == 1 && jump_count < 2) {
-		jump = 20.f;
-		++jump_count;
+	if (key[KEY_INPUT_C] == 1) {
+		wirepos = FocusPos;
+		start_wire = true;
 	}
+	if (start_wire == true) {
+		float rad = rot * PI / 180;
+		float px = wirepos.x + cos(rad) * wire_length;			// U‚èŽq–{‘Ì‚ÌÀ•W
+		float py = wirepos.y + sin(rad) * wire_length;			// 
+
+																// d—ÍˆÚ“®—Ê‚ð”½‰f‚µ‚½d‚è‚ÌˆÊ’u
+		float vx = px - wirepos.x;								// Žx“_‚©‚çd‚è‚Ü‚Å‚ÌƒxƒNƒgƒ‹‚ðo‚·
+		float vy = py - wirepos.y;								//
+		float t = -(vy * wire_gravity) / (vx * vx + vy * vy);	//  
+		float gx = px + t * vx;
+		float gy = py + wire_gravity + t * vy;
+
+		// ‚Q‚Â‚Ìd‚è‚ÌˆÊ’u‚ÌŠp“x·
+		float r = atan2(gy - wirepos.y, gx - wirepos.x) * 180 / PI;
+
+
+		rad = rot * PI / 180;
+
+		pos.x = wirepos.x + cos(rad) * wire_length;
+		pos.y = wirepos.y + sin(rad) * wire_length;
+
+		// Šp“x·‚ðŠp‘¬“x‚É‰ÁŽZ
+		float sub = r - rot;
+
+		sub -= floor(sub / 360.0) * 360.0;
+		if (sub < 0.0) {
+			sub += 360.0;
+		}
+		else if (sub > 180.0) {
+			sub -= 360.0;
+		}
+
+		move_speed += sub;
+
+		// Šp“x‚ÉŠp‘¬“x‚ð‰ÁŽZ
+		rot += move_speed;
+
+		if (dir == 1 && rot > 170)
+			start_wire = false;
+		if (dir == -1 && rot < 10)
+			start_wire = false;
+
+		// V‚µ‚¢d‚è‚ÌˆÊ’u
+		// d‚è‚ÌÀ•W
+		vx = px;
+		vy = py;
+		if (start_wire == false) {
+			jump = 20.f;
+			dir *= -1;
+			move_speed = -3;
+			if (dir == -1)
+				move_speed = 3;
+			rot = 90.f;
+			if (dir == -1)
+				rot = 90.f;
+		}
+		if (ceiling == true) {
+			start_wire = false;
+			dir *= -1;
+			move_speed = -3;
+			if (dir == -1)
+				move_speed = 3;
+			rot = 90.f;
+			if (dir == -1)
+				rot = 90.f;
+		}
+	}
+
 }
 
 void cEnemyWireman::MoveByAutomation() 
 {
 	if (action_count >= 0 && start_wire == false) {
 		if (dir == -1)
-			pos.x += 8;
+			pos.x += 2;
 		else if (dir == 1)
-			pos.x -= 8;
+			pos.x -= 2;
 		action_count--;
 		wirepos.x = pos.x;
 		wirepos.y = pos.y;
@@ -475,25 +543,25 @@ void cEnemyWireman::MoveByAutomation()
 		if (start_wire == false) {
 			jump = 20.f;
 			dir *= -1;
-			move_speed = -6;
+			move_speed = -3;
 			if (dir == -1)
-				move_speed = 6;
+				move_speed = 3;
 			rot = 90.f;
 			if (dir == -1)
 				rot = 90.f;
-
 		}
 		if (ceiling == true) {
 			start_wire = false;
 			dir *= -1;
-			move_speed = -6;
+			move_speed = -3;
 			if (dir == -1)
-				move_speed = 6;
+				move_speed = 3;
 			rot = 90.f;
 			if (dir == -1)
 				rot = 90.f;
 		}
 	}
+
 }
 
 /*------------------------------------------------------------------------------*
@@ -580,6 +648,7 @@ void cEnemyFryingman::MoveByAutomation()
 		pos.y -= 5;
 	}
 	if (firing == true) {
-		bullet.Shot(pos,bulletsize, 10,tan(30*PI/180), EnemyBullet);
+
+		bullet.Shot(bulletpos,bulletsize, 10,tan(30*PI/180), EnemyBullet);
 	}
 }

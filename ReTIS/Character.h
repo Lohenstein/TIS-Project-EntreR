@@ -185,11 +185,11 @@ public:
 		wirepos = { x,y,0.f };
 		rot = 90.f;
 		filing_angle = 45 * PI / 180;
-		wire_gravity = 0.5f;
+		wire_gravity = 0.1f;
 		wire_length = 100;
-		move_speed = 6;
+		move_speed = 3;
 		start_wire = false;
-		action_count = 100;
+		action_count = 10;
 		dir = -1;
 	}
 	void Update();
