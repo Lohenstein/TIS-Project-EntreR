@@ -185,11 +185,11 @@ public:
 		wirepos = { x,y,0.f };
 		rot = 90.f;
 		filing_angle = 45 * PI / 180;
-		wire_gravity = 0.1f;
+		wire_gravity = 0.4f;
 		wire_length = 100;
-		move_speed = 3;
+		move_speed = 6;
 		start_wire = false;
-		action_count = 10;
+		action_count = 5;
 		dir = -1;
 	}
 	void Update();
@@ -251,8 +251,8 @@ public:
 		player		 = new cPlayer(400.f, 100.f, 90.f, 120.f, 6.f, true);
 		jumpman[0]	 = new cEnemyJumpman(300.f, 100.f, 90.f,120.f, 2.f, false);
 		hardbody[0]	 = new cEnemyHardBody(1000.f, 100.f, 90.f, 120.f, 2.f, false);
-		wireman[0]	 = new cEnemyWireman(200.f, 100.f, 100.f, 100.f, 2.f, false);
-		fryingman[0] = new cEnemyFryingman(500.f, -100.f, 90.f, 90.f, 2.f, false);
+		wireman[0]	 = new cEnemyWireman(1000.f, 100.f, 90.f, 100.f, 2.f, false);
+		fryingman[0] = new  cEnemyFryingman(500.f, -100.f, 90.f, 90.f, 2.f, false);
 	}
 	~cCharacterManager() {
 		delete player;
