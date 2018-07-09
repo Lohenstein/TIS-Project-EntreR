@@ -172,6 +172,7 @@ public:
 	bool start_wire;		// ƒƒCƒ„[‚Å“®‚¢‚Ä‚¢‚é‚©
 	int action_count;
 	int dir;				// 1,‰E -1,¶
+	int move_pattern;
 
 
 	cEnemyWireman(float x, float y, float w, float h, float s, bool p) {
@@ -214,6 +215,7 @@ public:
 	int rotation_time;	// ‚Ç‚Ì‚­‚ç‚¢‰ñ‚Á‚Ä‚¢‚é‚©
 	bool firing;		
 	int time_sub;
+	float lockon;
 
 
 

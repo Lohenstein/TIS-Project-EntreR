@@ -643,9 +643,12 @@ void cEnemyFryingman::MoveByAutomation()
 			pos.x = FocusPos.x + cos(angle * PI / 180) * length;
 			pos.y = FocusPos.y + sin(angle * PI / 180) * length;
 			if (rotation_time <= 0) {
+				lockon = atan2(FocusPos.y - pos.y, FocusPos.x - pos.x );
 				move_flow = 2;
 				rotation_time = 100;	// クールタイムに使用
 				bulletpos = pos;
+				bullet.Shot(bulletpos, bulletsize, 10, cos(lockon * PI * 2 / 360) , EnemyBullet);
+
 			}
 		}
 		// 弾発射
@@ -657,14 +660,13 @@ void cEnemyFryingman::MoveByAutomation()
 			rotation_time--;
 			if (rotation_time <= 0)
 				move_flow = 3;
+
 		}
 		// ファンネル撤退
 		else if (move_flow == 3) {
 			pos.y -= 5;
+			firing = false;
 		}
-		if (firing == true) {
 
-			bullet.Shot(bulletpos, bulletsize, 10, tan(30 * PI / 180), EnemyBullet);
-		}
 	}
 }
