@@ -23,13 +23,18 @@ private:
 	cCamera *camera;
 	cGuiGame *gui;
 	int bghandle;
+protected:
+	// §ŒÀŽžŠÔ‚Æ‚©
+	int min  = 5;
+	int sec  = 0;
+	int time = 0;
 public:
 	cGame() { 
 		stage	  = new cStageManager("mapdata.csv"); 
 		character = new cCharacterManager();
 		camera	  = new cCamera();
 		gui       = new cGuiGame();
-		bghandle  = MakeScreen(stage->GetStageSizeX()*(int)bsize, stage->GetStageSizeY()*(int)bsize, false);
+		bghandle  = MakeScreen(stage->GetStageSizeX()*(int)bsize, stage->GetStageSizeY()*(int)bsize, true);
 		camera->SetStageSize(stage->GetStageSizeX(), stage->GetStageSizeY());
 	}
 	~cGame() { 
@@ -45,8 +50,11 @@ public:
 	}
 	void	Init();
 	void	Collision();
+	void	CollisionAroundMaptile(cObject *hit);
 	void	Update();
 	void	Render();
+	void	UpdateGui();
+	void	RenderGui();
 	int		StageSizeX() { return stage->GetStageSizeX(); }
 	int		StageSizeY() { return stage->GetStageSizeY(); }
 };

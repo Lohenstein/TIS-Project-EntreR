@@ -2,6 +2,7 @@
 
 extern VECTOR FocusPos;
 extern VECTOR FocusOld;
+extern VECTOR FocusCam;
 
 class cCharacterBase : public cObject{
 protected:
