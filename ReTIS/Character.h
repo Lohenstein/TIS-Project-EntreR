@@ -2,6 +2,8 @@
 
 extern VECTOR FocusPos;
 extern VECTOR FocusOld;
+extern VECTOR WirePos;
+extern bool AnchorStretch;
 
 class cCharacterBase : public cObject{
 protected:
@@ -170,20 +172,21 @@ public:
 	float rot;				// 初期プレイヤー角度
 	float filing_angle;		// ワイヤー発射角度（45度）
 	bool start_wire;		// ワイヤーで動いているか
-	bool now_wire;			// 
+	bool now_wire;			//
 	int action_count;
 	int dir;				// 1,右 -1,左
 	int move_pattern;
+	int wire_count;
 
 
 	cEnemyWireman(float x, float y, float w, float h, float s, bool p) {
-		pos		= { x, y, 0.f };
-		size	= { w, h, 0.f };
-		speed	= s;
+		pos = { x, y, 0.f };
+		size = { w, h, 0.f };
+		speed = s;
 		possess = p;
-		type	= Enemy;
+		type = Enemy;
 		landing = false;
-		
+
 		wirepos = { x,y,0.f };
 		rot = 90.f;
 		filing_angle = 45 * PI / 180;
@@ -194,12 +197,86 @@ public:
 		action_count = 5;
 		dir = -1;
 		now_wire = false;
+		wire_count = 0;
 	}
 	void Update();
 	void MoveByPlayer();
 	void MoveByAutomation();
 	void WireRender();
 };
+
+class cEnemyWireAnchor : public cEnemy
+{
+public:
+	VECTOR  wirepos;
+
+	bool dir;
+	float wire_angle;
+	float wire_speed;
+	float move_speed;
+	int move_pattern;
+	int count;
+
+	cEnemyWireAnchor(float x, float y, float w, float h, float s, bool p) {
+		pos = { x, y, 0.f };
+		size = { w, h, 0.f };
+		speed = s;
+		possess = p;
+		type = Enemy;
+		landing = false;
+		AnchorStretch = false;
+		count = 0;
+
+		wirepos = { x,y,0.f };
+	}
+	void Update();
+	void MoveByPlayer();
+	void MoveByAutomation();
+	void WireRender();
+
+};
+
+/*
+class cEnemyWireman : public cEnemy {
+public:
+VECTOR  wirepos;
+float move_speed;		// ワイヤーを伸ばしているときのキャラのスピード
+float wire_length;		// ワイヤーの長さ
+float wire_gravity;		// ワイヤーを伸ばしているときの重力
+float rot;				// 初期プレイヤー角度
+float filing_angle;		// ワイヤー発射角度（45度）
+bool start_wire;		// ワイヤーで動いているか
+bool now_wire;			//
+int action_count;
+int dir;				// 1,右 -1,左
+int move_pattern;
+
+
+cEnemyWireman(float x, float y, float w, float h, float s, bool p) {
+pos		= { x, y, 0.f };
+size	= { w, h, 0.f };
+speed	= s;
+possess = p;
+type	= Enemy;
+landing = false;
+
+wirepos = { x,y,0.f };
+rot = 90.f;
+filing_angle = 45 * PI / 180;
+wire_gravity = 0.4f;
+wire_length = 100;
+move_speed = 6;
+start_wire = false;
+action_count = 5;
+dir = -1;
+now_wire = false;
+}
+void Update();
+void MoveByPlayer();
+void MoveByAutomation();
+void WireRender();
+};
+*/
 
 
 class cEnemyFryingman : public cEnemy {
@@ -251,13 +328,15 @@ public:
 	cEnemyHardBody	*hardbody[ENEMY_MAX];
 	cEnemyWireman	*wireman[ENEMY_MAX];
 	cEnemyFryingman *fryingman[ENEMY_MAX];
+	cEnemyWireAnchor*wireanchor[ENEMY_MAX];
 
 	cCharacterManager() {
 		player		 = new cPlayer(400.f, 100.f, 90.f, 120.f, 6.f, true);
 		jumpman[0]	 = new cEnemyJumpman(300.f, 100.f, 90.f,120.f, 2.f, false);
 		hardbody[0]	 = new cEnemyHardBody(1000.f, 100.f, 90.f, 120.f, 2.f, false);
-		wireman[0]	 = new cEnemyWireman(1000.f, 100.f, 90.f, 100.f, 2.f, false);
-		fryingman[0] = new  cEnemyFryingman(500.f, -100.f, 90.f, 90.f, 2.f, false);
+		wireman[0]	 = new cEnemyWireman(300.f, 100.f, 90.f, 100.f, 2.f, false);
+		fryingman[0] = new cEnemyFryingman(500.f, -100.f, 90.f, 90.f, 2.f, false);
+		wireanchor[0]= new cEnemyWireAnchor(300.f, 500.f, 90.f, 100.f, 2.f, false);
 	}
 	~cCharacterManager() {
 		delete player;
@@ -281,6 +360,7 @@ public:
 	cObject *GetEnemyHardBody(int num)  { return (cObject*)hardbody[num];  }
 	cObject *GetEnemyWireman(int num)   { return (cObject*)wireman[num];   }
 	cObject *GetEnemyFryingman(int num) { return (cObject*)fryingman[num]; }
+	cObject *GetEnemyWireAnchor(int num) { return (cObject*)wireanchor[num]; }
 
 	int		GetPlayerHp() { return player->GetHp(); }
 

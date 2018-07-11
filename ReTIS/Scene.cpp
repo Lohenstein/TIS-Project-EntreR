@@ -16,6 +16,7 @@ void	cGame::Collision() {
 					if (character->GetEnemyJumpman(k)  != nullptr) CheckHitRectAndRect(character->GetEnemyJumpman(k),  stage->GetMapTile(i, j));
 					if (character->GetEnemyHardBody(k) != nullptr) CheckHitRectAndRect(character->GetEnemyHardBody(k), stage->GetMapTile(i, j));
 					if (character->GetEnemyWireman(k)  != nullptr) CheckHitRectAndRect(character->GetEnemyWireman(k),  stage->GetMapTile(i, j));
+					if (character->GetEnemyWireAnchor(k) != nullptr) CheckHitRectAndRect(character->GetEnemyWireAnchor(k), stage->GetMapTile(i, j));
 				}
 				for (int k = 0; k < BULLET_MAX; k++) {
 					if (bullet.GetBullet(k) != nullptr) {

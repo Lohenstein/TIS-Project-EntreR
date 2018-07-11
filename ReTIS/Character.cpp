@@ -1,6 +1,7 @@
 
 #include "Main.h"
-VECTOR FocusPos, FocusOld;
+VECTOR FocusPos, FocusOld,WirePos;
+bool AnchorStretch = true;
 /*------------------------------------------------------------------------------*
 | <<< cCharacterBase >>>
 *------------------------------------------------------------------------------*/
@@ -187,6 +188,7 @@ void	cCharacterManager::Render() {
 		if (wireman[i]	 != nullptr) wireman[i]   ->Render();
 		if (fryingman[i] != nullptr) fryingman[i] ->Render();
 		if (wireman[i]   != nullptr) wireman[i]   ->WireRender();
+		if (wireanchor[i] != nullptr) wireanchor[i]->Render();
 	}
 }
 void	cCharacterManager::Update() {
@@ -196,6 +198,7 @@ void	cCharacterManager::Update() {
 		if (hardbody[i]  != nullptr) hardbody[i]  ->Update();
 		if (wireman[i]   != nullptr) wireman[i]   ->Update();
 		if (fryingman[i] != nullptr) fryingman[i] ->Update();
+		if (wireanchor[i] != nullptr) wireanchor[i]->Update();
 	}
 	PossessListener();
 }
@@ -392,8 +395,20 @@ void cEnemyHardBody::MoveByAutomation()
 	}
 }
 
+void cEnemyWireAnchor::Update()
+{
+	pos = WirePos;
+	if (ceiling == true) AnchorStretch = true;
+}
+
+void cEnemyWireAnchor::MoveByAutomation()
+{
+
+}
+
 
 void cEnemyWireman::Update()
+
 {
 	if (possess) {
 		MoveByPlayer();
@@ -412,11 +427,52 @@ void cEnemyWireman::WireRender()
 	if (start_wire == true) {
 		DrawLine(pos.x, pos.y, wirepos.x, wirepos.y, 0xffffff);
 	}
+	DrawFormatString(0, 0, 0xfffff, "%d", AnchorStretch);
 }
 
 void	cEnemyWireman::MoveByPlayer() {
-	old = pos;	// 過去座標
-	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
+
+	if (possess == true) {
+		old = pos;	// 過去座標
+
+		//ここがバグの原因
+		if (key[KEY_INPUT_C] == 1) {
+			action_count = 30;
+			WirePos = pos;
+		}
+		if (action_count >=0) {
+			WirePos.x++;
+			WirePos.y--;
+			action_count--;
+		}
+		
+		if (AnchorStretch == true) {
+			pos = WirePos;
+			action_count = 0;
+		}
+
+		if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
+			if (key[KEY_INPUT_LEFT] == 2) {
+				inertia -= 4;				// 移動量θを減少
+			}
+			if (key[KEY_INPUT_RIGHT] == 2) {
+				inertia += 4;				// 移動量θを増加
+			}
+		}
+		else {
+			// キー押し下げ時以外は収束する
+			if (inertia > 0) inertia -= 2;
+			if (inertia < 0) inertia += 2;
+		}
+		if (landing == true)
+			jump_count = 0;
+		if (key[KEY_INPUT_SPACE] == 1 && jump_count < 2) {
+			jump = 20.f;
+			++jump_count;
+		}
+	}
+
+/*	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
 		if (key[KEY_INPUT_LEFT] == 2) {
 			inertia -= 4;				// 移動量θを減少
 			dir = -1;
@@ -508,7 +564,7 @@ void	cEnemyWireman::MoveByPlayer() {
 			if (dir == -1)
 				rot = 90.f;
 		}
-	}
+	}*/
 }
 
 void cEnemyWireman::MoveByAutomation() 
