@@ -7,7 +7,6 @@ class cCharacterBase : public cObject{
 protected:
 	float	speed;
 	float	jump = 0.f, gravity = 1.f , inertia = 0; // d—Í‚ÆŠµ«
-	bool	possess;	// æ‚èˆÚ‚ç‚ê‚Ä‚¢‚é‚©
 	int		hp = 5, invincible_time = 0;
 	int		jump_count = 0;
 	bool	invincible = false;
@@ -26,6 +25,7 @@ public:
 	cCharacterBase() {};
 	~cCharacterBase() {
 	};
+	bool	possess;	// æ‚èˆÚ‚ç‚ê‚Ä‚¢‚é‚©
 	void	HitAction(cObject *hit);
 	void	Collision(cObject *hit);
 	void	MoveByAutomation();
@@ -244,6 +244,7 @@ public:
 
 class cCharacterManager {
 protected:
+	int		possess_time = 0;
 public:
 	cPlayer			*player;
 	cEnemyJumpman	*jumpman[ENEMY_MAX];
@@ -274,6 +275,7 @@ public:
 	}
 	void	Update();
 	void	Render();
+	void	PossessListener();
 	cObject *GetPlayer()                { return (cObject*)player; }
 	cObject *GetEnemyJumpman(int num)   { return (cObject*)jumpman[num];   }
 	cObject *GetEnemyHardBody(int num)  { return (cObject*)hardbody[num];  }

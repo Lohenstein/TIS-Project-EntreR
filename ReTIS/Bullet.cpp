@@ -28,6 +28,7 @@ void cBullet::HitAction(cObject *hit) {
 		case EnemyBullet:
 			break;
 		}
+		flag = false;
 		break;
 	case MapTile:
 		flag = false;
