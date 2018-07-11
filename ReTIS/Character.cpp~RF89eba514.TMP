@@ -197,7 +197,6 @@ void	cCharacterManager::Update() {
 		if (wireman[i]   != nullptr) wireman[i]   ->Update();
 		if (fryingman[i] != nullptr) fryingman[i] ->Update();
 	}
-	PossessListener();
 }
 void	cCharacterManager::PossessListener() {
 	bool IsEnemyHavePossess = false;
@@ -219,7 +218,6 @@ void	cCharacterManager::PossessListener() {
 				if (fryingman[i] != nullptr) fryingman[i]->possess = false;
 			}
 			player->possess = true;
-			possess_time = 0;
 		}
 	}
 }
