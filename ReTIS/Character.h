@@ -2,6 +2,7 @@
 
 extern VECTOR FocusPos;
 extern VECTOR FocusOld;
+extern VECTOR FocusCam;
 extern VECTOR WirePos;
 extern bool AnchorStretch;
 

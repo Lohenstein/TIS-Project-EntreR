@@ -2,6 +2,7 @@
 #include "Main.h"
 VECTOR FocusPos, FocusOld,WirePos;
 bool AnchorStretch = true;
+VECTOR FocusPos, FocusOld, FocusCam;
 /*------------------------------------------------------------------------------*
 | <<< cCharacterBase >>>
 *------------------------------------------------------------------------------*/
@@ -189,6 +190,10 @@ void	cCharacterManager::Render() {
 		if (fryingman[i] != nullptr) fryingman[i] ->Render();
 		if (wireman[i]   != nullptr) wireman[i]   ->WireRender();
 		if (wireanchor[i] != nullptr) wireanchor[i]->Render();
+	}
+	if (possess_time != 0) {
+		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "%d", (600 - possess_time) / 60);
+		DrawFormatStringToHandle(FocusPos.x - w / 2, FocusPos.y - 120, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "%d", (600 - possess_time) / 60);
 	}
 }
 void	cCharacterManager::Update() {

@@ -51,14 +51,17 @@ void	cStageManager::LoadStageData(char name[]) {
 void	cStageManager::Render() {
 	for (int i = 0; i < GetStageSizeX(); i++) {
 		for (int j = 0; j < GetStageSizeY(); j++) {
-			if (GetTile(i, j) != 0) {
-				VECTOR pos  = GetPos(i, j);
-				VECTOR size = GetSize(i, j);
-				DrawBoxAA(pos.x - size.x / 2.f,
+			if (i * bsize > FocusCam.x - WINDOW_SIZE_X && i * bsize < FocusCam.x + WINDOW_SIZE_X &&
+				j * bsize > FocusCam.y - WINDOW_SIZE_Y && j * bsize < FocusCam.y + WINDOW_SIZE_Y) {
+				if (GetTile(i, j) != 0) {
+					VECTOR pos = GetPos(i, j);
+					VECTOR size = GetSize(i, j);
+					DrawBoxAA(pos.x - size.x / 2.f,
 						pos.y - size.y / 2.f,
 						pos.x + size.x / 2.f,
 						pos.y + size.y / 2.f,
 						0x555555, true);
+				}
 			}
 		}
 	}

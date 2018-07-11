@@ -8,6 +8,8 @@ namespace Game
 
 }
 
+int		font_handle[FONT_MAX];
+
 using	namespace Game;
 
 /*------------------------------------------------------------------------------*
@@ -16,6 +18,18 @@ using	namespace Game;
 void	game_init(void)
 {
 	scene.reset(new cGame);
+
+	// 軽いやつ読み込み
+	LPCSTR font_path = "data/font/みかちゃん-PB.ttf";
+	if (AddFontResourceEx(font_path, FR_PRIVATE, NULL) > 0) {
+	}
+	else {
+		// フォント読込エラー処理
+		MessageBox(NULL, "フォントの読込に失敗しちゃった...", "ごめんね＞＜", MB_OK);
+	}
+
+	font_handle[FONT_POSSESSTIME] = CreateFontToHandle("みかちゃん-PB", 48, 2, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
+	font_handle[FONT_TIME]		  = CreateFontToHandle("みかちゃん-PB", 72, 2, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
 }
 /*------------------------------------------------------------------------------*
 | <<< ゲームメイン >>>
