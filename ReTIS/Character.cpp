@@ -392,7 +392,6 @@ void cEnemyWireman::WireRender()
 
 void	cEnemyWireman::MoveByPlayer() {
 	old = pos;	// 過去座標
-	DrawFormatString(0, 0, 0xffffff, "%d", start_wire);
 	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
 		if (key[KEY_INPUT_LEFT] == 2) {
 			inertia -= 4;				// 移動量θを減少
@@ -413,7 +412,7 @@ void	cEnemyWireman::MoveByPlayer() {
 		wirepos = pos;
 		start_wire = true;
 	}
-	else if (key[KEY_INPUT_C] == 2 && start_wire == true)
+	else if (key[KEY_INPUT_C] == 2 && now_wire == false)
 	{
 		if (dir == -1)
 			wirepos.x -= cos(filing_angle) * 5;
@@ -421,7 +420,8 @@ void	cEnemyWireman::MoveByPlayer() {
 			wirepos.x += cos(filing_angle) * 5;
 		wirepos.y -= sin(filing_angle) * 5;
 	}
-	else if (start_wire == true && key[KEY_INPUT_C] == 0) {
+	else if (start_wire == true) {
+		now_wire = true;
 		float rad = rot * PI / 180;
 		float px = wirepos.x + cos(rad) * wire_length;			// 振り子本体の座標
 		float py = wirepos.y + sin(rad) * wire_length;			// 
@@ -472,9 +472,11 @@ void	cEnemyWireman::MoveByPlayer() {
 			if (dir == -1)
 				rot = 90.f;
 			start_wire = false;
+			now_wire = false;
 		}
 		if (ceiling == true) {
 			start_wire = false;
+			now_wire = false;
 			move_speed = -5;
 			if (dir == -1)
 				move_speed = 5;

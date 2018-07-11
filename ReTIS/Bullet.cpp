@@ -55,7 +55,7 @@ void cBulletManager::Render() {
 		}
 	}
 }
-
+	
 void cBulletManager::Shot(VECTOR p, VECTOR s, float sp, float r, eObjectType t) {
 	for (int i = 0; i < BULLET_MAX; i++) {
 		if (bullet[i] == nullptr) {

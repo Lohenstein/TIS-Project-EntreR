@@ -170,6 +170,7 @@ public:
 	float rot;				// 初期プレイヤー角度
 	float filing_angle;		// ワイヤー発射角度（45度）
 	bool start_wire;		// ワイヤーで動いているか
+	bool now_wire;			// 
 	int action_count;
 	int dir;				// 1,右 -1,左
 	int move_pattern;
@@ -192,6 +193,7 @@ public:
 		start_wire = false;
 		action_count = 5;
 		dir = -1;
+		now_wire = false;
 	}
 	void Update();
 	void MoveByPlayer();
