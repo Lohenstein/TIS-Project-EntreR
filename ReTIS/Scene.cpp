@@ -23,34 +23,13 @@ void	cGame::CollisionAroundMaptile(cObject *hit) {
 
 	for (int i = startx; i < endx; i++) {
 		for (int j = starty; j < endy; j++) {
-			if (stage->GetTile(i, j) != 0) {
+			if (stage->GetTile(i, j) != -1) {
 				CheckHitRectAndRect(hit, stage->GetMapTile(i, j));
 			}
 		}
 	}
 }
 void	cGame::Collision() {
-	/*/ マップチップとキャラクタ
-	for (int i = 0; i < stage->GetStageSizeX(); i++) {
-		for (int j = 0; j < stage->GetStageSizeY(); j++) {
-			if (i * bsize > FocusPos.x - WINDOW_SIZE_X / 2 && i * bsize < FocusPos.x + WINDOW_SIZE_X / 2 &&
-				j * bsize > FocusPos.y - WINDOW_SIZE_Y / 2 && j * bsize < FocusPos.y + WINDOW_SIZE_Y / 2) {
-				if (stage->GetTile(i, j) != 0) {
-					CheckHitRectAndRect(character->GetPlayer(), stage->GetMapTile(i, j));
-					for (int k = 0; k < ENEMY_MAX; k++) {
-						if (character->GetEnemyJumpman(k)  != nullptr) CheckHitRectAndRect(character->GetEnemyJumpman(k), stage->GetMapTile(i, j));
-						if (character->GetEnemyHardBody(k) != nullptr) CheckHitRectAndRect(character->GetEnemyHardBody(k), stage->GetMapTile(i, j));
-						if (character->GetEnemyWireman(k)  != nullptr) CheckHitRectAndRect(character->GetEnemyWireman(k), stage->GetMapTile(i, j));
-					}
-					for (int k = 0; k < BULLET_MAX; k++) {
-						if (bullet.GetBullet(k) != nullptr) {
-							CheckHitRectAndRect(stage->GetMapTile(i, j), bullet.GetBullet(k));
-						}
-					}
-				}
-			}
-		}
-	}*/
 	
 	CollisionAroundMaptile(character->GetPlayer());
 	for (int k = 0; k < ENEMY_MAX; k++) {

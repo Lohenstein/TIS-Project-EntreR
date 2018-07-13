@@ -1,6 +1,7 @@
 #pragma once
 
 const float bsize = 32.f;	// マップタイルのサイズ
+using namespace std;
 
 /*------------------------------------------------------------------------------*
 | <<< マップタイルクラス >>>
@@ -8,11 +9,22 @@ const float bsize = 32.f;	// マップタイルのサイズ
 class cStageMapTile : public cObject {
 protected:
 	int		tile;		// タイル
+	int		bg1;
+	int		bg2;
+	int		light;
 public:
 	cStageMapTile() { type = MapTile; };
 	~cStageMapTile() {};
-	int		GetTile() { return tile; }
+	int		GetTile()  { return tile; }
+	int		GetBg1()   { return bg1; }
+	int		GetBg2()   { return bg2; }
+	int		GetLight() { return light; }
 	void	HitAction(cObject *hit) {}
+	void	SetBg(int ibg1, int ibg2, int ilight) {
+		bg1 = ibg1;
+		bg2 = ibg2;
+		light = ilight;
+	}
 	void	SetData(VECTOR setPos, VECTOR setSize, int setTile) {
 		pos  = setPos;
 		size = setSize;
@@ -28,18 +40,25 @@ protected:
 	cStageMapTile	**stage;
 	int		stage_x;
 	int		stage_y;
+	int		image[3200];
 public:
-	cStageManager(char name[]) { LoadStageData(name); };
+	cStageManager(string name) { 
+		LoadStageData(name); 
+		LoadDivGraph("data/img/block/block.png", 3200, 50, 64, bsize, bsize, image);
+	};
 	~cStageManager() {
 		for (int i = 0; i < stage_x; i++) { delete[] stage[i]; }
 		delete[] stage;
 		stage = nullptr;
 	}
-	void	LoadStageData(char name[]);	// 最初に必ず通すこと！
+	void	LoadStageData(string name);	// 最初に必ず通すこと！
 	//VECTOR	*GetPos(int x, int y) { return &stage[x][y].GetPos(); }
-	VECTOR	GetPos(int x, int y)  { return stage[x][y].GetPos(); }
-	VECTOR	GetSize(int x, int y) { return stage[x][y].GetSize(); }
-	int		GetTile(int x, int y) { return stage[x][y].GetTile(); }
+	VECTOR	GetPos(int x, int y)   { return stage[x][y].GetPos(); }
+	VECTOR	GetSize(int x, int y)  { return stage[x][y].GetSize(); }
+	int		GetTile(int x, int y)  { return stage[x][y].GetTile(); }
+	int		GetBg1(int x, int y)   { return stage[x][y].GetBg1(); }
+	int		GetBg2(int x, int y)   { return stage[x][y].GetBg2(); }
+	int		GetLight(int x, int y) { return stage[x][y].GetLight(); }
 	int		GetStageSizeX() { return stage_x; }
 	int		GetStageSizeY() { return stage_y; }
 	void	Update();

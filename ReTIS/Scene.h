@@ -30,7 +30,7 @@ protected:
 	int time = 0;
 public:
 	cGame() { 
-		stage	  = new cStageManager("mapdata.csv"); 
+		stage	  = new cStageManager("data/map/test/mapdata"); 
 		character = new cCharacterManager();
 		camera	  = new cCamera();
 		gui       = new cGuiGame();
