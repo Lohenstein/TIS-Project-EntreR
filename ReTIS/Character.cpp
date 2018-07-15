@@ -1,8 +1,7 @@
 
 #include "Main.h"
-VECTOR FocusPos, FocusOld,WirePos;
-bool AnchorStretch = true;
-VECTOR FocusPos, FocusOld, FocusCam;
+VECTOR FocusPos, FocusOld,WirePos, FocusCam;
+int AnchorStretch = 0;
 /*------------------------------------------------------------------------------*
 | <<< cCharacterBase >>>
 *------------------------------------------------------------------------------*/
@@ -176,7 +175,6 @@ void	cEnemy::Render() {
 	DrawBoxAA(GetPos().x - GetSize().x / 2.f, GetPos().y - GetSize().y / 2.f,
 		GetPos().x + GetSize().x / 2.f, GetPos().y + GetSize().y / 2.f,
 		0xFFFF00, true);
-
 }
 /*------------------------------------------------------------------------------*
 | <<< cCharacterManager >>>
@@ -402,18 +400,25 @@ void cEnemyHardBody::MoveByAutomation()
 
 void cEnemyWireAnchor::Update()
 {
-	pos = WirePos;
-	if (ceiling == true) AnchorStretch = true;
+	if(AnchorStretch == 0) {
+		pos.x = -100;
+		pos.y = -100;
+	}
+	else pos = WirePos;
+	if (ceiling == true && AnchorStretch == 1) {
+		AnchorStretch = 2;
+		ceiling = false;
+	}
+
 }
 
 void cEnemyWireAnchor::MoveByAutomation()
 {
-
+	
 }
 
 
 void cEnemyWireman::Update()
-
 {
 	if (possess) {
 		MoveByPlayer();
@@ -423,7 +428,7 @@ void cEnemyWireman::Update()
 	else {
 		MoveByAutomation();
 	}
-	if (start_wire == false)
+	if (start_wire == false && AnchorStretch != 3)
 		Physical();
 }
 
@@ -432,29 +437,40 @@ void cEnemyWireman::WireRender()
 	if (start_wire == true) {
 		DrawLine(pos.x, pos.y, wirepos.x, wirepos.y, 0xffffff);
 	}
-	DrawFormatString(0, 0, 0xfffff, "%d", AnchorStretch);
+	DrawFormatString(0, 0, 0xffffff, "%d", action_count);
 }
 
 void	cEnemyWireman::MoveByPlayer() {
-
 	if (possess == true) {
+		DrawFormatString(0, 0, 0xffffff, "%d", AnchorStretch);
 		old = pos;	// ‰ß‹ŽÀ•W
 
-		//‚±‚±‚ªƒoƒO‚ÌŒ´ˆö
-		if (key[KEY_INPUT_C] == 1) {
-			action_count = 30;
+		if (key[KEY_INPUT_C] == 1 && AnchorStretch == 0) {
+			AnchorStretch = 1;
 			WirePos = pos;
 		}
-		if (action_count >=0) {
-			WirePos.x++;
-			WirePos.y--;
-			action_count--;
+		if (AnchorStretch == 1) {
+			Wire_and_Player = atan2(WirePos.y - pos.y, WirePos.x - pos.x);
+			WirePos.x+=5;
+			WirePos.y-=5;
+			count++;
 		}
-		
-		if (AnchorStretch == true) {
-			pos = WirePos;
-			action_count = 0;
+		if (AnchorStretch == 2) {
+			AnchorStretch = 3;
 		}
+		if (AnchorStretch == 3) {
+			pos.x-= 5 * Wire_and_Player;
+			pos.y+= 5 * Wire_and_Player;
+		}
+		if (pos.x >= WirePos.x && AnchorStretch == 3) {
+			AnchorStretch = 0;
+			jump = 20.f;
+		}
+		if (count >= 20 && AnchorStretch != 3) {
+			count = 0;
+			AnchorStretch = 0;
+		}
+
 
 		if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
 			if (key[KEY_INPUT_LEFT] == 2) {
@@ -570,6 +586,11 @@ void	cEnemyWireman::MoveByPlayer() {
 				rot = 90.f;
 		}
 	}*/
+
+	if (possess == false) {
+		AnchorStretch = 0;
+		count = 0;
+	}
 }
 
 void cEnemyWireman::MoveByAutomation() 

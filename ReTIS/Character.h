@@ -4,8 +4,7 @@ extern VECTOR FocusPos;
 extern VECTOR FocusOld;
 extern VECTOR FocusCam;
 extern VECTOR WirePos;
-extern bool AnchorStretch;
-
+extern int AnchorStretch;
 class cCharacterBase : public cObject{
 protected:
 	float	speed;
@@ -178,7 +177,9 @@ public:
 	int dir;				// 1,‰E -1,¶
 	int move_pattern;
 	int wire_count;
-
+	int count;
+	float Wire_and_Player;
+	
 
 	cEnemyWireman(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
@@ -199,6 +200,7 @@ public:
 		dir = -1;
 		now_wire = false;
 		wire_count = 0;
+		count = 0;
 	}
 	void Update();
 	void MoveByPlayer();
@@ -225,7 +227,6 @@ public:
 		possess = p;
 		type = Enemy;
 		landing = false;
-		AnchorStretch = false;
 		count = 0;
 
 		wirepos = { x,y,0.f };
@@ -337,7 +338,7 @@ public:
 		hardbody[0]	 = new cEnemyHardBody(1000.f, 100.f, 90.f, 120.f, 2.f, false);
 		wireman[0]	 = new cEnemyWireman(300.f, 100.f, 90.f, 100.f, 2.f, false);
 		fryingman[0] = new cEnemyFryingman(500.f, -100.f, 90.f, 90.f, 2.f, false);
-		wireanchor[0]= new cEnemyWireAnchor(300.f, 500.f, 90.f, 100.f, 2.f, false);
+		wireanchor[0] = new cEnemyWireAnchor(100, -100, 10, 10, 2, false);
 	}
 	~cCharacterManager() {
 		delete player;
@@ -362,6 +363,7 @@ public:
 	cObject *GetEnemyWireman(int num)   { return (cObject*)wireman[num];   }
 	cObject *GetEnemyFryingman(int num) { return (cObject*)fryingman[num]; }
 	cObject *GetEnemyWireAnchor(int num) { return (cObject*)wireanchor[num]; }
+	cObject *WireAnchor(int num)		{ return (cObject*)wireanchor[num]; }
 
 	int		GetPlayerHp() { return player->GetHp(); }
 
