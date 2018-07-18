@@ -1,7 +1,6 @@
 
 #include "Main.h"
-VECTOR FocusPos, FocusOld,WirePos, FocusCam;
-int AnchorStretch = 0;
+VECTOR FocusPos, FocusOld, FocusCam,MouseAdd;
 /*------------------------------------------------------------------------------*
 | <<< cCharacterBase >>>
 *------------------------------------------------------------------------------*/
@@ -186,7 +185,7 @@ void	cCharacterManager::Render() {
 		if (hardbody[i]  != nullptr) hardbody[i]  ->Render();
 		if (wireman[i]	 != nullptr) wireman[i]   ->Render();
 		if (fryingman[i] != nullptr) fryingman[i] ->Render();
-		if (wireman[i]   != nullptr) wireman[i]   ->WireRender();
+		if (wireman[i]   != nullptr) wireman[i]   ->WireRender(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch);
 		if (wireanchor[i] != nullptr) wireanchor[i]->Render();
 	}
 	if (possess_time != 0) {
@@ -199,9 +198,9 @@ void	cCharacterManager::Update() {
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (jumpman[i]   != nullptr) jumpman[i]   ->Update();
 		if (hardbody[i]  != nullptr) hardbody[i]  ->Update();
-		if (wireman[i]   != nullptr) wireman[i]   ->Update();
+		if (wireman[i]   != nullptr) wireman[i]   ->Update(&wmanager[i]->WirePos,&wmanager[i]->AnchorStretch);
 		if (fryingman[i] != nullptr) fryingman[i] ->Update();
-		if (wireanchor[i] != nullptr) wireanchor[i]->Update();
+		if (wireanchor[i] != nullptr) wireanchor[i]->Update(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch);
 	}
 	PossessListener();
 }
@@ -398,109 +397,160 @@ void cEnemyHardBody::MoveByAutomation()
 	}
 }
 
-void cEnemyWireAnchor::Update()
+void cEnemyWiremanManager::Wireman::MouseStateGet()
 {
-	if(AnchorStretch == 0) {
+	SetMouseDispFlag(TRUE);
+	GetMousePoint(&mouse_posx, &mouse_posy);
+	/*mouse_changeposx = FocusCam.x + mouse_posx - WINDOW_SIZE_X / 2;
+	mouse_changeposy = FocusCam.y + mouse_posy - WINDOW_SIZE_Y / 2;*/
+
+	/*mouse_changeposx = FocusPos.x + mouse_posx - WINDOW_SIZE_X / 2;
+	mouse_changeposy = FocusPos.y + mouse_posy - WINDOW_SIZE_Y / 2;*/
+	mouse_changeposx = mouse_posx + MouseAdd.x - WINDOW_SIZE_X / 2;
+	mouse_changeposy = mouse_posy + MouseAdd.y - WINDOW_SIZE_Y / 2;
+
+}
+
+void cEnemyWiremanManager::Anchor::Update(VECTOR *WirePos, int *AnchorStretch)
+{
+	if(*AnchorStretch == 0) {
 		pos.x = -100;
 		pos.y = -100;
 	}
-	else pos = WirePos;
-	if (ceiling == true && AnchorStretch == 1) {
-		AnchorStretch = 2;
+	else pos = *WirePos;
+	if (ceiling == true && *AnchorStretch == 1) {
+		*AnchorStretch = 2;
 		ceiling = false;
 	}
 
 }
 
-void cEnemyWireAnchor::MoveByAutomation()
+void cEnemyWiremanManager::Anchor::MoveByAutomation(VECTOR *WirePos, int *AnchorStretch)
 {
-	
+
 }
 
 
-void cEnemyWireman::Update()
+
+void cEnemyWiremanManager::Wireman::Update(VECTOR *WirePos, int *AnchorStretch )
 {
 	if (possess) {
-		MoveByPlayer();
+		MoveByPlayer(WirePos,AnchorStretch);
 		FocusOld = FocusPos;
 		FocusPos = pos;
 	}
 	else {
-		MoveByAutomation();
+		MoveByAutomation(WirePos,AnchorStretch);
+		*AnchorStretch = 0;
 	}
-	if (start_wire == false && AnchorStretch != 3)
+	if (*AnchorStretch != 2)
 		Physical();
+	MouseStateGet();
+
 }
 
-void cEnemyWireman::WireRender()
+void cEnemyWiremanManager::Wireman::WireRender(VECTOR *WirePos, int *AnchorStretch)
 {
-	if (start_wire == true) {
-		DrawLine(pos.x, pos.y, wirepos.x, wirepos.y, 0xffffff);
+	if (*AnchorStretch != 0) {
+		DrawLine(pos.x, pos.y, WirePos->x, WirePos->y, 0xffffff);
 	}
-	DrawFormatString(0, 0, 0xffffff, "%d", action_count);
+	DrawFormatString(FocusCam.x, FocusCam.y, 0xfffff, "%d %d", mouse_changeposx, mouse_changeposy);
+	DrawFormatString(FocusCam.x, FocusCam.y + 10, 0xfffff, "%f",wire_radian);
+	DrawFormatString(FocusCam.x, FocusCam.y + 20, 0xfffff, "%f %f", FocusPos.x, FocusPos.y);
+	DrawFormatString(FocusCam.x, FocusCam.y + 30, 0xfffff, "%f %f", WirePos->x, WirePos->y);
+	DrawCircle(mouse_changeposx, mouse_changeposy, 30, 0xfffff, true);
+
 }
 
-void	cEnemyWireman::MoveByPlayer() {
-	if (possess == true) {
-		DrawFormatString(0, 0, 0xffffff, "%d", AnchorStretch);
-		old = pos;	// 過去座標
+void	cEnemyWiremanManager::Wireman::MoveByPlayer(VECTOR *WirePos, int *AnchorStretch)
+{
+	mouse_state = GetMouseInput();
+	if (AnchorStretch == 0 ) {
+		
 
-		if (key[KEY_INPUT_C] == 1 && AnchorStretch == 0) {
-			AnchorStretch = 1;
-			WirePos = pos;
-		}
-		if (AnchorStretch == 1) {
-			Wire_and_Player = atan2(WirePos.y - pos.y, WirePos.x - pos.x);
-			WirePos.x+=5;
-			WirePos.y-=5;
-			count++;
-		}
-		if (AnchorStretch == 2) {
-			AnchorStretch = 3;
-		}
-		if (AnchorStretch == 3) {
-			pos.x-= 5 * Wire_and_Player;
-			pos.y+= 5 * Wire_and_Player;
-		}
-		if (pos.x >= WirePos.x && AnchorStretch == 3) {
-			AnchorStretch = 0;
-			jump = 20.f;
-		}
-		if (count >= 20 && AnchorStretch != 3) {
-			count = 0;
-			AnchorStretch = 0;
-		}
+	}
+	if (*AnchorStretch == 0 && (mouse_state & MOUSE_INPUT_LEFT)) {
+		
+		*AnchorStretch = 1;
+		*WirePos = pos;
+		wire_radian = atan2(mouse_changeposy - pos.y, mouse_changeposx -pos.x);
+	}
 
-
-		if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
-			if (key[KEY_INPUT_LEFT] == 2) {
-				inertia -= 4;				// 移動量θを減少
+	else if (*AnchorStretch == 1 && (mouse_state & MOUSE_INPUT_LEFT)) {
+		WirePos->x += anchor_speed * cos(wire_radian);
+		WirePos->y += anchor_speed * sin(wire_radian);
+	}
+	else if (*AnchorStretch == 2 && (mouse_state & MOUSE_INPUT_LEFT)) {
+		if (WirePos->x < pos.x) {
+			if (WirePos->x >= pos.x) {
+				move_speedx -= 2.f;
 			}
-			if (key[KEY_INPUT_RIGHT] == 2) {
-				inertia += 4;				// 移動量θを増加
+			else {
+				move_speedx += 2.f;
 			}
+			if (WirePos->y <= pos.y) {
+				move_speedy -= 3.f;
+			}
+			else {
+				move_speedy += 3.f;
+			}
+
+			//wire_radian = atan2(mouse_changeposy - pos.y, mouse_changeposx - pos.x);
+
+			if (ceiling == true) {
+				ceiling = false;
+				move_speedx = 0.f;
+			}
+			if (landing == true) {
+				move_speedy = 0.f;
+				landing = false;
+			}
+
+			pos.x += move_speedx / 3 * cos(wire_radian);
+			pos.y += move_speedy * sin(wire_radian);
 		}
 		else {
-			// キー押し下げ時以外は収束する
-			if (inertia > 0) inertia -= 2;
-			if (inertia < 0) inertia += 2;
-		}
-		if (landing == true)
-			jump_count = 0;
-		if (key[KEY_INPUT_SPACE] == 1 && jump_count < 2) {
-			jump = 20.f;
-			++jump_count;
+			if (WirePos->x >= pos.x) {
+				move_speedx += 2.f;
+			}
+			else {
+				move_speedx -= 2.f;
+			}
+			if (WirePos->y <= pos.y) {
+				move_speedy += 3.f;
+			}
+			else {
+				move_speedy -= 3.f;
+			}
+
+			//wire_radian = atan2(mouse_changeposy - pos.y, mouse_changeposx - pos.x);
+
+			if (ceiling == true) {
+				ceiling = false;
+				move_speedx = 0.f;
+			}
+			if (landing == true) {
+				move_speedy = 0.f;
+				landing = false;
+			}
+
+			pos.x += move_speedx / 3 * cos(wire_radian);
+			pos.y += move_speedy * sin(wire_radian);
 		}
 	}
+	else {
+		*AnchorStretch = 0;
+		wire_radian = 0.f;
+		move_speedx = 0.f;
+		move_speedy = 0.f;
+	}
 
-/*	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
+	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
 		if (key[KEY_INPUT_LEFT] == 2) {
 			inertia -= 4;				// 移動量θを減少
-			dir = -1;
 		}
 		if (key[KEY_INPUT_RIGHT] == 2) {
 			inertia += 4;				// 移動量θを増加
-			dir = 1;
 		}
 	}
 	else {
@@ -508,185 +558,18 @@ void	cEnemyWireman::MoveByPlayer() {
 		if (inertia > 0) inertia -= 2;
 		if (inertia < 0) inertia += 2;
 	}
-		// ワイヤーマンはジャンプなしでもいいかと思いました
-	if (key[KEY_INPUT_C] == 1 && start_wire == false) {
-		wirepos = pos;
-		start_wire = true;
+	if (landing == true)
+		jump_count = 0;
+	if (key[KEY_INPUT_SPACE] == 1 && jump_count < 2) {
+		jump = 20.f;
+		++jump_count;
 	}
-	else if (key[KEY_INPUT_C] == 2 && now_wire == false)
-	{
-		if (dir == -1)
-			wirepos.x -= cos(filing_angle) * 5;
-		else if (dir == 1)
-			wirepos.x += cos(filing_angle) * 5;
-		wirepos.y -= sin(filing_angle) * 5;
-	}
-	else if (start_wire == true) {
-		now_wire = true;
-		float rad = rot * PI / 180;
-		float px = wirepos.x + cos(rad) * wire_length;			// 振り子本体の座標
-		float py = wirepos.y + sin(rad) * wire_length;			// 
 
-																// 重力移動量を反映した重りの位置
-		float vx = px - wirepos.x;								// 支点から重りまでのベクトルを出す
-		float vy = py - wirepos.y;								//
-		float t = -(vy * wire_gravity) / (vx * vx + vy * vy);	//  
-		float gx = px + t * vx;
-		float gy = py + wire_gravity + t * vy;
-
-		// ２つの重りの位置の角度差
-		float r = atan2(gy - wirepos.y, gx - wirepos.x) * 180 / PI;
-
-
-		rad = rot * PI / 180;
-
-		pos.x = wirepos.x + cos(rad) * wire_length;
-		pos.y = wirepos.y + sin(rad) * wire_length;
-
-		// 角度差を角速度に加算
-		float sub = r - rot;
-
-		sub -= floor(sub / 360.0) * 360.0;
-		if (sub < 0.0) {
-			sub += 360.0;
-		}
-		else if (sub > 180.0) {
-			sub -= 360.0;
-		}
-
-		move_speed += sub;
-
-		// 角度に角速度を加算
-		rot += move_speed;
-
-		// 新しい重りの位置
-		// 重りの座標
-		vx = px;
-		vy = py;
-		if (key[KEY_INPUT_SPACE] == 1) {
-			jump = 20.f;
-			wire_gravity = 0.4f;
-			move_speed = -5;
-			if (dir == -1)
-				move_speed = 5;
-			rot = 90.f;
-			if (dir == -1)
-				rot = 90.f;
-			start_wire = false;
-			now_wire = false;
-		}
-		if (ceiling == true) {
-			start_wire = false;
-			now_wire = false;
-			move_speed = -5;
-			if (dir == -1)
-				move_speed = 5;
-			rot = 90.f;
-			if (dir == -1)
-				rot = 90.f;
-		}
-	}*/
-
-	if (possess == false) {
-		AnchorStretch = 0;
-		count = 0;
-	}
 }
 
-void cEnemyWireman::MoveByAutomation() 
+void cEnemyWiremanManager::Wireman::MoveByAutomation(VECTOR *WirePos, int *AnchorStretch)
 {
-	if (possess == false) {
-		if (pos.y <= WINDOW_SIZE_Y * 0.7 && start_wire == false) {
-			if (dir == -1)
-				pos.x += 2;
-			else if (dir == 1)
-				pos.x -= 2;
-			action_count--;
-			wirepos.x = pos.x;
-			wirepos.y = pos.y;
-		}
-		else if (pos.y >= WINDOW_SIZE_Y * 0.7 && start_wire == false) {
-			if (dir == -1)
-				wirepos.x += cos(filing_angle) * 5;
-			else if (dir == 1)
-				wirepos.x -= cos(filing_angle) * 5;
-			wirepos.y -= sin(filing_angle) * 5;
-			action_count--;
-			if (action_count <= 0) {
-				wirepos.y -= 100;
-				start_wire = true;
-				action_count = 5;
-			}
-		}
-		if (start_wire == true) {
-			float rad = rot * PI / 180;
-			float px = wirepos.x + cos(rad) * wire_length;			// 振り子本体の座標
-			float py = wirepos.y + sin(rad) * wire_length;			// 
 
-																	// 重力移動量を反映した重りの位置
-			float vx = px - wirepos.x;								// 支点から重りまでのベクトルを出す
-			float vy = py - wirepos.y;								//
-			float t = -(vy * wire_gravity) / (vx * vx + vy * vy);	//  
-			float gx = px + t * vx;
-			float gy = py + wire_gravity + t * vy;
-
-			// ２つの重りの位置の角度差
-			float r = atan2(gy - wirepos.y, gx - wirepos.x) * 180 / PI;
-
-
-			rad = rot * PI / 180;
-
-			pos.x = wirepos.x + cos(rad) * wire_length;
-			pos.y = wirepos.y + sin(rad) * wire_length;
-
-			// 角度差を角速度に加算
-			float sub = r - rot;
-
-			sub -= floor(sub / 360.0) * 360.0;
-			if (sub < 0.0) {
-				sub += 360.0;
-			}
-			else if (sub > 180.0) {
-				sub -= 360.0;
-			}
-
-			move_speed += sub;
-
-			// 角度に角速度を加算
-			rot += move_speed;
-
-			if (dir == 1 && rot > 170)
-				start_wire = false;
-			if (dir == -1 && rot < 10)
-				start_wire = false;
-
-			// 新しい重りの位置
-			// 重りの座標
-			vx = px;
-			vy = py;
-			if (start_wire == false) {
-				jump = 20.f;
-				dir *= -1;
-				move_speed = 5;
-				if (dir == -1)
-					move_speed = -5;
-				rot = 60.f;
-				if (dir == -1)
-					rot = 120.f;
-			}
-			if (ceiling == true) {
-				start_wire = false;
-				jump = 20.f;
-				dir *= -1;
-				move_speed = 5;
-				if (dir == -1)
-					move_speed = -5;
-				rot = 90.f;
-				if (dir == -1)
-					rot = 90.f;
-			}
-		}
-	}
 }
 
 /*------------------------------------------------------------------------------*

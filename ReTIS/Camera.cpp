@@ -79,6 +79,8 @@ void cCamera::Update(VECTOR focus) {
 
 	FocusCam.x = px;
 	FocusCam.y = py;
+	MouseAdd.x = px;
+	MouseAdd.y = py;
 
 	ox = camera_px;
 	oy = camera_py;
