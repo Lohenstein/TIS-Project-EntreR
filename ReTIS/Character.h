@@ -80,8 +80,9 @@ public:
 	float rad;
 	bool move_flag;
 	int jump_count;
-	int move_dir;
+	bool direction;
 
+	bool attack_flag;
 	int image_change;
 
 	cEnemyJumpman(float x, float y, float w, float h, float s, bool p) {
@@ -91,10 +92,12 @@ public:
 		possess = p;
 		type = Enemy;
 		landing = false;
+		hp = 6;
+
 		move_flag = false;
 		jump_count = 0;
-		move_dir = 1;
-
+		direction = true;
+		attack_flag = false;
 		image_change = 0;
 	}
 	~cEnemyJumpman() {}
@@ -118,6 +121,7 @@ public:
 
 	bool direction;
 	int player_move_pattern;
+	bool attack_flag;
 
 	cEnemyGunman(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
@@ -126,6 +130,7 @@ public:
 		possess = p;
 		type = Enemy;
 		landing = false;
+		hp = 6;
 
 		attack_count = 0;
 		bulletsize = { 20,20,0 };
@@ -135,6 +140,7 @@ public:
 
 		direction = true;
 		player_move_pattern = 0;
+		attack_count = false;
 	}
 	~cEnemyGunman() {}
 
@@ -144,24 +150,6 @@ public:
 	void Render(int image[]);
 };
 
-class cEnemyCannon : public cEnemy
-{
-public:
-	int attack_count;
-
-
-	cEnemyCannon(float x, float y, float w, float h, float s, bool p) {
-		pos = { x, y, 0.f };
-		size = { w, h, 0.f };
-		speed = s;
-		possess = p;
-		type = Enemy;
-		landing = false;
-
-		attack_count = 0;
-	}
-	void MoveByAutomation();
-};
 
 class cEnemyHardBody : public cEnemy {
 public:
@@ -180,6 +168,7 @@ public:
 		possess = p;
 		landing = false;
 		type = Enemy;
+		hp = 6;
 		
 		move_speed = 0.8f;
 		life = 100;
@@ -228,6 +217,7 @@ public:
 			possess = p;
 			type = Enemy;
 			landing = false;
+			hp = 6;
 
 			enemy_count = 0;
 
@@ -309,6 +299,7 @@ public:
 		possess = p;
 		landing = false;
 		type = Enemy;
+		hp = 2;
 		
 		move_speed = 0.8f;
 		angle = 30.f;
@@ -336,7 +327,7 @@ public:
 
 	VECTOR Player_old;
 
-
+	bool direction;
 	int image_change;
 
 	cEnemyBossmiddle(float x, float y, float w, float h, float s, bool p) {
@@ -346,16 +337,71 @@ public:
 		possess = p;
 		landing = false;
 		type = Enemy;
+		hp = 10;
 
 		move_time = 0;
 		move_pattern = 0;
 		move_speed = 1.5f;
 		image_change = 0;
+		direction = false;
 	}
 	void Update();
-	void MoveByPlayer();
 	void MoveByAutomation();
 	void Render(int image[]);
+};
+
+class cEnemyCircularSaw :public cEnemy {
+protected:
+public:
+	int attack_count;
+	int move_pattern;
+	float radian;
+
+	int image_change;
+	bool direction;
+
+	cEnemyCircularSaw(float x, float y, float w, float h, float s, bool p) {
+		pos = { x, y, 0.f };
+		size = { w, h, 0.f };
+		speed = s;
+		possess = p;
+		landing = false;
+		type = Enemy;
+
+		move_pattern = 0;
+		attack_count = 0;
+		radian = 0.f;
+		image_change = 0;
+		direction = false;
+	}
+	void Update();
+	void MoveByAutomation();
+	void Render(int image[]);
+};
+
+class cEnemyCannon : public cEnemy
+{
+public:
+	int attack_count;
+
+	int image_change;
+	bool direction;
+
+	cEnemyCannon(float x, float y, float w, float h, float s, bool p) {
+		pos = { x, y, 0.f };
+		size = { w, h, 0.f };
+		speed = s;
+		possess = p;
+		type = Enemy;
+		landing = false;
+
+		image_change = 0;
+		attack_count = 0;
+		direction = false;
+	}
+	void Update();
+	void Render(int image[]);
+	void MoveByAutomation();
 };
 
 
@@ -373,12 +419,17 @@ public:
 	cEnemyWiremanManager *wmanager[ENEMY_MAX];
 	cEnemyGunman *gunman[ENEMY_MAX];
 	cEnemyBossmiddle *bossmiddle[ENEMY_MAX];
+	cEnemyCircularSaw *circularsaw[ENEMY_MAX];
+	cEnemyCannon *cannon[ENEMY_MAX];
+	
 
 	int		wireman_img[273];
 	int		jumpman_img[120];
 	int		bossmiddle_img[200];
 	int		fryingman_img[123];
 	int		gunman_img[234];
+	int		circularsaw_img[5];
+	int		cannon_img[20];
 
 	cCharacterManager() {
 		player = new cPlayer(400.f, 100.f, 90.f, 120.f, 6.f, true);
@@ -390,12 +441,16 @@ public:
 		wmanager[0] = new cEnemyWiremanManager;
 		gunman[0] = new cEnemyGunman(200.f, 100.f, 120.f, 150.f, 2.f, false);
 		bossmiddle[0] = new cEnemyBossmiddle(1900.f, 300.f, 90.f, 150.f, 2.f, false);
-
+		circularsaw[0] = new cEnemyCircularSaw(100.f, 100.f, 100.f, 100.f, 2.f, false);
+		cannon[0] = new cEnemyCannon(200.f, 200.f, 100.f, 100.f, 2.f, false);
+		
 		LoadDivGraph("data/img/enemy/Jumpman.PNG", 120, 30, 4, 300, 300, jumpman_img);
 		LoadDivGraph("data/img/enemy/Gunman.PNG", 234, 39, 6, 300, 300, gunman_img);
 		LoadDivGraph("data/img/enemy/Fryingman.PNG", 123, 41, 3, 300, 300, fryingman_img);
 		LoadDivGraph("data/img/enemy/Bossmiddle.PNG", 200, 50, 4, 300, 300, bossmiddle_img);
 		LoadDivGraph("data/img/enemy/Wireman.PNG", 273, 39, 7, 300, 300, wireman_img);
+		LoadDivGraph("data/img/enemy/CircularSaw.PNG", 5, 5, 1, 300, 300, circularsaw_img);
+		LoadDivGraph("data/img/enemy/BigGun.PNG", 20, 20, 1, 300, 300, cannon_img);
 	}
 	~cCharacterManager() {
 		delete player;
@@ -427,6 +482,8 @@ public:
 	cObject *WireAnchor(int num) { return (cObject*)wireanchor[num]; }
 	cObject *GetEnemyGunman(int num) { return (cObject*)gunman[num]; }
 	cObject *GetEnemyBossmiddle(int num) { return (cObject*)bossmiddle[num]; }
+	cObject *GetCircularSaw(int num) { return (cObject*)circularsaw[num]; }
+	cObject *GetCannon(int num) { return (cObject*)cannon[num]; }
 
 	int		GetPlayerHp() { return player->GetHp(); }
 
