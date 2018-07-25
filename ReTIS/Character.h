@@ -3,19 +3,17 @@
 extern VECTOR FocusPos;
 extern VECTOR FocusOld;
 extern VECTOR FocusCam;
-extern VECTOR WirePos;
-extern bool AnchorStretch;
-
-class cCharacterBase : public cObject{
+extern VECTOR MouseAdd;
+class cCharacterBase : public cObject {
 protected:
 	float	speed;
-	float	jump = 0.f, gravity = 1.f , inertia = 0; // 重力と慣性
+	float	jump = 0.f, gravity = 1.f, inertia = 0; // 重力と慣性
 	int		hp = 5, invincible_time = 0;
 	int		jump_count = 0;
 	bool	invincible = false;
 	void	Physical();	// ジャンプとかの計算
 
-	// 着地した時の判定 ------------------
+						// 着地した時の判定 ------------------
 	bool	landing;
 
 	// ワイヤーが触れた時の判定-----------
@@ -23,6 +21,12 @@ protected:
 
 	// 何かにあたったとき-----------------
 	bool	ceiling;
+
+	// 足場の下に当たっているかの判定-----
+	bool	bottomhit;
+	bool	righthit;
+	bool	lefthit;
+
 
 public:
 	cCharacterBase() {};
@@ -43,13 +47,13 @@ class cPlayer : public cCharacterBase {
 protected:
 public:
 	cPlayer(float x, float y, float w, float h, float s, bool p) {
-		pos     = { x, y, 0.f };
-		size    = { w, h, 0.f };
-		speed   = s;
+		pos = { x, y, 0.f };
+		size = { w, h, 0.f };
+		speed = s;
 		possess = p;
-		type    = Player;
+		type = Player;
 	}
-	~cPlayer(){}
+	~cPlayer() {}
 	void	Render();
 };
 
@@ -57,18 +61,18 @@ class cEnemy : public cCharacterBase {
 protected:
 public:
 	/*cEnemy(float x, float y, float w, float h, float s, bool p) {
-		pos     = { x, y, 0.f };
-		size    = { w, h, 0.f };
-		speed   = s;
-		possess = p;
-		bullet  = new cBulletManager();
-		type    = Enemy;
+	pos     = { x, y, 0.f };
+	size    = { w, h, 0.f };
+	speed   = s;
+	possess = p;
+	bullet  = new cBulletManager();
+	type    = Enemy;
 	}*/
 	~cEnemy() {}
 	void	Render();
 };
 
-class cEnemyJumpman : public cEnemy 
+class cEnemyJumpman : public cEnemy
 {
 protected:
 public:
@@ -77,6 +81,8 @@ public:
 	bool move_flag;
 	int jump_count;
 	int move_dir;
+
+	int image_change;
 
 	cEnemyJumpman(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
@@ -88,33 +94,54 @@ public:
 		move_flag = false;
 		jump_count = 0;
 		move_dir = 1;
+
+		image_change = 0;
 	}
 	~cEnemyJumpman() {}
 	void Update();
 	void MoveByPlayer();
 	void MoveByAutomation();
+	void Render(int image[120]);
 };
 
 class cEnemyGunman : public cEnemy
 {
 protected:
 public:
+	int move_pattern;
 	int attack_count;
+	bool attack;
+	VECTOR bulletsize;
+	VECTOR bulletpos;
+	int image_change;
+	bool bullet_fire;
 
+	bool direction;
+	int player_move_pattern;
 
 	cEnemyGunman(float x, float y, float w, float h, float s, bool p) {
-		pos		= { x, y, 0.f };
-		size	= { w, h, 0.f };
-		speed	= s;
+		pos = { x, y, 0.f };
+		size = { w, h, 0.f };
+		speed = s;
 		possess = p;
-		type	= Enemy;
+		type = Enemy;
 		landing = false;
 
 		attack_count = 0;
+		bulletsize = { 20,20,0 };
+		image_change = 0;
+		move_pattern = 0;
+		bullet_fire = false;
+
+		direction = true;
+		player_move_pattern = 0;
 	}
 	~cEnemyGunman() {}
 
 	void MoveByAutomation();
+	void MoveByPlayer();
+	void Update();
+	void Render(int image[]);
 };
 
 class cEnemyCannon : public cEnemy
@@ -124,11 +151,11 @@ public:
 
 
 	cEnemyCannon(float x, float y, float w, float h, float s, bool p) {
-		pos		= { x, y, 0.f };
-		size	= { w, h, 0.f };
-		speed	= s;
+		pos = { x, y, 0.f };
+		size = { w, h, 0.f };
+		speed = s;
 		possess = p;
-		type	= Enemy;
+		type = Enemy;
 		landing = false;
 
 		attack_count = 0;
@@ -136,7 +163,7 @@ public:
 	void MoveByAutomation();
 };
 
-class cEnemyHardBody : public cEnemy{
+class cEnemyHardBody : public cEnemy {
 public:
 	float move_speed;
 	int life;
@@ -144,140 +171,117 @@ public:
 	bool attack_flag;
 	int jump_count;
 	int cool_time;
+	int image_change;
 
 	cEnemyHardBody(float x, float y, float w, float h, float s, bool p) {
-		pos			= { x, y, 0.f };
-		size		= { w, h, 0.f };
-		speed		= s;
-		possess		= p;
-		landing		= false;
-		type		= Enemy;
-		move_speed	= 0.8f;
-		life		= 100;
+		pos = { x, y, 0.f };
+		size = { w, h, 0.f };
+		speed = s;
+		possess = p;
+		landing = false;
+		type = Enemy;
+		
+		move_speed = 0.8f;
+		life = 100;
 		attack_time = 0;
 		attack_flag = false;
-		jump_count  = 0;
-		cool_time	= 0;
+		jump_count = 0;
+		cool_time = 0;
+		image_change = 0;
 	}
 	void Update();
 	void MoveByPlayer();
 	void MoveByAutomation();
 };
 
-class cEnemyWireman : public cEnemy {
+
+class cEnemyWiremanManager : public cEnemy {
 public:
-	VECTOR  wirepos;
-	float move_speed;		// ワイヤーを伸ばしているときのキャラのスピード
-	float wire_length;		// ワイヤーの長さ
-	float wire_gravity;		// ワイヤーを伸ばしているときの重力
-	float rot;				// 初期プレイヤー角度
-	float filing_angle;		// ワイヤー発射角度（45度）
-	bool start_wire;		// ワイヤーで動いているか
-	bool now_wire;			//
-	int action_count;
-	int dir;				// 1,右 -1,左
-	int move_pattern;
-	int wire_count;
+	VECTOR WirePos;
+	int AnchorStretch;
+	int EnemyAnchorStretch;
+
+	class Wireman : public cEnemy {
+	public:
+		int enemy_count;
+		int EnemyAnchorStretch;
+
+		int mouse_state;
+		int mouse_posx;
+		int mouse_posy;
+		float move_speedx;
+		float move_speedy;
+		float anchor_speed;
+		float wire_radian;
+		float mouse_changeposx;
+		float mouse_changeposy;
+
+		int debug_int;
+		int image_change;
+		bool direction;			
 
 
-	cEnemyWireman(float x, float y, float w, float h, float s, bool p) {
-		pos = { x, y, 0.f };
-		size = { w, h, 0.f };
-		speed = s;
-		possess = p;
-		type = Enemy;
-		landing = false;
+		Wireman(float x, float y, float w, float h, float s, bool p) {
+			pos = { x, y, 0.f };
+			size = { w, h, 0.f };
+			speed = s;
+			possess = p;
+			type = Enemy;
+			landing = false;
 
-		wirepos = { x,y,0.f };
-		rot = 90.f;
-		filing_angle = 45 * PI / 180;
-		wire_gravity = 0.4f;
-		wire_length = 100;
-		move_speed = 6;
-		start_wire = false;
-		action_count = 5;
-		dir = -1;
-		now_wire = false;
-		wire_count = 0;
-	}
-	void Update();
-	void MoveByPlayer();
-	void MoveByAutomation();
-	void WireRender();
+			enemy_count = 0;
+
+			mouse_state = 0;
+			mouse_posx = 0;
+			mouse_posy = 0;
+			move_speedx = 0.f;
+			move_speedy = 0.f;
+			anchor_speed = 10.f;
+			wire_radian = 0.f;
+			mouse_changeposx = 0.f;
+			mouse_changeposy = 0.f;
+			debug_int = 0;
+			image_change = 0;
+
+			direction = true;
+		}
+		void Update(VECTOR *WirePos, int *AnchorStretch, int *EnemyAnchorStretch);
+		void MoveByPlayer(VECTOR *WirePos, int *AnchorStretch);
+		void MoveByAutomation(VECTOR *WirePos, int *AnchorStretch, int *EnemyAnchorStretch);
+		void WireRender(VECTOR *WirePos, int *AnchorStretch, int *EnemyAnchorStretch);
+		void MouseStateGet();
+		void Render(int image[],int *AnchorStretch, int *EnemyAnchorStretch);
+	};
+
+	class Anchor : public cEnemy
+	{
+	public:
+		VECTOR  wirepos;
+
+		bool dir;
+		float wire_angle;
+		float wire_speed;
+		float move_speed;
+		int move_pattern;
+		int count;
+
+		Anchor(float x, float y, float w, float h, float s, bool p) {
+			pos = { x, y, 0.f };
+			size = { w, h, 0.f };
+			speed = s;
+			possess = p;
+			type = Enemy;
+			landing = false;
+			count = 0;
+
+			wirepos = { x,y,0.f };
+		}
+		void Update(VECTOR *WirePos, int *AnchorStretch, int *EnemyAnchorStretch);
+		void MoveByAutomation(VECTOR *WirePos, int *AnchorStretch);
+
+	};
+
 };
-
-class cEnemyWireAnchor : public cEnemy
-{
-public:
-	VECTOR  wirepos;
-
-	bool dir;
-	float wire_angle;
-	float wire_speed;
-	float move_speed;
-	int move_pattern;
-	int count;
-
-	cEnemyWireAnchor(float x, float y, float w, float h, float s, bool p) {
-		pos = { x, y, 0.f };
-		size = { w, h, 0.f };
-		speed = s;
-		possess = p;
-		type = Enemy;
-		landing = false;
-		AnchorStretch = false;
-		count = 0;
-
-		wirepos = { x,y,0.f };
-	}
-	void Update();
-	void MoveByPlayer();
-	void MoveByAutomation();
-	void WireRender();
-
-};
-
-/*
-class cEnemyWireman : public cEnemy {
-public:
-VECTOR  wirepos;
-float move_speed;		// ワイヤーを伸ばしているときのキャラのスピード
-float wire_length;		// ワイヤーの長さ
-float wire_gravity;		// ワイヤーを伸ばしているときの重力
-float rot;				// 初期プレイヤー角度
-float filing_angle;		// ワイヤー発射角度（45度）
-bool start_wire;		// ワイヤーで動いているか
-bool now_wire;			//
-int action_count;
-int dir;				// 1,右 -1,左
-int move_pattern;
-
-
-cEnemyWireman(float x, float y, float w, float h, float s, bool p) {
-pos		= { x, y, 0.f };
-size	= { w, h, 0.f };
-speed	= s;
-possess = p;
-type	= Enemy;
-landing = false;
-
-wirepos = { x,y,0.f };
-rot = 90.f;
-filing_angle = 45 * PI / 180;
-wire_gravity = 0.4f;
-wire_length = 100;
-move_speed = 6;
-start_wire = false;
-action_count = 5;
-dir = -1;
-now_wire = false;
-}
-void Update();
-void MoveByPlayer();
-void MoveByAutomation();
-void WireRender();
-};
-*/
 
 
 class cEnemyFryingman : public cEnemy {
@@ -293,11 +297,10 @@ public:
 	int length;
 	int move_flow;		// 0,降下 1,回転 2,発砲 3,上昇（消える）
 	int rotation_time;	// どのくらい回っているか
-	bool firing;		
+	bool firing;
 	int time_sub;
 	float lockon;
-
-
+	int image_change;
 
 	cEnemyFryingman(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
@@ -306,6 +309,7 @@ public:
 		possess = p;
 		landing = false;
 		type = Enemy;
+		
 		move_speed = 0.8f;
 		angle = 30.f;
 		radian = 0;
@@ -313,31 +317,85 @@ public:
 		move_flow = -1;
 		rotation_time = 200;
 		firing = false;
-		bulletsize = {50,50,0};
+		bulletsize = { 50,50,0 };
+		image_change = 0;
 	}
 	void Update();
 	void MoveByPlayer();
 	void MoveByAutomation();
+	void Render(int image[]);
 };
+
+
+class cEnemyBossmiddle :public cEnemy {
+protected:
+public:
+	int move_time;
+	int move_pattern;
+	float move_speed;
+
+	VECTOR Player_old;
+
+
+	int image_change;
+
+	cEnemyBossmiddle(float x, float y, float w, float h, float s, bool p) {
+		pos = { x, y, 0.f };
+		size = { w, h, 0.f };
+		speed = s;
+		possess = p;
+		landing = false;
+		type = Enemy;
+
+		move_time = 0;
+		move_pattern = 0;
+		move_speed = 1.5f;
+		image_change = 0;
+	}
+	void Update();
+	void MoveByPlayer();
+	void MoveByAutomation();
+	void Render(int image[]);
+};
+
 
 class cCharacterManager {
 protected:
 	int		possess_time = 0;
+
 public:
 	cPlayer			*player;
 	cEnemyJumpman	*jumpman[ENEMY_MAX];
 	cEnemyHardBody	*hardbody[ENEMY_MAX];
-	cEnemyWireman	*wireman[ENEMY_MAX];
+	cEnemyWiremanManager::Wireman	*wireman[ENEMY_MAX];
 	cEnemyFryingman *fryingman[ENEMY_MAX];
-	cEnemyWireAnchor*wireanchor[ENEMY_MAX];
+	cEnemyWiremanManager::Anchor*wireanchor[ENEMY_MAX];
+	cEnemyWiremanManager *wmanager[ENEMY_MAX];
+	cEnemyGunman *gunman[ENEMY_MAX];
+	cEnemyBossmiddle *bossmiddle[ENEMY_MAX];
+
+	int		wireman_img[273];
+	int		jumpman_img[120];
+	int		bossmiddle_img[200];
+	int		fryingman_img[123];
+	int		gunman_img[234];
 
 	cCharacterManager() {
-		player		 = new cPlayer(400.f, 100.f, 90.f, 120.f, 6.f, true);
-		jumpman[0]	 = new cEnemyJumpman(300.f, 100.f, 90.f,120.f, 2.f, false);
-		hardbody[0]	 = new cEnemyHardBody(1000.f, 100.f, 90.f, 120.f, 2.f, false);
-		wireman[0]	 = new cEnemyWireman(300.f, 100.f, 90.f, 100.f, 2.f, false);
-		fryingman[0] = new cEnemyFryingman(500.f, -100.f, 90.f, 90.f, 2.f, false);
-		wireanchor[0]= new cEnemyWireAnchor(300.f, 500.f, 90.f, 100.f, 2.f, false);
+		player = new cPlayer(400.f, 100.f, 90.f, 120.f, 6.f, true);
+		jumpman[0] = new cEnemyJumpman(300.f, 100.f,120.f, 150.f, 2.f, false);
+		hardbody[0] = new cEnemyHardBody(1000.f, 100.f, 120.f, 150.f, 2.f, false);
+		wireman[0] = new cEnemyWiremanManager::Wireman(300.f, 100.f, 80.f, 220.f, 2.f, false);
+		fryingman[0] = new cEnemyFryingman(1000.f, 500.f, 90.f, 90.f, 2.f, false);
+		wireanchor[0] = new cEnemyWiremanManager::Anchor(100, -100, 10, 10, 2, false);
+		wmanager[0] = new cEnemyWiremanManager;
+		gunman[0] = new cEnemyGunman(200.f, 100.f, 120.f, 150.f, 2.f, false);
+		bossmiddle[0] = new cEnemyBossmiddle(1900.f, 300.f, 90.f, 150.f, 2.f, false);
+
+		LoadDivGraph("data/img/enemy/Jumpman.PNG", 120, 30, 4, 300, 300, jumpman_img);
+		LoadDivGraph("data/img/enemy/Gunman.PNG", 234, 39, 6, 300, 300, gunman_img);
+		LoadDivGraph("data/img/enemy/Fryingman.PNG", 123, 41, 3, 300, 300, fryingman_img);
+		LoadDivGraph("data/img/enemy/Bossmiddle.PNG", 200, 50, 4, 300, 300, bossmiddle_img);
+		LoadDivGraph("data/img/enemy/Wireman.PNG", 273, 39, 7, 300, 300, wireman_img);
 	}
 	~cCharacterManager() {
 		delete player;
@@ -347,21 +405,28 @@ public:
 			delete hardbody[i];
 			delete wireman[i];
 			delete fryingman[i];
-			jumpman[i]   = nullptr;
-			hardbody[i]  = nullptr;
-			wireman[i]	 = nullptr;
+			delete gunman[i];
+			delete bossmiddle[i];
+			jumpman[i] = nullptr;
+			hardbody[i] = nullptr;
+			wireman[i] = nullptr;
 			fryingman[i] = nullptr;
+			gunman[i] = nullptr;
+			bossmiddle[i] = nullptr;
 		}
 	}
 	void	Update();
 	void	Render();
 	void	PossessListener();
-	cObject *GetPlayer()                { return (cObject*)player; }
-	cObject *GetEnemyJumpman(int num)   { return (cObject*)jumpman[num];   }
-	cObject *GetEnemyHardBody(int num)  { return (cObject*)hardbody[num];  }
-	cObject *GetEnemyWireman(int num)   { return (cObject*)wireman[num];   }
+	cObject *GetPlayer() { return (cObject*)player; }
+	cObject *GetEnemyJumpman(int num) { return (cObject*)jumpman[num]; }
+	cObject *GetEnemyHardBody(int num) { return (cObject*)hardbody[num]; }
+	cObject *GetEnemyWireman(int num) { return (cObject*)wireman[num]; }
 	cObject *GetEnemyFryingman(int num) { return (cObject*)fryingman[num]; }
 	cObject *GetEnemyWireAnchor(int num) { return (cObject*)wireanchor[num]; }
+	cObject *WireAnchor(int num) { return (cObject*)wireanchor[num]; }
+	cObject *GetEnemyGunman(int num) { return (cObject*)gunman[num]; }
+	cObject *GetEnemyBossmiddle(int num) { return (cObject*)bossmiddle[num]; }
 
 	int		GetPlayerHp() { return player->GetHp(); }
 
