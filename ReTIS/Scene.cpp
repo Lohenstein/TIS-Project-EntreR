@@ -66,6 +66,7 @@ void	cGame::Collision() {
 		if (character->GetEnemyWireman(i) != nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyWireman(i));
 		if (character->GetEnemyGunman(i) != nullptr)CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyGunman(i));
 		if (character->GetEnemyBossmiddle(i) != nullptr)CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyBossmiddle(i));
+		if (character->GetCircularSaw(i) != nullptr)CheckHitRectAndRect(character->GetPlayer(), character->GetCircularSaw(i));
 	}
 }
 
