@@ -2,13 +2,14 @@
 
 #define FONT_MAX			(16)
 #define FONT_TIME			(0)
-#define FONT_POSSESSTIME		(1)
+#define FONT_POSSESSTIME	(1)
 
 namespace	Game
 {
 	//--- ’è”éŒ¾ ---
 	enum mode {
 		mode_title,
+		mode_lobby,
 		mode_game,
 		mode_over,
 	};

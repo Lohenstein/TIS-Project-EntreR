@@ -65,3 +65,5 @@ public:
 	void	Render();
 	cObject *GetMapTile(int x, int y) { return reinterpret_cast<cObject*>(&stage[x][y]); }
 };
+
+extern vector<string> split(string& input, char delimiter);

@@ -25,7 +25,7 @@ void	game_init(void)
 	}
 	else {
 		// フォント読込エラー処理
-		MessageBox(NULL, "フォントの読込に失敗しちゃった...", "ごめんね＞＜", MB_OK);
+		MessageBox(NULL, "フォントの読込に失敗しました。", "Debug - Error", MB_OK);
 	}
 
 	font_handle[FONT_POSSESSTIME] = CreateFontToHandle("みかちゃん-PB", 48, 2, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
@@ -40,6 +40,8 @@ void	game_main(void)
 	switch (mode)
 	{
 	case mode_title:
+		break;
+	case mode_lobby:
 		break;
 	case mode_game:
 		scene->Update();

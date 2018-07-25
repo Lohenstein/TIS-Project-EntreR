@@ -1,7 +1,9 @@
 
 #include "Main.h"
-VECTOR FocusPos, FocusOld, WirePos ,FocusCam;;
+VECTOR FocusPos, FocusOld, WirePos ,FocusCam, MouseAdd;
 bool AnchorStretch = true;
+
+using namespace std;
 
 /*------------------------------------------------------------------------------*
 | <<< cCharacterBase >>>
@@ -187,14 +189,14 @@ void	cEnemy::Render() {
 void	cCharacterManager::Render() {
 	player->Render();
 	for (int i = 0; i < ENEMY_MAX; i++) {
-		if (jumpman[i] != nullptr) jumpman[i]->Render(jumpman_img);
-		if (hardbody[i] != nullptr) hardbody[i]->Render();
-		if (wireman[i] != nullptr) wireman[i]->Render(wireman_img,&wmanager[i]->AnchorStretch,&wmanager[i]->EnemyAnchorStretch);
-		if (fryingman[i] != nullptr) fryingman[i]->Render(fryingman_img);
-		if (wireman[i] != nullptr) wireman[i]->WireRender(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch, &wmanager[i]->EnemyAnchorStretch);
-		if (wireanchor[i] != nullptr) wireanchor[i]->Render();
-		if (gunman[i] != nullptr)	gunman[i]->Render(gunman_img);
-		if (bossmiddle[i] != nullptr)bossmiddle[i]->Render(bossmiddle_img);
+		if (jumpman[i]	  != nullptr)	jumpman[i]->Render(jumpman_img);
+		if (hardbody[i]   != nullptr)	hardbody[i]->Render();
+		if (wireman[i]	  != nullptr)	wireman[i]->Render(wireman_img,&wmanager[i]->AnchorStretch,&wmanager[i]->EnemyAnchorStretch);
+		if (fryingman[i]  != nullptr)	fryingman[i]->Render(fryingman_img);
+		if (wireman[i]	  != nullptr)	wireman[i]->WireRender(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch, &wmanager[i]->EnemyAnchorStretch);
+		if (wireanchor[i] != nullptr)	wireanchor[i]->Render();
+		if (gunman[i]	  != nullptr)	gunman[i]->Render(gunman_img);
+		if (bossmiddle[i] != nullptr)	bossmiddle[i]->Render(bossmiddle_img);
 	}
 	if (possess_time != 0) {
 		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "%d", (600 - possess_time) / 60);
@@ -217,11 +219,11 @@ void	cCharacterManager::Update() {
 void	cCharacterManager::PossessListener() {
 	bool IsEnemyHavePossess = false;
 	for (int i = 0; i < ENEMY_MAX; i++) {
-		if (jumpman[i] != nullptr) if (jumpman[i]->possess == true) IsEnemyHavePossess = true;
-		if (hardbody[i] != nullptr) if (hardbody[i]->possess == true) IsEnemyHavePossess = true;
-		if (wireman[i] != nullptr) if (wireman[i]->possess == true) IsEnemyHavePossess = true;
+		if (jumpman[i]   != nullptr) if (jumpman[i]->possess   == true) IsEnemyHavePossess = true;
+		if (hardbody[i]  != nullptr) if (hardbody[i]->possess  == true) IsEnemyHavePossess = true;
+		if (wireman[i]   != nullptr) if (wireman[i]->possess   == true) IsEnemyHavePossess = true;
 		if (fryingman[i] != nullptr) if (fryingman[i]->possess == true) IsEnemyHavePossess = true;
-		if (gunman[i] != nullptr) if (gunman[i]->possess == true) IsEnemyHavePossess = true;
+		if (gunman[i]    != nullptr) if (gunman[i]->possess    == true) IsEnemyHavePossess = true;
 	}
 	if (IsEnemyHavePossess) {
 		player->possess = false;
@@ -229,15 +231,101 @@ void	cCharacterManager::PossessListener() {
 		const int possess_time_max = 60 * 10; // 10秒
 		if (possess_time >= possess_time_max) {
 			for (int i = 0; i < ENEMY_MAX; i++) {
-				if (jumpman[i] != nullptr) jumpman[i]->possess = false;
-				if (hardbody[i] != nullptr) hardbody[i]->possess = false;
-				if (wireman[i] != nullptr) wireman[i]->possess = false;
+				if (jumpman[i]   != nullptr) jumpman[i]->possess   = false;
+				if (hardbody[i]  != nullptr) hardbody[i]->possess  = false;
+				if (wireman[i]   != nullptr) wireman[i]->possess   = false;
 				if (fryingman[i] != nullptr) fryingman[i]->possess = false;
-				if (gunman[i] != nullptr) gunman[i]->possess = false;
+				if (gunman[i]    != nullptr) gunman[i]->possess    = false;
 			}
 			player->possess = true;
 			possess_time = 0;
 		}
+	}
+}
+
+void	cCharacterManager::DeleteCharacters() {
+
+	delete player;
+	player = nullptr;
+
+	for (int i = 0; i < ENEMY_MAX; i++) {
+
+		delete jumpman[i];
+		delete hardbody[i];
+		delete wireman[i];
+		delete fryingman[i];
+		delete gunman[i];
+		delete bossmiddle[i];
+
+		jumpman[i] = nullptr;
+		hardbody[i] = nullptr;
+		wireman[i] = nullptr;
+		fryingman[i] = nullptr;
+		gunman[i] = nullptr;
+		bossmiddle[i] = nullptr;
+	}
+}
+void	cCharacterManager::LoadCharacters(string name) {
+
+	// 複数のcsv読み込むきたない機構
+	string enemy = name + "_enemy.csv";
+	ifstream ifs; ifs.open(enemy.c_str());
+	string line;
+
+	int count = 0;
+	while (getline(ifs, line)) {
+
+		vector<string> str = split(line, ',');
+
+		switch (stoi(str.at(0))) {
+		case ePlayer:
+			player = new cPlayer(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
+			break;
+		case eJumpman:
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				if (jumpman[i] == nullptr) {
+					jumpman[i] = new cEnemyJumpman(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
+					break;
+				}
+			}
+			break;
+		case eHardbody:
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				if (hardbody[i] == nullptr) {
+					hardbody[i] = new cEnemyHardBody(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
+					break;
+				}
+			}
+			break;
+		case eFryingman:
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				if (fryingman[i] == nullptr) {
+					fryingman[i] = new cEnemyFryingman(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
+					break;
+				}
+			}
+			break;
+		case eGunman:
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				if (gunman[i] == nullptr) {
+					gunman[i] = new cEnemyGunman(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
+					break;
+				}
+			}
+			break;
+		case eBossmiddle:
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				if (bossmiddle[i] == nullptr) {
+					bossmiddle[i] = new cEnemyBossmiddle(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
+					break;
+				}
+			}
+			break;
+		default:
+			MessageBox(NULL, "キャラクターシート読み込み時に\n存在しないパラメータが読み込まれました。", "Debug - Error", MB_OK);
+			break;
+		}
+		count++;
 	}
 }
 /*------------------------------------------------------------------------------*
