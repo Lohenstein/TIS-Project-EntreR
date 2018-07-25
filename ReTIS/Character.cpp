@@ -1,8 +1,8 @@
 
 #include "Main.h"
-VECTOR FocusPos, FocusOld,WirePos;
+VECTOR FocusPos, FocusOld, WirePos ,FocusCam;;
 bool AnchorStretch = true;
-VECTOR FocusPos, FocusOld, FocusCam;
+
 /*------------------------------------------------------------------------------*
 | <<< cCharacterBase >>>
 *------------------------------------------------------------------------------*/
