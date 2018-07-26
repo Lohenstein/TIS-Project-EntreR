@@ -8,6 +8,9 @@ void cBullet::Update() {
 	pos.x += cos(rad) * speed;
 	pos.y += sin(rad) * speed;
 
+	if (speed == 0)
+		pos.y -= 10000;
+
 	if (GetPos().x > FocusPos.x + WINDOW_SIZE_X || GetPos().x < FocusPos.x - WINDOW_SIZE_X ||
 		GetPos().y > FocusPos.y + WINDOW_SIZE_Y || GetPos().y < FocusPos.y - WINDOW_SIZE_Y) {
 		//‰æ–ÊŠO‚È‚çÁ‚·
@@ -26,6 +29,8 @@ void cBullet::HitAction(cObject *hit) {
 		case PlayerBullet:
 			break;
 		case EnemyBullet:
+			break;
+		case PlayerAttack:
 			break;
 		}
 		flag = false;

@@ -57,6 +57,7 @@ void	cGame::Collision() {
 				if (character->GetEnemyHardBody(j) != nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyHardBody(j));
 				if (character->GetEnemyWireman(j) != nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyWireman(j));
 				if (character->GetEnemyGunman(j) != nullptr)CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyGunman(j));
+				if (character->GetEnemyBossmiddle(j) != nullptr)CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyBossmiddle(j));
 			}
 		}
 	}

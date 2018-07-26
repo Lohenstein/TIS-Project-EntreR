@@ -88,6 +88,10 @@ public:
 	bool attack_flag;
 	int image_change;
 
+	int move_pattern;
+
+	VECTOR player_attack;
+
 	cEnemyJumpman(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
@@ -95,7 +99,7 @@ public:
 		possess = p;
 		type = Enemy;
 		landing = false;
-		hp = 6;
+		hp = 1;
 
 		move_flag = false;
 		jump_count = 0;
@@ -330,6 +334,7 @@ public:
 	float move_speed;
 
 	VECTOR Player_old;
+	VECTOR Attack_pos;
 
 	bool direction;
 	int image_change;
@@ -341,7 +346,7 @@ public:
 		possess = p;
 		landing = false;
 		type = Enemy;
-		hp = 10;
+		hp = 5;
 
 		move_time = 0;
 		move_pattern = 0;
