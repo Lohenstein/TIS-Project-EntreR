@@ -137,9 +137,6 @@ void	cGame::Render() {
 }
 
 void	cGame::DrawResult() {
-}
-
-void	cGame::DrawResult() {
 	// ”–ˆÃ‚­‚·‚é
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, trans >= 255 ? 255 : trans);
 

@@ -111,6 +111,8 @@ void	cCharacterBase::HitAction(cObject *hit) {
 		if (this->GetType() == Player) {
 			IsClearFlag = true;
 		}
+		break; 
+	case Coin:
 		break;
 	}
 }
@@ -214,6 +216,7 @@ void	cCharacterManager::Render() {
 		if (cannon[i]		!= nullptr) cannon[i]->Render(cannon_img);
 		if (movefloor[i]	!= nullptr) movefloor[i]->Render();
 		if (dropfloor[i]	!= nullptr) dropfloor[i]->Render();
+		if (coin[i] != nullptr) coin[i]->Render(coin_img);
 	}
 	if (possess_time != 0) {
 		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "%d", (600 - possess_time) / 60);
@@ -234,6 +237,7 @@ void	cCharacterManager::Update() {
 		if (cannon[i]		!= nullptr) cannon[i]->Update();
 		if (movefloor[i]	!= nullptr) movefloor[i]->Update(3.f, 0, 1);
 		if (dropfloor[i]	!= nullptr) dropfloor[i]->Update();
+		if (coin[i] != nullptr) coin[i]->Update();
 	}
 	PossessListener();
 	DeleteDeathCharacters();
@@ -269,7 +273,6 @@ void	cCharacterManager::DeleteCharacters() {
 
 	delete player;
 	player = nullptr;
-
 	for (int i = 0; i < ENEMY_MAX; i++) {
 
 		delete jumpman[i];
@@ -281,16 +284,19 @@ void	cCharacterManager::DeleteCharacters() {
 		delete dropfloor[i];
 		delete movefloor[i];
 
-		jumpman[i]	  = nullptr;
-		hardbody[i]   = nullptr;
-		wireman[i]	  = nullptr;
-		fryingman[i]  = nullptr;
-		gunman[i]	  = nullptr;
+		jumpman[i] = nullptr;
+		hardbody[i] = nullptr;
+		wireman[i] = nullptr;
+		fryingman[i] = nullptr;
+		gunman[i] = nullptr;
 		bossmiddle[i] = nullptr;
-		dropfloor[i]  = nullptr;
-		movefloor[i]  = nullptr;
+		dropfloor[i] = nullptr;
+		movefloor[i] = nullptr;
+
 	}
 }
+
+
 void	cCharacterManager::DeleteDeathCharacters() {
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (jumpman[i] != nullptr) {
@@ -416,6 +422,14 @@ void	cCharacterManager::LoadCharacters(string name) {
 				}
 			}
 			break;
+		case eCoin:
+			for (int i = 0; i < 2; i++) {
+				if (coin[i] == nullptr) {
+					coin[i] = new cCoin(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)));
+					break;
+				}
+			}
+			break;
 		default:
 			MessageBox(NULL, "キャラクターシート読み込み時に\n存在しないパラメータが読み込まれました。", "Debug - Error", MB_OK);
 			break;
@@ -439,6 +453,8 @@ void cEnemyJumpman::Update()
 			attack_flag = false;
 		}
 	}
+	if (hp == 0)
+		possess = false;
 	Physical();
 }
 
@@ -673,12 +689,12 @@ void cEnemyGunman::MoveByPlayer()
 		case 1:
 			if (attack_count == 0) {
 				if (direction == false) {
-					bulletpos.x += 100;
+					//bulletpos.x += 100;
 					bullet.Shot(bulletpos, bulletsize, -10, PI, PlayerAttack);
 				}
 
 				else {
-					bulletpos.x -= 100;
+					//bulletpos.x -= 100;
 					bullet.Shot(bulletpos, bulletsize, 10, PI, PlayerAttack);
 				}
 			}
@@ -1462,7 +1478,7 @@ void cEnemyCannon::MoveByAutomation()
 | <<< cCoin >>>
 *------------------------------------------------------------------------------*/
 
-/*void cCoin::Update() 
+void cCoin::Update() 
 {
 	if (FocusPos.x - 50 < pos.x && FocusPos.x + 50 > pos.x)
 		if (FocusPos.y - 50 < pos.y && FocusPos.y + 50 > pos.y)
@@ -1472,4 +1488,4 @@ void cEnemyCannon::MoveByAutomation()
 void cCoin::Render(int image[]) 
 {
 	DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[cointype], true);
-}*/
+}
