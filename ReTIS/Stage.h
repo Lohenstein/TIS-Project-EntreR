@@ -20,10 +20,9 @@ public:
 	int		GetBg2()   { return bg2; }
 	int		GetLight() { return light; }
 	void	HitAction(cObject *hit) {}
-	void	SetBg(int ibg1, int ibg2, int ilight) {
+	void	SetBg(int ibg1, int ibg2) {
 		bg1 = ibg1;
 		bg2 = ibg2;
-		light = ilight;
 	}
 	void	SetData(VECTOR setPos, VECTOR setSize, int setTile) {
 		pos  = setPos;

@@ -490,5 +490,7 @@ enum character {
 	eHardbody,
 	eFryingman,
 	eGunman,
-	eBossmiddle
+	eBossmiddle,
+	eCircularsaw,
+	eCannon
 };

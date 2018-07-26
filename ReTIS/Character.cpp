@@ -325,6 +325,22 @@ void	cCharacterManager::LoadCharacters(string name) {
 				}
 			}
 			break;
+		case eCircularsaw:
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				if (circularsaw[i] == nullptr) {
+					circularsaw[i] = new cEnemyCircularSaw(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
+					break;
+				}
+			}
+			break;
+		case eCannon:
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				if (cannon[i] == nullptr) {
+					cannon[i] = new cEnemyCannon(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
+					break;
+				}
+			}
+			break;
 		default:
 			MessageBox(NULL, "キャラクターシート読み込み時に\n存在しないパラメータが読み込まれました。", "Debug - Error", MB_OK);
 			break;

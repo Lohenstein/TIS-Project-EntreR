@@ -22,26 +22,22 @@ void	cStageManager::LoadStageData(string name) {
 	string main  = name + ".csv";
 	string bg1   = name + "_bg1.csv";
 	string bg2   = name + "_bg2.csv";
-	string light = name + "_light.csv";
 
 	ifstream ifs_mapdata; ifs_mapdata.open(main.c_str());
 	ifstream ifs_bg1;     ifs_bg1.open(bg1.c_str());
 	ifstream ifs_bg2;     ifs_bg2.open(bg2.c_str());
-	ifstream ifs_light;   ifs_light.open(light.c_str());
 
 	string line_mapdata;
 	string line_bg1;
 	string line_bg2;
-	string line_light;
 
 	int count = 0;
-	while ( getline(ifs_mapdata, line_mapdata) && getline(ifs_light, line_light) &&
+	while ( getline(ifs_mapdata, line_mapdata) &&
 			getline(ifs_bg1, line_bg1) && getline(ifs_bg2, line_bg2)) {
 
 		vector<string> str_mapdata  = split(line_mapdata, ',');
 		vector<string> str_bg1		= split(line_bg1, ',');
 		vector<string> str_bg2		= split(line_bg2, ',');
-		vector<string> str_light	= split(line_light, ',');
 
 		// 最初の一行目はマップの大きさ情報
 		if (count == 0) {
@@ -60,7 +56,7 @@ void	cStageManager::LoadStageData(string name) {
 				VECTOR pos  = { (float)i * bsize + bsize / 2.f, (float)(count - 1) * bsize + bsize / 2.f, NULL };
 				VECTOR size = { bsize, bsize, NULL };
 				stage[i][count - 1].SetData(pos, size, stoi(str_mapdata.at(i)));
-				stage[i][count - 1].SetBg(stoi(str_bg1.at(i)), stoi(str_bg2.at(i)), stoi(str_light.at(i)));
+				stage[i][count - 1].SetBg(stoi(str_bg1.at(i)), stoi(str_bg2.at(i)));
 			}
 		}
 		count++;
