@@ -1,7 +1,7 @@
 #include "Main.h"
 
 // ãÈå`ìØémÇÃÇ†ÇΩÇËîªíË
-void CheckHitRectAndRect(cObject *obj1, cObject *obj2) {
+void	CheckHitRectAndRect(cObject *obj1, cObject *obj2) {
 
 	if (obj1->GetPos().x - (obj1->GetSize().x / 2.f) <= obj2->GetPos().x + (obj2->GetSize().x / 2.f) &&
 		obj2->GetPos().x - (obj2->GetSize().x / 2.f) <= obj1->GetPos().x + (obj1->GetSize().x / 2.f) &&
@@ -11,6 +11,20 @@ void CheckHitRectAndRect(cObject *obj1, cObject *obj2) {
 		// è’ìÀëäéËÇÃèÓïÒÇìnÇµÇƒè’ìÀå„ÇÃèàóùÇçsÇ§
 		obj1->HitAction(obj2);
 		obj2->HitAction(obj1);
+	}
+}
+
+void	CheckHitRectAndCircle(cObject *obj1, cObject *obj2) {
+	if ((obj2->GetPos().x > obj1->GetPos().x - (obj1->GetSize().x / 2.f) && obj2->GetPos().x < obj1->GetPos().x + (obj1->GetSize().x / 2.f) && obj2->GetPos().y > obj1->GetPos().y - (obj1->GetSize().y / 2.f) - obj2->GetSize().z && obj2->GetPos().y < obj1->GetPos().y + (obj1->GetSize().y / 2.f) + obj2->GetSize().z) ||
+		(obj2->GetPos().x > obj1->GetPos().x - (obj1->GetSize().x / 2.f) - obj2->GetSize().z && obj2->GetPos().x < obj1->GetPos().x + (obj1->GetSize().x / 2.f) + obj2->GetSize().z && obj2->GetPos().y > obj1->GetPos().y - (obj1->GetSize().y / 2.f) && obj2->GetPos().y < obj1->GetPos().y + (obj1->GetSize().y / 2.f)) ||
+		((obj1->GetPos().x - (obj1->GetSize().x / 2.f) - obj2->GetPos().x) * (obj1->GetPos().x - (obj1->GetSize().x / 2.f) - obj2->GetPos().x) + (obj1->GetPos().y - (obj1->GetSize().y / 2.f) - obj2->GetPos().y) * (obj1->GetPos().y - (obj1->GetSize().y / 2.f) - obj2->GetPos().y) < obj2->GetSize().z * obj2->GetSize().z) ||
+		((obj1->GetPos().x + (obj1->GetSize().x / 2.f) - obj2->GetPos().x) * (obj1->GetPos().x - (obj1->GetSize().x / 2.f) - obj2->GetPos().x) + (obj1->GetPos().y - (obj1->GetSize().y / 2.f) - obj2->GetPos().y) * (obj1->GetPos().y - (obj1->GetSize().y / 2.f) - obj2->GetPos().y) < obj2->GetSize().z * obj2->GetSize().z) ||
+		((obj1->GetPos().x - (obj1->GetSize().x / 2.f) - obj2->GetPos().x) * (obj1->GetPos().x - (obj1->GetSize().x / 2.f) - obj2->GetPos().x) + (obj1->GetPos().y - (obj1->GetSize().y / 2.f) - obj2->GetPos().y) * (obj1->GetPos().y + (obj1->GetSize().y / 2.f) - obj2->GetPos().y) < obj2->GetSize().z * obj2->GetSize().z) ||
+		((obj1->GetPos().x + (obj1->GetSize().x / 2.f) - obj2->GetPos().x) * (obj1->GetPos().x - (obj1->GetSize().x / 2.f) - obj2->GetPos().x) + (obj1->GetPos().y - (obj1->GetSize().y / 2.f) - obj2->GetPos().y) * (obj1->GetPos().y + (obj1->GetSize().y / 2.f) - obj2->GetPos().y) < obj2->GetSize().z * obj2->GetSize().z)) {
+
+		// è’ìÀëäéËÇÃèÓïÒÇìnÇµÇƒè’ìÀå„ÇÃèàóùÇçsÇ§
+		obj1->HitAction(obj2); // â~
+		obj2->HitAction(obj1); // éläp
 	}
 }
 

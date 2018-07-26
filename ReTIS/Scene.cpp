@@ -31,6 +31,8 @@ void	cGame::CollisionAroundMaptile(cObject *hit) {
 }
 void	cGame::Collision() {
 
+	CheckHitRectAndRect(character->GetPlayer(), character->GetClear());
+
 	CollisionAroundMaptile(character->GetPlayer());
 	for (int k = 0; k < ENEMY_MAX; k++) {
 		if (character->GetEnemyJumpman(k) != nullptr) CollisionAroundMaptile(character->GetEnemyJumpman(k));
@@ -98,12 +100,17 @@ void	cGame::Collision() {
 
 void	cGame::Update() {
 	input();
-	character->Update();
-	Collision();
-	bullet.Update();
-	camera->Update(FocusPos);
-	gui->SetHp(character->GetPlayerHp());
-	UpdateGui();
+	if (IsClearFlag) {
+
+	}
+	else {
+		character->Update();
+		Collision();
+		bullet.Update();
+		camera->Update(FocusPos);
+		gui->SetHp(character->GetPlayerHp());
+		UpdateGui();
+	}
 }
 
 void	cGame::Render() {
@@ -121,7 +128,48 @@ void	cGame::Render() {
 	gui->Render();
 	RenderGui();
 
+	if (IsClearFlag) {
+		DrawResult();
+		trans++;
+	}
+
 	//DrawFormatString(10, 10, 0xFFFFFF, "‘€ìƒLƒƒƒ‰‚ÌÀ•W:x=%d, y=%d", (int)FocusPos.x, (int)FocusPos.y);
+}
+
+void	cGame::DrawResult() {
+}
+
+void	cGame::DrawResult() {
+	// ”–ˆÃ‚­‚·‚é
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, trans >= 255 ? 255 : trans);
+
+	DrawGraph(0, 0, imghandle[0], false);
+	int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_TIME], "Stage Clear!!");
+	DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 150, 0xFFFFFF, font_handle[FONT_TIME], "Stage Clear!!");
+
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	if (trans > 255) {
+		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Score:%dsec", time);
+		DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 300, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Score:%dsec", time);
+	}
+	if (trans > 275) {
+		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Time:%dsec", time);
+		DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 350, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Time:%dsec", time);
+	}
+	if (trans > 295) {
+		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Coin:%dsec", time);
+		DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 400, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Coin:%dsec", time);
+	}
+	if (trans > 315) {
+		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "RareCoin:%d/5", time);
+		DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 450, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "RareCoin:%d/5", time);
+	}
+	if (trans > 335 && trans % 30 != 0) {
+		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "R key: Retry / X key : Lab", time);
+		DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 550, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "R key: Retry / X key : Lab", time);
+	}
+
 }
 void	cGame::UpdateGui() {
 	time++;

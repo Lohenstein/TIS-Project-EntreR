@@ -473,7 +473,7 @@ public:
 	cClearCollision(int x, int y) {
 		size = { 96.f, 128.f, 0.f };
 		pos  = { (float)x, (float)y, 0.f };
-		type = eClear;
+		type = Clear;
 	}
 	void	HitAction(cObject *hit) {
 		if (hit->GetType() == Player) IsClear = true;

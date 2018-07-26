@@ -1,8 +1,8 @@
 
 #include "Main.h"
 VECTOR FocusPos, FocusOld, WirePos ,FocusCam,MouseAdd;
-bool AnchorStretch = true;
-
+bool	AnchorStretch = true;
+bool	IsClearFlag;
 using namespace std;
 
 /*------------------------------------------------------------------------------*
@@ -94,18 +94,23 @@ void	cCharacterBase::HitAction(cObject *hit) {
 		Damaged();
 		break;
 	case EnemyBullet:
-		if (possess) {
-			Damaged();
-		}
+		Damaged();
 		break;
 	case PlayerBullet:
 		possess = true;
 		break;
 	case PlayerAttack:
-		hp--;
+		if (this->GetType() != Player) {
+			Damaged();
+		}
 		break;
 	case MapTile:
 		Collision(hit);
+		break;
+	case Clear:
+		if (this->GetType() == Player) {
+			IsClearFlag = true;
+		}
 		break;
 	}
 }
@@ -115,7 +120,6 @@ void	cCharacterBase::Damaged() {
 		invincible_time = 0;
 		hp--;
 		if (hp <= 0) {
-			// GameOver
 		}
 	}
 }
@@ -196,6 +200,7 @@ void	cEnemy::Render() {
 *------------------------------------------------------------------------------*/
 void	cCharacterManager::Render() {
 	player->Render();
+	clear->DebugRender();
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (jumpman[i]		!= nullptr) jumpman[i]->Render(jumpman_img);
 		if (hardbody[i]		!= nullptr) hardbody[i]->Render();
@@ -231,6 +236,7 @@ void	cCharacterManager::Update() {
 		if (dropfloor[i]	!= nullptr) dropfloor[i]->Update();
 	}
 	PossessListener();
+	DeleteDeathCharacters();
 }
 void	cCharacterManager::PossessListener() {
 	bool IsEnemyHavePossess = false;
@@ -285,6 +291,40 @@ void	cCharacterManager::DeleteCharacters() {
 		movefloor[i]  = nullptr;
 	}
 }
+void	cCharacterManager::DeleteDeathCharacters() {
+	for (int i = 0; i < ENEMY_MAX; i++) {
+		if (jumpman[i] != nullptr) {
+			if (jumpman[i]->GetHp() <= 0) {
+				delete jumpman[i];
+				jumpman[i] = nullptr;
+			}
+		}
+		if (hardbody[i] != nullptr) {
+			if (hardbody[i]->GetHp() <= 0) {
+				delete hardbody[i];
+				hardbody[i] = nullptr;
+			}
+		}
+		if (fryingman[i] != nullptr) {
+			if (fryingman[i]->GetHp() <= 0) {
+				delete fryingman[i];
+				fryingman[i] = nullptr;
+			}
+		}
+		if (gunman[i] != nullptr) {
+			if (gunman[i]->GetHp() <= 0) {
+				delete gunman[i];
+				gunman[i] = nullptr;
+			}
+		}
+		if (bossmiddle[i] != nullptr) {
+			if (bossmiddle[i]->GetHp() <= 0) {
+				delete bossmiddle[i];
+				bossmiddle[i] = nullptr;
+			}
+		}
+	}
+}
 void	cCharacterManager::LoadCharacters(string name) {
 
 	// •¡”‚Ìcsv“Ç‚Ýž‚Þ‚«‚½‚È‚¢‹@\
@@ -300,6 +340,9 @@ void	cCharacterManager::LoadCharacters(string name) {
 		switch (stoi(str.at(0))) {
 		case ePlayer:
 			player = new cPlayer(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
+			break;
+		case eClear:
+			clear = new cClearCollision(stoi(str.at(1)), stoi(str.at(2)));
 			break;
 		case eJumpman:
 			for (int i = 0; i < ENEMY_MAX; i++) {

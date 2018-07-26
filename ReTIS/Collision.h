@@ -26,10 +26,11 @@ enum eObjectType {
 	EnemyBullet,	// 敵から発射される弾
 	PlayerAttack,	// プレイヤーの攻撃　bullet.Shotで使用
 	Bullet,			// 弾 ※使わない
-	Coin
+	Clear			// クリア判定
 };
 
 extern void		CheckHitRectAndRect(cObject *obj1, cObject *obj2);
+extern void		CheckHitRectAndCircle(cObject *obj1, cObject *obj2);
 extern float	col_CheckRadian(VECTOR p1, VECTOR p2);
 extern int		col_HitRadian(VECTOR p1, VECTOR p2, float rad);
 extern int		col_HitRadianR(VECTOR p1, VECTOR p2);
