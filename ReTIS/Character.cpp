@@ -455,14 +455,16 @@ void	cCharacterManager::LoadCharacters(string name) {
 *------------------------------------------------------------------------------*/
 void cEnemyJumpman::Update()
 {
-	if (possess) {
-		MoveByPlayer();		// èÊÇËà⁄Ç¡ÇƒÇ¢ÇΩÇÁéËìÆëÄçÏ
-		FocusOld = FocusPos;
-		FocusPos = pos;
-	}
-	else {
-		MoveByAutomation();	// ÇªÇÃëºÇÕé©ìÆ
-		attack_flag = false;
+	if (hp > 0) {
+		if (possess) {
+			MoveByPlayer();		// èÊÇËà⁄Ç¡ÇƒÇ¢ÇΩÇÁéËìÆëÄçÏ
+			FocusOld = FocusPos;
+			FocusPos = pos;
+		}
+		else {
+			MoveByAutomation();	// ÇªÇÃëºÇÕé©ìÆ
+			attack_flag = false;
+		}
 	}
 	Physical();
 }
@@ -505,25 +507,23 @@ void cEnemyJumpman::MoveByAutomation()
 {
 	if (hp > 0) {
 		inertia = 0;
-		if (possess == false) {
-			if (direction == true) {
-				pos.x += 5;
-			}
-			else {
-				pos.x -= 5;
-			}
-			if (landing == true && jump_count != 3) {
-				jump = 20.f;
-				jump_count++;
-				landing = false;
-			}
-			if (landing == true && jump_count == 3) {
-				jump = 20.f;
-				jump_count = 0;
-				if (direction == true)
-					direction = false;
-				else direction = true;
-			}
+		if (direction == true) {
+			pos.x += 5;
+		}
+		else {
+			pos.x -= 5;
+		}
+		if (landing == true && jump_count != 3) {
+			jump = 20.f;
+			jump_count++;
+			landing = false;
+		}
+		if (landing == true && jump_count == 3) {
+			jump = 20.f;
+			jump_count = 0;
+			if (direction == true)
+				direction = false;
+			else direction = true;
 		}
 	}
 }
@@ -573,7 +573,6 @@ void cEnemyJumpman::Render(int image[120])
 					if (direction == true) {
 						player_attack.x += 100;
 						bullet.Shot(player_attack, { 10,10,0 }, 0, 180, PlayerAttack);
-
 					}
 					else {
 						player_attack.x -= 100;
@@ -602,11 +601,6 @@ void cEnemyJumpman::Render(int image[120])
 		DrawRotaGraph(pos.x, pos.y, 0.7, 0, image[image_change], TRUE, TRUE);
 	else if (direction == false)
 		DrawRotaGraph(pos.x, pos.y, 0.7, 0, image[image_change], TRUE, FALSE);
-
-	DrawCircle(pos.x - 40, pos.y - 50, 10, 0xfffff, true);
-	DrawCircle(pos.x + 40, pos.y + 50, 10, 0xfffff, true);
-	/*if (landing == true)
-		DrawCircle(FocusPos.x, FocusPos.y, 100, 0xfffff, true);*/
 }
 
 /*------------------------------------------------------------------------------*
@@ -614,7 +608,6 @@ void cEnemyJumpman::Render(int image[120])
 *------------------------------------------------------------------------------*/
 void cEnemyGunman::MoveByAutomation()
 {
-
 	if (hp > 0) {
 		switch (move_pattern) {
 		case 0:
@@ -749,8 +742,6 @@ void cEnemyGunman::Update()
 
 void cEnemyGunman::Render(int image[])
 {
-	DrawFormatString(FocusCam.x, FocusCam.y + 20, 0xfffff, "%d", inertia);
-
 	if (hp > 0) {
 		if (possess == false) {
 			switch (move_pattern) {
@@ -809,7 +800,7 @@ void cEnemyGunman::Render(int image[])
 			image_change = 156;
 
 		if (image_change == 180)
-			image_change == 180;
+			image_change = 180;
 		else		image_change++;
 	}
 
@@ -817,11 +808,6 @@ void cEnemyGunman::Render(int image[])
 		DrawRotaGraph(pos.x, pos.y - 15, 0.7, 0, image[image_change], TRUE, FALSE);
 	else if (direction == false)
 		DrawRotaGraph(pos.x, pos.y - 15, 0.7, 0, image[image_change], TRUE, TRUE);
-
-	DrawCircle(pos.x - 40, pos.y - 60, 10, 0xfffff, true);
-	DrawCircle(pos.x + 40, pos.y + 60, 10, 0xfffff, true);
-
-	//DrawCircle(pos.x, pos.y, 10, 0xffffff, true);
 }
 
 /*------------------------------------------------------------------------------*
@@ -959,7 +945,6 @@ void cEnemyWiremanManager::Wireman::Update(VECTOR *WirePos, int *AnchorStretch, 
 		MoveByAutomation(WirePos, AnchorStretch, EnemyAnchorStretch);
 		*AnchorStretch = 0;
 	}
-	//if (*AnchorStretch != 2 || *EnemyAnchorStretch != 2)
 	Physical();
 	MouseStateGet();
 }
@@ -1068,8 +1053,6 @@ void	cEnemyWiremanManager::Wireman::MoveByPlayer(VECTOR *WirePos, int *AnchorStr
 
 void cEnemyWiremanManager::Wireman::MoveByAutomation(VECTOR *WirePos, int *AnchorStretch, int *EnemyAnchorStretch)
 {
-	// *EnemyAnchorStretchÇÃèâä˙âª
-	//if (*EnemyAnchorStretch != (0 | 1 | 2)){*EnemyAnchorStretch = 0;}
 	if (hp <= 0) {
 		*EnemyAnchorStretch == 3;
 	}
@@ -1194,8 +1177,6 @@ void cEnemyWiremanManager::Wireman::Render(int image[], int *AnchorStretch, int 
 
 	else if (direction == true)
 		DrawRotaGraph(pos.x, pos.y - 15, 0.7, 0, image[image_change], TRUE, TRUE);
-	DrawCircle(pos.x - 40, pos.y - 60, 10, 0xfffff, true);
-	DrawCircle(pos.x + 40, pos.y + 60, 10, 0xfffff, true);
 }
 
 /*------------------------------------------------------------------------------*
@@ -1399,9 +1380,6 @@ void cEnemyBossmiddle::Render(int image[])
 		DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
 	else if (direction == false)
 		DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
-
-	DrawCircle(pos.x - 45, pos.y - 75, 10, 0xfffff, true);
-	DrawCircle(pos.x + 45, pos.y + 75, 10, 0xfffff, true);
 }
 
 /*------------------------------------------------------------------------------*
@@ -1467,9 +1445,6 @@ void cEnemyCannon::Render(int image[])
 	if (direction == false)
 		DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], true);
 	else 	DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], true);
-	DrawFormatString(pos.x, pos.y, 0xffffff, "%d", image_change);
-	DrawFormatString(FocusPos.x, FocusPos.y - 100 , 0xfffff, "%f", -angle * 180 / PI);
-	DrawFormatString(FocusPos.x, FocusPos.y - 110, 0xfffff, "%f", angle);
 }
 
 void cEnemyCannon::MoveByAutomation() 
@@ -1509,3 +1484,19 @@ void cEnemyCannon::MoveByAutomation()
 	}
 
 }
+
+/*------------------------------------------------------------------------------*
+| <<< cCoin >>>
+*------------------------------------------------------------------------------*/
+
+/*void cCoin::Update() 
+{
+	if (FocusPos.x - 50 < pos.x && FocusPos.x + 50 > pos.x)
+		if (FocusPos.y - 50 < pos.y && FocusPos.y + 50 > pos.y)
+			getcoin = true;
+}
+
+void cCoin::Render(int image[]) 
+{
+	DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[cointype], true);
+}*/
