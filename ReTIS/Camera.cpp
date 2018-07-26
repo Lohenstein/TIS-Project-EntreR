@@ -91,6 +91,7 @@ void cCamera::Update(VECTOR focus) {
 	if (camera_px < 0.f) camera_px = 0.f;
 	if (camera_px > sx * bsize - WINDOW_SIZE_X) camera_px = sx * bsize - WINDOW_SIZE_X;
 	for (int i = 0; i < 2; i++) cloud[i] -= 0.2f;
+	if (camera_py > 3000.f) camera_py = 3000.f;
 }
 
 void cCamera::Render(int handle) {

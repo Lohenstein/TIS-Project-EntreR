@@ -1,5 +1,7 @@
 #include "Main.h"
 
+std::unique_ptr<cBase> scene;
+
 /*------------------------------------------------------------------------------*
 | <<< ゲーム >>>
 *------------------------------------------------------------------------------*/
@@ -101,7 +103,10 @@ void	cGame::Collision() {
 void	cGame::Update() {
 	input();
 	if (IsClearFlag) {
-
+		UpdateResult();
+	}
+	else if (IsOverFlag) {
+		UpdateOver();
 	}
 	else {
 		character->Update();
@@ -128,12 +133,57 @@ void	cGame::Render() {
 	gui->Render();
 	RenderGui();
 
+	// クリア時
 	if (IsClearFlag) {
 		DrawResult();
 		trans++;
 	}
+	// ゲームオーバー時
+	if (IsOverFlag) {
+		DrawOver();
+		trans++;
+	}
 
 	//DrawFormatString(10, 10, 0xFFFFFF, "操作キャラの座標:x=%d, y=%d", (int)FocusPos.x, (int)FocusPos.y);
+}
+
+void	cGame::DrawOver() {
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, trans >= 255 ? 255 : trans);
+
+	DrawGraph(0, 0, imghandle[0], false);
+	int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_TIME], "Game Over!!");
+	DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 150, 0xFFFFFF, font_handle[FONT_TIME], "Game Over!!");
+
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	if (trans > 235 && trans % 30 != 0) {
+		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "R key: Retry / X key : Lab", time);
+		DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 550, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "R key: Retry / X key : Lab", time);
+	}
+}
+
+void	cGame::UpdateOver() {
+	if (key[KEY_INPUT_R] == 1 && trans > 235) {
+		// なうろ
+		DrawGraph(0, 0, imghandle[0], false);
+		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
+		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
+		ScreenFlip();
+		// 初期化
+		scene.reset(new cGame);
+	}
+}
+
+void	cGame::UpdateResult() {
+	if (key[KEY_INPUT_R] == 1 && trans > 335) {
+		// なうろ
+		DrawGraph(0, 0, imghandle[0], false);
+		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
+		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
+		ScreenFlip();
+		// 初期化
+		scene.reset(new cGame);
+	}
 }
 
 void	cGame::DrawResult() {
@@ -151,7 +201,7 @@ void	cGame::DrawResult() {
 		DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 300, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Score:%dsec", time);
 	}
 	if (trans > 275) {
-		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Time:%dsec", time);
+		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Time:%dsec", rectime);
 		DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 350, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Time:%dsec", time);
 	}
 	if (trans > 295) {
@@ -166,18 +216,21 @@ void	cGame::DrawResult() {
 		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "R key: Retry / X key : Lab", time);
 		DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 550, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "R key: Retry / X key : Lab", time);
 	}
-
 }
+
 void	cGame::UpdateGui() {
 	time++;
 }
+
 void	cGame::RenderGui() {
 	if (time >= 60) {
 		time = 0;
 		sec--;
 		if (sec < 0) {
+			rectime++;
 			sec = 59;
 			min--;
+			if (min <= 0 && sec <= 0) IsOverFlag = true;
 		}
 	}
 	if (sec < 10) {

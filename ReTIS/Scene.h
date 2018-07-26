@@ -48,6 +48,7 @@ protected:
 	int min  = 5;
 	int sec  = 0;
 	int time = 0;
+	int rectime = 0;
 	int trans = 0;
 public:
 	cGame() { 
@@ -80,9 +81,17 @@ public:
 	void	CollisionAroundMaptile(cObject *hit);
 	void	Update();
 	void	Render();
+
 	void	UpdateGui();
 	void	RenderGui();
+
 	void	DrawResult();
+	void	UpdateResult();
+	void	DrawOver();
+	void	UpdateOver();
+
 	int		StageSizeX() { return stage->GetStageSizeX(); }
 	int		StageSizeY() { return stage->GetStageSizeY(); }
 };
+
+extern std::unique_ptr<cBase> scene;
