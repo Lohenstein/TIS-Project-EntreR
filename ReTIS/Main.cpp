@@ -9,7 +9,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// ê›íË
 	ChangeWindowMode(true);
 	SetGraphMode(WINDOW_SIZE_X, WINDOW_SIZE_Y, 32);
-	SetMainWindowText("EntreR");
+	SetMainWindowText("EntreR - Demo Edition");
 
 	// èâä˙âª
 	if (DxLib_Init() == -1) {

@@ -1,4 +1,7 @@
 #pragma once
+
+using namespace std;
+
 class cBase
 {
 public:
@@ -34,6 +37,7 @@ private:
 	cCamera *camera;
 	cGuiGame *gui;
 	int bghandle;
+	string stagepath;
 protected:
 	// §ŒÀŽžŠÔ‚Æ‚©
 	int min  = 5;
@@ -41,8 +45,10 @@ protected:
 	int time = 0;
 public:
 	cGame() { 
-		stage	  = new cStageManager("data/map/tenji/mapdata"); 
-		character = new cCharacterManager("data/map/tenji/mapdata");
+		stagepath = "data/map/tenji/";
+		stage	  = new cStageManager(stagepath);
+		character = new cCharacterManager(stagepath);
+		//entity    = new cEntityManager(stagepath);
 		camera	  = new cCamera();
 		gui       = new cGuiGame();
 		bghandle  = MakeScreen(stage->GetStageSizeX()*(int)bsize, stage->GetStageSizeY()*(int)bsize, true);
@@ -51,10 +57,12 @@ public:
 	~cGame() { 
 		delete stage;
 		delete character;
+		//delete entity;
 		delete camera;
 		delete gui;
 		stage     = nullptr;
 		character = nullptr;
+		//entity	  = nullptr;
 		camera	  = nullptr;
 		gui		  = nullptr;
 		DeleteGraph(bghandle);
