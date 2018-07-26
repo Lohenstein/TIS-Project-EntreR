@@ -225,7 +225,7 @@ void	cCharacterManager::Update() {
 		if (wireanchor[i]	!= nullptr) wireanchor[i]->Update(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch, &wmanager[i]->EnemyAnchorStretch);
 		if (gunman[i]		!= nullptr)	gunman[i]->Update();
 		if (bossmiddle[i]	!= nullptr) bossmiddle[i]->Update();
-		if (circularsaw[i]	!= nullptr) circularsaw[i]->Update();
+		if (circularsaw[i]	!= nullptr) circularsaw[i]->Update(10.f,0,1);
 		if (cannon[i]		!= nullptr) cannon[i]->Update();
 		if (movefloor[i]	!= nullptr) movefloor[i]->Update(3.f, 0, 1);
 		if (dropfloor[i]	!= nullptr) dropfloor[i]->Update();
@@ -1338,38 +1338,44 @@ void cEnemyBossmiddle::Render(int image[])
 | <<< cEnemyCircularSaw >>>
 *------------------------------------------------------------------------------*/
 
-void cEnemyCircularSaw::Update() {
-	MoveByAutomation();
+void cEnemyCircularSaw::Update(float s,int p1,int p2) {
+	// ˆÚ“®‚·‚éŠp“x‚Æ‹——£‚ð‹‚ß‚é
+	float rad = atan2f(sy[1] - sy[0], sx[1] - sx[0]);
+	float dis = sqrtf((sx[1] - sx[0]) * (sx[1] - sx[0]) + (sy[1] - sy[0]) * (sy[1] - sy[0]));
+
+	// ‰ß‹Ž‚ÌˆÚ“®‚ð•Û‘¶
+	old = pos;
+
+	// ˆÚ“®‚·‚é
+	pos.x = sx[0] - (cosf(rad + PI) * p);
+	pos.y = sy[0] - (sinf(rad + PI) * p);
+
+	// ˆÚ“®‚Ì•ûŒü‚ÉŒü‚©‚Á‚Ä“®‚©‚·
+	if (flag)
+		p += s;
+	else
+		p -= s;
+
+	// ˆÚ“®‚Ì•ûŒü‚ÌØ‚è‘Ö‚¦
+	if (p >= dis || p <= 0.f) {
+		if (flag)
+			flag = false;
+		else
+			flag = true;
+	}
+
 }
 
-void cEnemyCircularSaw::MoveByAutomation() {
-	switch (move_pattern) {
-	case 0:
-		attack_count++;
-		pos.x += 10;
-		if (attack_count == 100) {
-			move_pattern = 1;
-			attack_count = 0;
-		}
-		break;
-	case 1:
-		attack_count++;
-		pos.x -= 10;
-		if (attack_count == 100) {
-			move_pattern = 0;
-			attack_count = 0;
-		}
-		break;
-	}
+void cEnemyCircularSaw::SetPoint(int num, float x, float y) {
+	sx[num] = x;
+	sy[num] = y;
 }
 
 void cEnemyCircularSaw::Render(int image[]) {
 	image_change++;
 	if (image_change == 5)
 		image_change = 0;
-	if (direction == false)
-		DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], true);
-	else 	DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], true);
+	DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], true);
 }
 
 /*------------------------------------------------------------------------------*
