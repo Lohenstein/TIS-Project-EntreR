@@ -24,6 +24,7 @@ enum eObjectType {
 	Player,			// プレイヤー
 	PlayerBullet,	// プレイヤーキャラから発射される弾（乗り移り弾）
 	EnemyBullet,	// 敵から発射される弾
+	PlayerAttack,	// プレイヤーの攻撃　bullet.Shotで使用
 	Bullet			// 弾 ※使わない
 };
 
