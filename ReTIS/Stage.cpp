@@ -19,9 +19,9 @@ vector<string> split(string& input, char delimiter)
 void	cStageManager::LoadStageData(string name) {
 
 	// •¡”‚Ìcsv“Ç‚İ‚Ş‚«‚½‚È‚¢‹@\
-	string main  = name + ".csv";
-	string bg1   = name + "_bg1.csv";
-	string bg2   = name + "_bg2.csv";
+	string main  = name + "mapdata.csv";
+	string bg1   = name + "mapdata_bg1.csv";
+	string bg2   = name + "mapdata_bg2.csv";
 
 	ifstream ifs_mapdata; ifs_mapdata.open(main.c_str());
 	ifstream ifs_bg1;     ifs_bg1.open(bg1.c_str());

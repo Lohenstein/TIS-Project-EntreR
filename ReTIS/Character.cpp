@@ -10,6 +10,8 @@ using namespace std;
 *------------------------------------------------------------------------------*/
 void	cCharacterBase::MoveByAutomation() {
 	old = pos;
+	if (inertia > 0) inertia -= 2;
+	if (inertia < 0) inertia += 2;
 }
 void	cCharacterBase::MoveByPlayer() {
 	old = pos;	// âﬂãéç¿ïW
@@ -84,6 +86,9 @@ void	cCharacterBase::HitAction(cObject *hit) {
 			pos.x += hit->GetPos().x - hit->GetOld().x;
 			jump = -4.f;
 		}
+		break;
+	case DropFloor:
+		Collision(hit);
 		break;
 	case Enemy:
 		Damaged();
@@ -192,16 +197,18 @@ void	cEnemy::Render() {
 void	cCharacterManager::Render() {
 	player->Render();
 	for (int i = 0; i < ENEMY_MAX; i++) {
-		if (jumpman[i] != nullptr) jumpman[i]->Render(jumpman_img);
-		if (hardbody[i] != nullptr) hardbody[i]->Render();
-		if (wireman[i] != nullptr) wireman[i]->Render(wireman_img,&wmanager[i]->AnchorStretch,&wmanager[i]->EnemyAnchorStretch);
-		if (fryingman[i] != nullptr) fryingman[i]->Render(fryingman_img);
-		if (wireman[i] != nullptr) wireman[i]->WireRender(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch, &wmanager[i]->EnemyAnchorStretch);
-		if (wireanchor[i] != nullptr) wireanchor[i]->Render();
-		if (gunman[i] != nullptr)	gunman[i]->Render(gunman_img);
-		if (bossmiddle[i] != nullptr)bossmiddle[i]->Render(bossmiddle_img);
-		if (circularsaw[i] != nullptr)circularsaw[i]->Render(circularsaw_img);
-		if (cannon[i] != nullptr)cannon[i]->Render(cannon_img);
+		if (jumpman[i]		!= nullptr) jumpman[i]->Render(jumpman_img);
+		if (hardbody[i]		!= nullptr) hardbody[i]->Render();
+		if (wireman[i]		!= nullptr) wireman[i]->Render(wireman_img,&wmanager[i]->AnchorStretch,&wmanager[i]->EnemyAnchorStretch);
+		if (fryingman[i]	!= nullptr) fryingman[i]->Render(fryingman_img);
+		if (wireman[i]		!= nullptr) wireman[i]->WireRender(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch, &wmanager[i]->EnemyAnchorStretch);
+		if (wireanchor[i]	!= nullptr) wireanchor[i]->Render();
+		if (gunman[i]		!= nullptr)	gunman[i]->Render(gunman_img);
+		if (bossmiddle[i]	!= nullptr) bossmiddle[i]->Render(bossmiddle_img);
+		if (circularsaw[i]	!= nullptr) circularsaw[i]->Render(circularsaw_img);
+		if (cannon[i]		!= nullptr) cannon[i]->Render(cannon_img);
+		if (movefloor[i]	!= nullptr) movefloor[i]->Render();
+		if (dropfloor[i]	!= nullptr) dropfloor[i]->Render();
 	}
 	if (possess_time != 0) {
 		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "%d", (600 - possess_time) / 60);
@@ -211,15 +218,17 @@ void	cCharacterManager::Render() {
 void	cCharacterManager::Update() {
 	player->Update();
 	for (int i = 0; i < ENEMY_MAX; i++) {
-		if (jumpman[i] != nullptr) jumpman[i]->Update();
-		if (hardbody[i] != nullptr) hardbody[i]->Update();
-		if (wireman[i] != nullptr) wireman[i]->Update(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch, &wmanager[i]->EnemyAnchorStretch);
-		if (fryingman[i] != nullptr) fryingman[i]->Update();
-		if (wireanchor[i] != nullptr) wireanchor[i]->Update(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch, &wmanager[i]->EnemyAnchorStretch);
-		if (gunman[i] != nullptr)	gunman[i]->Update();
-		if (bossmiddle[i] != nullptr)bossmiddle[i]->Update();
-		if (circularsaw[i] != nullptr)circularsaw[i]->Update();
-		if (cannon[i] != nullptr)cannon[i]->Update();
+		if (jumpman[i]		!= nullptr) jumpman[i]->Update();
+		if (hardbody[i]		!= nullptr) hardbody[i]->Update();
+		if (wireman[i]		!= nullptr) wireman[i]->Update(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch, &wmanager[i]->EnemyAnchorStretch);
+		if (fryingman[i]	!= nullptr) fryingman[i]->Update();
+		if (wireanchor[i]	!= nullptr) wireanchor[i]->Update(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch, &wmanager[i]->EnemyAnchorStretch);
+		if (gunman[i]		!= nullptr)	gunman[i]->Update();
+		if (bossmiddle[i]	!= nullptr) bossmiddle[i]->Update();
+		if (circularsaw[i]	!= nullptr) circularsaw[i]->Update();
+		if (cannon[i]		!= nullptr) cannon[i]->Update();
+		if (movefloor[i]	!= nullptr) movefloor[i]->Update(3.f, 0, 1);
+		if (dropfloor[i]	!= nullptr) dropfloor[i]->Update();
 	}
 	PossessListener();
 }
@@ -263,6 +272,8 @@ void	cCharacterManager::DeleteCharacters() {
 		delete fryingman[i];
 		delete gunman[i];
 		delete bossmiddle[i];
+		delete dropfloor[i];
+		delete movefloor[i];
 
 		jumpman[i] = nullptr;
 		hardbody[i] = nullptr;
@@ -270,12 +281,14 @@ void	cCharacterManager::DeleteCharacters() {
 		fryingman[i] = nullptr;
 		gunman[i] = nullptr;
 		bossmiddle[i] = nullptr;
+		dropfloor[i] = nullptr;
+		movefloor[i] = nullptr;
 	}
 }
 void	cCharacterManager::LoadCharacters(string name) {
 
 	// ï°êîÇÃcsvì«Ç›çûÇﬁÇ´ÇΩÇ»Ç¢ã@ç\
-	string enemy = name + "_enemy.csv";
+	string enemy = name + "mapdata_enemy.csv";
 	ifstream ifs; ifs.open(enemy.c_str());
 	string line;
 
@@ -340,6 +353,22 @@ void	cCharacterManager::LoadCharacters(string name) {
 			for (int i = 0; i < ENEMY_MAX; i++) {
 				if (cannon[i] == nullptr) {
 					cannon[i] = new cEnemyCannon(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
+					break;
+				}
+			}
+			break;
+		case eMoveFloor:
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				if (movefloor[i] == nullptr) {
+					movefloor[i] = new cMoveFloor(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)));
+					break;
+				}
+			}
+			break;
+		case eDropFloor:
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				if (dropfloor[i] == nullptr) {
+					dropfloor[i] = new cDropFloor(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)));
 					break;
 				}
 			}

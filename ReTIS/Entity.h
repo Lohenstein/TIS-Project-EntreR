@@ -1,55 +1,32 @@
 #pragma once
 
-class cEntity : public cObject {
-protected:
-public:
-	cEntity() {};
-	~cEntity() {};
-};
+using namespace std;
 
-class cMoveFloor : public cEntity {
-protected:
-	int		now_point;
-	bool	flag;
-	float	p;
-	float	sx[10], sy[10];
+/*
+class cEntityManager {
 public:
-	// コンストラクタ
-	cMoveFloor() {
-		flag = true;
-		size = { 160.f, 30.f, 0.f };
-		p	 = 0.f;
-		now_point = 0;
-		type = MoveFloor;
-	}
-	cMoveFloor(float h, float w) {
-		flag = true;
-		size = { w, h, 0.f };
-		p    = 0.f;
-		now_point = 0;
-		type = MoveFloor;
-	}
-	void	Render();
-	void	Update(float s, int p1, int p2);
-	void	SetPoint(int num, float x, float y);
-	void	HitAction(cObject *hit) {};
-};
 
-class cDropFloor : public cEntity {
-protected:
-	int		time;
-	bool	flag;
-	float	sx, sy;
-	float	gravity = 1.f;
-	float	drop_p  = 0.f;
-public:
-	cDropFloor() {
-		flag = false;
-		size = { 160.f, 30.f, 0.f };
-		time = 0;
-	}
+	cDropFloor *dropfloor[ENEMY_MAX];
+	cMoveFloor *movefloor[ENEMY_MAX];
+
+	void	LoadEntities(string name);
+
 	void	Render();
 	void	Update();
-	void	SetPoint(float x, float y);
-	void	HitAction(cObject *hit);
+
+	cEntityManager(string name) {
+		LoadEntities(name);
+	}
+	~cEntityManager() {
+		for (int i = 0; i < ENEMY_MAX; i++) {
+			delete dropfloor[i];
+			delete movefloor[i];
+			dropfloor[i] = nullptr;
+			movefloor[i] = nullptr;
+		}
+	}
+
+	cObject *GetDropFloor(int num) { return (cObject*)dropfloor[num]; }
+	cObject *GetMoveFloor(int num) { return (cObject*)movefloor[num]; }
 };
+*/
