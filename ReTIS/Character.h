@@ -122,6 +122,7 @@ public:
 	bool direction;
 	int player_move_pattern;
 	bool attack_flag;
+	float lockon;
 
 	cEnemyGunman(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
@@ -133,7 +134,8 @@ public:
 		hp = 6;
 
 		attack_count = 0;
-		bulletsize = { 20,20,0 };
+		bulletsize = { 50,50,0 };
+		bulletpos = { 0,0,0 };
 		image_change = 0;
 		move_pattern = 0;
 		bullet_fire = false;
@@ -141,6 +143,7 @@ public:
 		direction = true;
 		player_move_pattern = 0;
 		attack_count = false;
+		lockon = 0.f;
 	}
 	~cEnemyGunman() {}
 
@@ -268,9 +271,7 @@ public:
 		}
 		void Update(VECTOR *WirePos, int *AnchorStretch, int *EnemyAnchorStretch);
 		void MoveByAutomation(VECTOR *WirePos, int *AnchorStretch);
-
 	};
-
 };
 
 
@@ -383,9 +384,13 @@ class cEnemyCannon : public cEnemy
 {
 public:
 	int attack_count;
+	int move_pattern;
+	float angle;
 
 	int image_change;
 	bool direction;
+	VECTOR bulletpos;
+	VECTOR bulletsize;
 
 	cEnemyCannon(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
@@ -395,9 +400,12 @@ public:
 		type = Enemy;
 		landing = false;
 
+		bulletsize = { 50,50,0 };
+		angle = 0.f;
 		image_change = 0;
 		attack_count = 0;
 		direction = false;
+		move_pattern = 0;
 	}
 	void Update();
 	void Render(int image[]);
@@ -433,16 +441,16 @@ public:
 
 	cCharacterManager() {
 		player = new cPlayer(400.f, 100.f, 90.f, 120.f, 6.f, true);
-		jumpman[0] = new cEnemyJumpman(300.f, 100.f,120.f, 150.f, 2.f, false);
+		jumpman[0] = new cEnemyJumpman(300.f, 100.f,80.f, 100.f, 2.f, false);
 		hardbody[0] = new cEnemyHardBody(1000.f, 100.f, 120.f, 150.f, 2.f, false);
-		wireman[0] = new cEnemyWiremanManager::Wireman(300.f, 100.f, 80.f, 220.f, 2.f, false);
+		wireman[0] = new cEnemyWiremanManager::Wireman(300.f, 100.f, 80.f, 120.f, 2.f, false);
 		fryingman[0] = new cEnemyFryingman(1000.f, 500.f, 90.f, 90.f, 2.f, false);
 		wireanchor[0] = new cEnemyWiremanManager::Anchor(100, -100, 10, 10, 2, false);
 		wmanager[0] = new cEnemyWiremanManager;
-		gunman[0] = new cEnemyGunman(200.f, 100.f, 120.f, 150.f, 2.f, false);
+		gunman[0] = new cEnemyGunman(800.f, 100.f, 80.f, 120.f, 2.f, false);
 		bossmiddle[0] = new cEnemyBossmiddle(1900.f, 300.f, 90.f, 150.f, 2.f, false);
 		circularsaw[0] = new cEnemyCircularSaw(100.f, 100.f, 100.f, 100.f, 2.f, false);
-		cannon[0] = new cEnemyCannon(200.f, 200.f, 100.f, 100.f, 2.f, false);
+		cannon[0] = new cEnemyCannon(1500.f, 500.f, 100.f, 100.f, 2.f, false);
 		
 		LoadDivGraph("data/img/enemy/Jumpman.PNG", 120, 30, 4, 300, 300, jumpman_img);
 		LoadDivGraph("data/img/enemy/Gunman.PNG", 234, 39, 6, 300, 300, gunman_img);
