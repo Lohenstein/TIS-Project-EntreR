@@ -31,6 +31,8 @@ void	cGame::CollisionAroundMaptile(cObject *hit) {
 }
 void	cGame::Collision() {
 
+	CheckHitRectAndRect(character->GetPlayer(), character->GetClear());
+
 	CollisionAroundMaptile(character->GetPlayer());
 	for (int k = 0; k < ENEMY_MAX; k++) {
 		if (character->GetEnemyJumpman(k) != nullptr) CollisionAroundMaptile(character->GetEnemyJumpman(k));

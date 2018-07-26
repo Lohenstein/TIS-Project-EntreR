@@ -107,6 +107,8 @@ void	cCharacterBase::HitAction(cObject *hit) {
 	case MapTile:
 		Collision(hit);
 		break;
+	case Clear:
+
 	}
 }
 void	cCharacterBase::Damaged() {
@@ -300,6 +302,9 @@ void	cCharacterManager::LoadCharacters(string name) {
 		switch (stoi(str.at(0))) {
 		case ePlayer:
 			player = new cPlayer(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
+			break;
+		case eClear:
+			clear = new cClearCollision(stoi(str.at(1)), stoi(str.at(2)));
 			break;
 		case eJumpman:
 			for (int i = 0; i < ENEMY_MAX; i++) {

@@ -48,7 +48,6 @@ public:
 		stagepath = "data/map/tenji/";
 		stage	  = new cStageManager(stagepath);
 		character = new cCharacterManager(stagepath);
-		//entity    = new cEntityManager(stagepath);
 		camera	  = new cCamera();
 		gui       = new cGuiGame();
 		bghandle  = MakeScreen(stage->GetStageSizeX()*(int)bsize, stage->GetStageSizeY()*(int)bsize, true);

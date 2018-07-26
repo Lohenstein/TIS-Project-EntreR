@@ -467,6 +467,23 @@ public:
 	void	HitAction(cObject *hit);
 };
 
+class cClearCollision : public cEnemy {
+public:
+	bool IsClear = false; // クリア判定
+	cClearCollision(int x, int y) {
+		size = { 96.f, 128.f, 0.f };
+		pos  = { (float)x, (float)y, 0.f };
+		type = Clear;
+	}
+	void	HitAction(cObject *hit) {
+		if (hit->GetType() == Player) IsClear = true;
+	}
+	void	DebugRender() {
+		DrawBoxAA(pos.x - GetSize().x / 2.f, pos.y - GetSize().y / 2.f,
+			pos.x + GetSize().x / 2.f, pos.y + GetSize().y / 2.f,
+			0xFFFFFF, false);
+	}
+};
 
 class cCharacterManager {
 protected:
@@ -475,6 +492,7 @@ protected:
 public:
 	// Character
 	cPlayer							*player;
+	cClearCollision					*clear;
 	cEnemyJumpman					*jumpman[ENEMY_MAX];
 	cEnemyHardBody					*hardbody[ENEMY_MAX];
 	cEnemyWiremanManager::Wireman	*wireman[ENEMY_MAX];
@@ -525,6 +543,7 @@ public:
 	}
 
 	cObject *GetPlayer() { return (cObject*)player; }
+	cObject *GetClear() { return (cObject*)clear; }
 	cObject *GetEnemyJumpman(int num) { return (cObject*)jumpman[num]; }
 	cObject *GetEnemyHardBody(int num) { return (cObject*)hardbody[num]; }
 	cObject *GetEnemyWireman(int num) { return (cObject*)wireman[num]; }
@@ -552,5 +571,6 @@ enum character {
 	eCircularsaw,	// 7
 	eCannon,		// 8
 	eMoveFloor,		// 9
-	eDropFloor		// 10
+	eDropFloor,		// 10
+	eClear			// 11(クリア判定)
 };
