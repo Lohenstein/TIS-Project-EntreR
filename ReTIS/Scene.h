@@ -41,8 +41,8 @@ protected:
 	int time = 0;
 public:
 	cGame() { 
-		stage	  = new cStageManager("data/map/test/mapdata"); 
-		character = new cCharacterManager("data/map/test/mapdata");
+		stage	  = new cStageManager("data/map/tenji/mapdata"); 
+		character = new cCharacterManager("data/map/tenji/mapdata");
 		camera	  = new cCamera();
 		gui       = new cGuiGame();
 		bghandle  = MakeScreen(stage->GetStageSizeX()*(int)bsize, stage->GetStageSizeY()*(int)bsize, true);
