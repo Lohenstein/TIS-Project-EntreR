@@ -30,8 +30,6 @@ void cBullet::HitAction(cObject *hit) {
 			break;
 		case EnemyBullet:
 			break;
-		case PlayerAttack:
-			break;
 		}
 		flag = false;
 		break;

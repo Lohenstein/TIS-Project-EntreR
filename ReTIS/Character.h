@@ -486,6 +486,27 @@ public:
 	}
 };
 
+class cCoin : public cEnemy {
+public:
+	bool getcoin;
+	int  cointype;
+
+	VECTOR CoinPos;
+	cCoin(float w, float h, float x, float y, float t) {
+		CoinPos = { x, y, 0.f };
+		size = { w, h, 0.f };
+		type = Coin;
+		hp = 1;
+
+		pos = CoinPos;
+		cointype = t;
+		getcoin = false;
+	}
+	void Update();
+	void Render(int image[]);
+};
+
+
 class cCharacterManager {
 protected:
 	int		possess_time = 0;
@@ -508,7 +529,7 @@ public:
 	cEnemyCannon					*cannon[ENEMY_MAX];
 	cDropFloor						*dropfloor[ENEMY_MAX];
 	cMoveFloor						*movefloor[ENEMY_MAX];
-	//cCoin							*coin[3];
+	cCoin							*coin[3];
 
 	int		wireman_img[273];
 	int		jumpman_img[120];
@@ -517,6 +538,7 @@ public:
 	int		gunman_img[234];
 	int		circularsaw_img[5];
 	int		cannon_img[20];
+	int		coin_img[3];
 
 	void	Update();
 	void	Render();
@@ -538,6 +560,9 @@ public:
 		LoadDivGraph("data/img/enemy/Wireman.PNG", 273, 39, 7, 300, 300, wireman_img);
 		LoadDivGraph("data/img/enemy/CircularSaw.PNG", 5, 5, 1, 300, 300, circularsaw_img);
 		LoadDivGraph("data/img/enemy/BigGun.PNG", 20, 20, 1, 300, 300, cannon_img);
+		coin_img[0] = LoadGraph("data/img/enemy/NormalCoin.PNG");
+		coin_img[1] = LoadGraph("data/img/enemy/BigCoin.PNG");
+		coin_img[2] = LoadGraph("data/img/enemy/EnergyCoin.PNG");
 	}
 	~cCharacterManager() {
 		DeleteCharacters();
@@ -557,7 +582,7 @@ public:
 	cObject *GetCannon(int num) { return (cObject*)cannon[num]; }
 	cObject *GetDropFloor(int num) { return (cObject*)dropfloor[num]; }
 	cObject *GetMoveFloor(int num) { return (cObject*)movefloor[num]; }
-	//cObject *GetCoin(int num) { return (cObject*)coin[num]; }
+	cObject *GetCoin(int num) { return (cObject*)coin[num]; }
 	
 	int		GetPlayerHp() { return player->GetHp(); }
 
@@ -575,5 +600,6 @@ enum character {
 	eCannon,		// 8
 	eMoveFloor,		// 9
 	eDropFloor,		// 10
-	eClear			// 11(クリア判定)
+	eClear,			// 11(クリア判定)
+	eCoin			// 12
 };
