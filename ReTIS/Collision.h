@@ -25,7 +25,8 @@ enum eObjectType {
 	PlayerBullet,	// プレイヤーキャラから発射される弾（乗り移り弾）
 	EnemyBullet,	// 敵から発射される弾
 	PlayerAttack,	// プレイヤーの攻撃　bullet.Shotで使用
-	Bullet			// 弾 ※使わない
+	Bullet,			// 弾 ※使わない
+	Coin
 };
 
 extern void		CheckHitRectAndRect(cObject *obj1, cObject *obj2);

@@ -138,7 +138,7 @@ public:
 		possess = p;
 		type = Enemy;
 		landing = false;
-		hp = 6;
+		hp = 1;
 
 		attack_count = 0;
 		bulletsize = { 50,50,0 };
@@ -465,6 +465,22 @@ public:
 	void	HitAction(cObject *hit);
 };
 
+/*class cCoin : public cEnemy {
+public:
+	bool getcoin;
+	int  cointype;
+
+	cCoin(int w, int h, int x, int y,int t) {
+		pos = { x, y, 0.f };
+		size = { w, h, 0.f };
+		type = Coin;
+
+		cointype = t;
+		getcoin = false;
+	}
+	void Update();
+	void Render(int image[]);
+};*/
 
 class cCharacterManager {
 protected:
@@ -487,7 +503,7 @@ public:
 	cEnemyCannon					*cannon[ENEMY_MAX];
 	cDropFloor						*dropfloor[ENEMY_MAX];
 	cMoveFloor						*movefloor[ENEMY_MAX];
-	
+	//cCoin							*coin[3];
 
 	int		wireman_img[273];
 	int		jumpman_img[120];
@@ -534,6 +550,8 @@ public:
 	cObject *GetCannon(int num) { return (cObject*)cannon[num]; }
 	cObject *GetDropFloor(int num) { return (cObject*)dropfloor[num]; }
 	cObject *GetMoveFloor(int num) { return (cObject*)movefloor[num]; }
+	//cObject *GetCoin(int num) { return (cObject*)coin[num]; }
+	
 	int		GetPlayerHp() { return player->GetHp(); }
 
 };
@@ -549,5 +567,6 @@ enum character {
 	eCircularsaw,	// 7
 	eCannon,		// 8
 	eMoveFloor,		// 9
-	eDropFloor		// 10
+	eDropFloor,		// 10
+	eCoin			// 11
 };
