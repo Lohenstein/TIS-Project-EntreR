@@ -4,6 +4,7 @@ extern VECTOR FocusPos;
 extern VECTOR FocusOld;
 extern VECTOR FocusCam;
 extern VECTOR MouseAdd;
+extern bool	  IsClearFlag;
 
 using namespace std;
 
@@ -55,6 +56,7 @@ public:
 		speed = s;
 		possess = p;
 		type = Player;
+		IsClearFlag = false;
 	}
 	~cPlayer() {}
 	void	Render();
@@ -465,22 +467,23 @@ public:
 	void	HitAction(cObject *hit);
 };
 
-/*class cCoin : public cEnemy {
+class cClearCollision : public cEnemy {
 public:
-	bool getcoin;
-	int  cointype;
-
-	cCoin(int w, int h, int x, int y,int t) {
-		pos = { x, y, 0.f };
-		size = { w, h, 0.f };
-		type = Coin;
-
-		cointype = t;
-		getcoin = false;
+	bool IsClear = false; // クリア判定
+	cClearCollision(int x, int y) {
+		size = { 96.f, 128.f, 0.f };
+		pos  = { (float)x, (float)y, 0.f };
+		type = eClear;
 	}
-	void Update();
-	void Render(int image[]);
-};*/
+	void	HitAction(cObject *hit) {
+		if (hit->GetType() == Player) IsClear = true;
+	}
+	void	DebugRender() {
+		DrawBoxAA(pos.x - GetSize().x / 2.f, pos.y - GetSize().y / 2.f,
+			pos.x + GetSize().x / 2.f, pos.y + GetSize().y / 2.f,
+			0xFFFFFF, false);
+	}
+};
 
 class cCharacterManager {
 protected:
@@ -489,6 +492,7 @@ protected:
 public:
 	// Character
 	cPlayer							*player;
+	cClearCollision					*clear;
 	cEnemyJumpman					*jumpman[ENEMY_MAX];
 	cEnemyHardBody					*hardbody[ENEMY_MAX];
 	cEnemyWiremanManager::Wireman	*wireman[ENEMY_MAX];
@@ -518,6 +522,7 @@ public:
 	void	PossessListener();
 	void	LoadCharacters(string name);
 	void	DeleteCharacters();
+	void	DeleteDeathCharacters();
 	cCharacterManager(string name) {
 		/*
 		wireman[0]	  = new cEnemyWiremanManager::Wireman(300.f, 100.f, 80.f, 220.f, 2.f, false);
@@ -538,6 +543,7 @@ public:
 	}
 
 	cObject *GetPlayer() { return (cObject*)player; }
+	cObject *GetClear() { return (cObject*)clear; }
 	cObject *GetEnemyJumpman(int num) { return (cObject*)jumpman[num]; }
 	cObject *GetEnemyHardBody(int num) { return (cObject*)hardbody[num]; }
 	cObject *GetEnemyWireman(int num) { return (cObject*)wireman[num]; }
@@ -568,5 +574,5 @@ enum character {
 	eCannon,		// 8
 	eMoveFloor,		// 9
 	eDropFloor,		// 10
-	eCoin			// 11
+	eClear			// 11(クリア判定)
 };
