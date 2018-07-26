@@ -2,7 +2,7 @@
 #include "Main.h"
 VECTOR FocusPos, FocusOld, WirePos ,FocusCam,MouseAdd;
 bool	AnchorStretch = true;
-bool	IsClearFlag;
+bool	IsClearFlag, IsOverFlag;
 using namespace std;
 
 /*------------------------------------------------------------------------------*
@@ -35,6 +35,10 @@ void	cCharacterBase::MoveByPlayer() {
 	}
 	if (key[KEY_INPUT_X] == 1) {
 		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, 0, PlayerBullet);
+	}
+	// ŒŠ‚É—Ž‚Á‚±‚¿‚½
+	if (pos.y >= 3520) {
+		IsOverFlag = true;
 	}
 }
 
@@ -292,33 +296,56 @@ void	cCharacterManager::DeleteCharacters() {
 	}
 }
 void	cCharacterManager::DeleteDeathCharacters() {
+	if (player->GetHp() <= 0) {
+		IsOverFlag = true;
+	}
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (jumpman[i] != nullptr) {
 			if (jumpman[i]->GetHp() <= 0) {
+				if (jumpman[i]->possess) {
+					player->possess = true;
+					possess_time = 0;
+				}
 				delete jumpman[i];
 				jumpman[i] = nullptr;
 			}
 		}
 		if (hardbody[i] != nullptr) {
 			if (hardbody[i]->GetHp() <= 0) {
+				if (hardbody[i]->possess) {
+					player->possess = true;
+					possess_time = 0;
+				}
 				delete hardbody[i];
 				hardbody[i] = nullptr;
 			}
 		}
 		if (fryingman[i] != nullptr) {
 			if (fryingman[i]->GetHp() <= 0) {
+				if (fryingman[i]->possess) {
+					player->possess = true;
+					possess_time = 0;
+				}
 				delete fryingman[i];
 				fryingman[i] = nullptr;
 			}
 		}
 		if (gunman[i] != nullptr) {
 			if (gunman[i]->GetHp() <= 0) {
+				if (gunman[i]->possess) {
+					player->possess = true;
+					possess_time = 0;
+				}
 				delete gunman[i];
 				gunman[i] = nullptr;
 			}
 		}
 		if (bossmiddle[i] != nullptr) {
 			if (bossmiddle[i]->GetHp() <= 0) {
+				if (bossmiddle[i]->possess) {
+					player->possess = true;
+					possess_time = 0;
+				}
 				delete bossmiddle[i];
 				bossmiddle[i] = nullptr;
 			}

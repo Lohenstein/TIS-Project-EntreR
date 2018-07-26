@@ -4,7 +4,6 @@
 namespace Game
 {
 	int mode = mode_game;
-	std::unique_ptr<cBase> scene;
 
 }
 

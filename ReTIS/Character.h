@@ -4,7 +4,7 @@ extern VECTOR FocusPos;
 extern VECTOR FocusOld;
 extern VECTOR FocusCam;
 extern VECTOR MouseAdd;
-extern bool	  IsClearFlag;
+extern bool	  IsClearFlag, IsOverFlag;
 
 using namespace std;
 
@@ -57,6 +57,7 @@ public:
 		possess = p;
 		type = Player;
 		IsClearFlag = false;
+		IsOverFlag  = false;
 	}
 	~cPlayer() {}
 	void	Render();
