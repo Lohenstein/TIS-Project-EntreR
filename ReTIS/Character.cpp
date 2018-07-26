@@ -272,14 +272,14 @@ void	cCharacterManager::DeleteCharacters() {
 		delete dropfloor[i];
 		delete movefloor[i];
 
-		jumpman[i] = nullptr;
-		hardbody[i] = nullptr;
-		wireman[i] = nullptr;
-		fryingman[i] = nullptr;
-		gunman[i] = nullptr;
+		jumpman[i]	  = nullptr;
+		hardbody[i]   = nullptr;
+		wireman[i]	  = nullptr;
+		fryingman[i]  = nullptr;
+		gunman[i]	  = nullptr;
 		bossmiddle[i] = nullptr;
-		dropfloor[i] = nullptr;
-		movefloor[i] = nullptr;
+		dropfloor[i]  = nullptr;
+		movefloor[i]  = nullptr;
 	}
 }
 void	cCharacterManager::LoadCharacters(string name) {
