@@ -32,17 +32,23 @@ protected:
 class cGame : public cBase
 {
 private:
+
 	cStageManager *stage;
 	cCharacterManager *character;
 	cCamera *camera;
 	cGuiGame *gui;
+
+	int imghandle[10];
+
 	int bghandle;
 	string stagepath;
+
 protected:
 	// §ŒÀŽžŠÔ‚Æ‚©
 	int min  = 5;
 	int sec  = 0;
 	int time = 0;
+	int trans = 0;
 public:
 	cGame() { 
 		stagepath = "data/map/tenji/";
@@ -52,6 +58,9 @@ public:
 		gui       = new cGuiGame();
 		bghandle  = MakeScreen(stage->GetStageSizeX()*(int)bsize, stage->GetStageSizeY()*(int)bsize, true);
 		camera->SetStageSize(stage->GetStageSizeX(), stage->GetStageSizeY());
+
+		// ‰æ‘œ
+		imghandle[0] = LoadGraph("data/img/wall/wallbk.png");
 	}
 	~cGame() { 
 		delete stage;
@@ -73,6 +82,7 @@ public:
 	void	Render();
 	void	UpdateGui();
 	void	RenderGui();
+	void	DrawResult();
 	int		StageSizeX() { return stage->GetStageSizeX(); }
 	int		StageSizeY() { return stage->GetStageSizeY(); }
 };

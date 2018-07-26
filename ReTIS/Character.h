@@ -4,6 +4,7 @@ extern VECTOR FocusPos;
 extern VECTOR FocusOld;
 extern VECTOR FocusCam;
 extern VECTOR MouseAdd;
+extern bool	  IsClearFlag;
 
 using namespace std;
 
@@ -55,6 +56,7 @@ public:
 		speed = s;
 		possess = p;
 		type = Player;
+		IsClearFlag = false;
 	}
 	~cPlayer() {}
 	void	Render();
@@ -520,6 +522,7 @@ public:
 	void	PossessListener();
 	void	LoadCharacters(string name);
 	void	DeleteCharacters();
+	void	DeleteDeathCharacters();
 	cCharacterManager(string name) {
 		/*
 		wireman[0]	  = new cEnemyWiremanManager::Wireman(300.f, 100.f, 80.f, 220.f, 2.f, false);
