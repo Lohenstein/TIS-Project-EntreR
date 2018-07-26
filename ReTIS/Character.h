@@ -360,32 +360,30 @@ public:
 };
 
 class cEnemyCircularSaw :public cEnemy {
-protected:
 public:
-	int attack_count;
-	int move_pattern;
-	float radian;
+	int		now_point;
+	bool	flag;
+	float	p;
+	float	sx[2] = { 0, 0 }, sy[2] = { 0, 0 };
+	int		image_change;
 
-	int image_change;
-	bool direction;
-
-	cEnemyCircularSaw(float x, float y, float w, float h, float s, bool p) {
-		pos = { x, y, 0.f };
-		size = { w, h, 0.f };
-		speed = s;
-		possess = p;
-		landing = false;
+	// コンストラクタ
+	cEnemyCircularSaw(int w, int h, int x1, int y1, int x2, int y2) {
+		flag = true;
+		size = { (float)w, (float)h, 0.f };
+		p = 0.f;
+		now_point = 0;
 		type = Enemy;
+		possess = false;
 
-		move_pattern = 0;
-		attack_count = 0;
-		radian = 0.f;
+		SetPoint(0, x1, y1);
+		SetPoint(1, x2, y2);
 		image_change = 0;
-		direction = false;
 	}
-	void Update();
-	void MoveByAutomation();
-	void Render(int image[]);
+	void	Update(float s, int p1, int p2);
+	void	SetPoint(int num, float x, float y);
+	void	HitAction(cObject *hit) {};
+	void	Render(int image[]);
 };
 
 class cEnemyCannon : public cEnemy
@@ -522,7 +520,6 @@ public:
 	void	PossessListener();
 	void	LoadCharacters(string name);
 	void	DeleteCharacters();
-
 	cCharacterManager(string name) {
 		/*
 		wireman[0]	  = new cEnemyWiremanManager::Wireman(300.f, 100.f, 80.f, 220.f, 2.f, false);
