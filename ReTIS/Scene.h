@@ -15,6 +15,17 @@ public:
 	}
 };
 
+class cLobby : public cBase
+{
+private:
+	cStageManager *stage;
+	cCharacterManager *character;
+	cCamera *camera;
+	cGuiGame *gui;
+protected:
+
+};
+
 class cGame : public cBase
 {
 private:
@@ -31,7 +42,7 @@ protected:
 public:
 	cGame() { 
 		stage	  = new cStageManager("data/map/test/mapdata"); 
-		character = new cCharacterManager();
+		character = new cCharacterManager("data/map/test/mapdata");
 		camera	  = new cCamera();
 		gui       = new cGuiGame();
 		bghandle  = MakeScreen(stage->GetStageSizeX()*(int)bsize, stage->GetStageSizeY()*(int)bsize, true);

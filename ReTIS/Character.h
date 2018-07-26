@@ -4,6 +4,9 @@ extern VECTOR FocusPos;
 extern VECTOR FocusOld;
 extern VECTOR FocusCam;
 extern VECTOR MouseAdd;
+
+using namespace std;
+
 class cCharacterBase : public cObject {
 protected:
 	float	speed;
@@ -439,19 +442,19 @@ public:
 	int		circularsaw_img[5];
 	int		cannon_img[20];
 
-	cCharacterManager() {
-		player = new cPlayer(400.f, 100.f, 90.f, 120.f, 6.f, true);
-		jumpman[0] = new cEnemyJumpman(300.f, 100.f,80.f, 100.f, 2.f, false);
-		hardbody[0] = new cEnemyHardBody(1000.f, 100.f, 120.f, 150.f, 2.f, false);
-		wireman[0] = new cEnemyWiremanManager::Wireman(300.f, 100.f, 80.f, 120.f, 2.f, false);
-		fryingman[0] = new cEnemyFryingman(1000.f, 500.f, 90.f, 90.f, 2.f, false);
+	void	Update();
+	void	Render();
+	void	PossessListener();
+	void	LoadCharacters(string name);
+	void	DeleteCharacters();
+
+	cCharacterManager(string name) {
+		/*
+		wireman[0]	  = new cEnemyWiremanManager::Wireman(300.f, 100.f, 80.f, 220.f, 2.f, false);
 		wireanchor[0] = new cEnemyWiremanManager::Anchor(100, -100, 10, 10, 2, false);
-		wmanager[0] = new cEnemyWiremanManager;
-		gunman[0] = new cEnemyGunman(800.f, 100.f, 80.f, 120.f, 2.f, false);
-		bossmiddle[0] = new cEnemyBossmiddle(1900.f, 300.f, 90.f, 150.f, 2.f, false);
-		circularsaw[0] = new cEnemyCircularSaw(100.f, 100.f, 100.f, 100.f, 2.f, false);
-		cannon[0] = new cEnemyCannon(1500.f, 500.f, 100.f, 100.f, 2.f, false);
-		
+		wmanager[0]   = new cEnemyWiremanManager;
+		*/
+		LoadCharacters(name);
 		LoadDivGraph("data/img/enemy/Jumpman.PNG", 120, 30, 4, 300, 300, jumpman_img);
 		LoadDivGraph("data/img/enemy/Gunman.PNG", 234, 39, 6, 300, 300, gunman_img);
 		LoadDivGraph("data/img/enemy/Fryingman.PNG", 123, 41, 3, 300, 300, fryingman_img);
@@ -461,26 +464,9 @@ public:
 		LoadDivGraph("data/img/enemy/BigGun.PNG", 20, 20, 1, 300, 300, cannon_img);
 	}
 	~cCharacterManager() {
-		delete player;
-		player = nullptr;
-		for (int i = 0; i < ENEMY_MAX; i++) {
-			delete jumpman[i];
-			delete hardbody[i];
-			delete wireman[i];
-			delete fryingman[i];
-			delete gunman[i];
-			delete bossmiddle[i];
-			jumpman[i] = nullptr;
-			hardbody[i] = nullptr;
-			wireman[i] = nullptr;
-			fryingman[i] = nullptr;
-			gunman[i] = nullptr;
-			bossmiddle[i] = nullptr;
-		}
+		DeleteCharacters();
 	}
-	void	Update();
-	void	Render();
-	void	PossessListener();
+
 	cObject *GetPlayer() { return (cObject*)player; }
 	cObject *GetEnemyJumpman(int num) { return (cObject*)jumpman[num]; }
 	cObject *GetEnemyHardBody(int num) { return (cObject*)hardbody[num]; }
@@ -495,4 +481,14 @@ public:
 
 	int		GetPlayerHp() { return player->GetHp(); }
 
+};
+
+enum character {
+	eCharacter,
+	ePlayer,
+	eJumpman,
+	eHardbody,
+	eFryingman,
+	eGunman,
+	eBossmiddle
 };
