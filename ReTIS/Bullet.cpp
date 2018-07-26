@@ -5,8 +5,8 @@ cBulletManager bullet;
 
 void cBullet::Update() {
 
-	pos.x += sin(rad) * speed;
-	pos.y += cos(rad) * speed;
+	pos.x += cos(rad) * speed;
+	pos.y += sin(rad) * speed;
 
 	if (GetPos().x > FocusPos.x + WINDOW_SIZE_X || GetPos().x < FocusPos.x - WINDOW_SIZE_X ||
 		GetPos().y > FocusPos.y + WINDOW_SIZE_Y || GetPos().y < FocusPos.y - WINDOW_SIZE_Y) {

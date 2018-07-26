@@ -125,6 +125,7 @@ public:
 	bool direction;
 	int player_move_pattern;
 	bool attack_flag;
+	float lockon;
 
 	cEnemyGunman(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
@@ -136,7 +137,8 @@ public:
 		hp = 6;
 
 		attack_count = 0;
-		bulletsize = { 20,20,0 };
+		bulletsize = { 50,50,0 };
+		bulletpos = { 0,0,0 };
 		image_change = 0;
 		move_pattern = 0;
 		bullet_fire = false;
@@ -144,6 +146,7 @@ public:
 		direction = true;
 		player_move_pattern = 0;
 		attack_count = false;
+		lockon = 0.f;
 	}
 	~cEnemyGunman() {}
 
@@ -271,9 +274,7 @@ public:
 		}
 		void Update(VECTOR *WirePos, int *AnchorStretch, int *EnemyAnchorStretch);
 		void MoveByAutomation(VECTOR *WirePos, int *AnchorStretch);
-
 	};
-
 };
 
 
@@ -386,9 +387,13 @@ class cEnemyCannon : public cEnemy
 {
 public:
 	int attack_count;
+	int move_pattern;
+	float angle;
 
 	int image_change;
 	bool direction;
+	VECTOR bulletpos;
+	VECTOR bulletsize;
 
 	cEnemyCannon(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
@@ -398,9 +403,12 @@ public:
 		type = Enemy;
 		landing = false;
 
+		bulletsize = { 50,50,0 };
+		angle = 0.f;
 		image_change = 0;
 		attack_count = 0;
 		direction = false;
+		move_pattern = 0;
 	}
 	void Update();
 	void Render(int image[]);

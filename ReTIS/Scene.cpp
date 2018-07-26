@@ -39,6 +39,7 @@ void	cGame::Collision() {
 		if (character->GetEnemyWireAnchor(k) != nullptr) CollisionAroundMaptile(character->WireAnchor(k));
 		if (character->GetEnemyGunman(k) != nullptr)	CollisionAroundMaptile(character->GetEnemyGunman(k));
 		if (character->GetEnemyBossmiddle(k) != nullptr) CollisionAroundMaptile(character->GetEnemyBossmiddle(k));
+		if (character->GetCannon(k) != nullptr)CollisionAroundMaptile(character->GetCannon(k));
 	}
 	for (int k = 0; k < BULLET_MAX; k++) {
 		if (bullet.GetBullet(k) != nullptr) {
