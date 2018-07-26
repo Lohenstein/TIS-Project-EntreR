@@ -62,6 +62,7 @@ public:
 	int		GetStageSizeY() { return stage_y; }
 	void	Update();
 	void	Render();
+	void	RenderBG();
 	cObject *GetMapTile(int x, int y) { return reinterpret_cast<cObject*>(&stage[x][y]); }
 };
 

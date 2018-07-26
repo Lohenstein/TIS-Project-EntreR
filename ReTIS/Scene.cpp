@@ -123,8 +123,9 @@ void	cGame::Render() {
 	SetDrawScreen(bghandle);
 	ClearDrawScreen();
 	// •`‰æ
-	stage->Render();
+	stage->RenderBG();
 	character->Render();
+	stage->Render();
 	bullet.Render();
 	// –ß‚·
 	SetDrawScreen(DX_SCREEN_BACK);

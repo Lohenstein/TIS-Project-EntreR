@@ -63,7 +63,7 @@ void	cStageManager::LoadStageData(string name) {
 	}
 }
 
-void	cStageManager::Render() {
+void	cStageManager::RenderBG() {
 	for (int i = 0; i < GetStageSizeX(); i++) {
 		for (int j = 0; j < GetStageSizeY(); j++) {
 			if (i * bsize > FocusCam.x - WINDOW_SIZE_X && i * bsize < FocusCam.x + WINDOW_SIZE_X &&
@@ -72,6 +72,17 @@ void	cStageManager::Render() {
 				VECTOR size = GetSize(i, j);
 				if (GetBg1(i, j) != -1)   DrawGraph(pos.x - size.x / 2.f, pos.y - size.y / 2.f, image[GetBg1(i, j)], true);
 				if (GetBg2(i, j) != -1)   DrawGraph(pos.x - size.x / 2.f, pos.y - size.y / 2.f, image[GetBg2(i, j)], true);
+			}
+		}
+	}
+}
+void	cStageManager::Render() {
+	for (int i = 0; i < GetStageSizeX(); i++) {
+		for (int j = 0; j < GetStageSizeY(); j++) {
+			if (i * bsize > FocusCam.x - WINDOW_SIZE_X && i * bsize < FocusCam.x + WINDOW_SIZE_X &&
+				j * bsize > FocusCam.y - WINDOW_SIZE_Y && j * bsize < FocusCam.y + WINDOW_SIZE_Y) {
+				VECTOR pos = GetPos(i, j);
+				VECTOR size = GetSize(i, j);
 				if (GetTile(i, j) != -1)  DrawGraph(pos.x - size.x / 2.f, pos.y - size.y / 2.f, image[GetTile(i, j)], true);
 			}
 		}

@@ -234,7 +234,7 @@ void	cCharacterManager::Update() {
 		if (wireanchor[i]	!= nullptr) wireanchor[i]->Update(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch, &wmanager[i]->EnemyAnchorStretch);
 		if (gunman[i]		!= nullptr)	gunman[i]->Update();
 		if (bossmiddle[i]	!= nullptr) bossmiddle[i]->Update();
-		if (circularsaw[i]	!= nullptr) circularsaw[i]->Update(10.f,0,1);
+		if (circularsaw[i]	!= nullptr) circularsaw[i]->Update(5.f, 0, 1);
 		if (cannon[i]		!= nullptr) cannon[i]->Update();
 		if (movefloor[i]	!= nullptr) movefloor[i]->Update(3.f, 0, 1);
 		if (dropfloor[i]	!= nullptr) dropfloor[i]->Update();
@@ -414,7 +414,7 @@ void	cCharacterManager::LoadCharacters(string name) {
 		case eCircularsaw:
 			for (int i = 0; i < ENEMY_MAX; i++) {
 				if (circularsaw[i] == nullptr) {
-					circularsaw[i] = new cEnemyCircularSaw(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
+					circularsaw[i] = new cEnemyCircularSaw(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)));
 					break;
 				}
 			}
@@ -1423,7 +1423,7 @@ void cEnemyCircularSaw::Render(int image[]) {
 	image_change++;
 	if (image_change == 5)
 		image_change = 0;
-	DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], true);
+	DrawGraph(pos.x - 150.f, pos.y - 150.f, image[image_change], true);
 }
 
 /*------------------------------------------------------------------------------*
