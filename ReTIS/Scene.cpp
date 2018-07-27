@@ -50,7 +50,19 @@ void	cGame::Collision() {
 			CollisionAroundMaptile(bullet.GetBullet(k));
 		}
 	}
-
+	for (int i = 0; i < ENEMY_MAX; i++) {
+		if (character->GetCoin(i) != nullptr) {
+			CheckHitRectAndRect(character->GetPlayer(), character->GetCoin(i));
+			for (int j = 0; j < ENEMY_MAX; j++) {
+				if (character->GetEnemyJumpman(j)	 != nullptr) CheckHitRectAndRect(character->GetCoin(i), character->GetEnemyJumpman(j));
+				if (character->GetEnemyHardBody(j)	 != nullptr) CheckHitRectAndRect(character->GetCoin(i), character->GetEnemyHardBody(j));
+				if (character->GetEnemyWireman(j)	 != nullptr) CheckHitRectAndRect(character->GetCoin(i), character->GetEnemyWireman(j));
+				if (character->GetEnemyWireAnchor(j) != nullptr) CheckHitRectAndRect(character->GetCoin(i), character->GetEnemyWireAnchor(j));
+				if (character->GetEnemyGunman(j)	 != nullptr) CheckHitRectAndRect(character->GetCoin(i), character->GetEnemyGunman(j));
+				if (character->GetEnemyBossmiddle(j) != nullptr) CheckHitRectAndRect(character->GetCoin(i), character->GetEnemyBossmiddle(j));
+			}
+		}
+	}
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (character->GetMoveFloor(i) != nullptr) {
 			CheckHitRectAndRect(character->GetPlayer(), character->GetMoveFloor(i));
@@ -123,8 +135,9 @@ void	cGame::Render() {
 	SetDrawScreen(bghandle);
 	ClearDrawScreen();
 	// •`‰æ
-	stage->Render();
+	stage->RenderBG();
 	character->Render();
+	stage->Render();
 	bullet.Render();
 	// –ß‚·
 	SetDrawScreen(DX_SCREEN_BACK);

@@ -3,6 +3,8 @@
 VECTOR FocusPos, FocusOld, WirePos ,FocusCam,MouseAdd;
 bool	AnchorStretch = true;
 bool	IsClearFlag, IsOverFlag;
+int		coin, ecoin, rcoin;
+
 using namespace std;
 
 /*------------------------------------------------------------------------------*
@@ -116,7 +118,14 @@ void	cCharacterBase::HitAction(cObject *hit) {
 			IsClearFlag = true;
 		}
 		break; 
-	case Coin:
+	case NormalCoin:
+		coin++;
+		break;
+	case EneCoin:
+		ecoin++;
+		break;
+	case RareCoin:
+		rcoin++;
 		break;
 	}
 }
@@ -220,7 +229,7 @@ void	cCharacterManager::Render() {
 		if (cannon[i]		!= nullptr) cannon[i]->Render(cannon_img);
 		if (movefloor[i]	!= nullptr) movefloor[i]->Render();
 		if (dropfloor[i]	!= nullptr) dropfloor[i]->Render();
-		if (coin[i] != nullptr) coin[i]->Render(coin_img);
+		if (coin[i]			!= nullptr) coin[i]->Render(coin_img);
 	}
 	if (possess_time != 0) {
 		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "%d", (600 - possess_time) / 60);
@@ -237,11 +246,11 @@ void	cCharacterManager::Update() {
 		if (wireanchor[i]	!= nullptr) wireanchor[i]->Update(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch, &wmanager[i]->EnemyAnchorStretch);
 		if (gunman[i]		!= nullptr)	gunman[i]->Update();
 		if (bossmiddle[i]	!= nullptr) bossmiddle[i]->Update();
-		if (circularsaw[i]	!= nullptr) circularsaw[i]->Update(10.f,0,1);
+		if (circularsaw[i]	!= nullptr) circularsaw[i]->Update(5.f, 0, 1);
 		if (cannon[i]		!= nullptr) cannon[i]->Update();
 		if (movefloor[i]	!= nullptr) movefloor[i]->Update(3.f, 0, 1);
 		if (dropfloor[i]	!= nullptr) dropfloor[i]->Update();
-		if (coin[i] != nullptr) coin[i]->Update();
+		if (coin[i]			!= nullptr) coin[i]->Update();
 	}
 	PossessListener();
 	DeleteDeathCharacters();
@@ -356,6 +365,12 @@ void	cCharacterManager::DeleteDeathCharacters() {
 				bossmiddle[i] = nullptr;
 			}
 		}
+		if (coin[i] != nullptr) {
+			if (coin[i]->GetHp() <= 0) {
+				delete coin[i];
+				coin[i] = nullptr;
+			}
+		}
 	}
 }
 void	cCharacterManager::LoadCharacters(string name) {
@@ -420,7 +435,7 @@ void	cCharacterManager::LoadCharacters(string name) {
 		case eCircularsaw:
 			for (int i = 0; i < ENEMY_MAX; i++) {
 				if (circularsaw[i] == nullptr) {
-					circularsaw[i] = new cEnemyCircularSaw(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
+					circularsaw[i] = new cEnemyCircularSaw(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)));
 					break;
 				}
 			}
@@ -450,9 +465,9 @@ void	cCharacterManager::LoadCharacters(string name) {
 			}
 			break;
 		case eCoin:
-			for (int i = 0; i < 2; i++) {
+			for (int i = 0; i < ENEMY_MAX; i++) {
 				if (coin[i] == nullptr) {
-					coin[i] = new cCoin(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)));
+					coin[i] = new cCoin(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)));
 					break;
 				}
 			}
@@ -1439,7 +1454,7 @@ void cEnemyCircularSaw::Render(int image[]) {
 	image_change++;
 	if (image_change == 5)
 		image_change = 0;
-	DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], true);
+	DrawGraph(pos.x - 150.f, pos.y - 150.f, image[image_change], true);
 }
 
 /*------------------------------------------------------------------------------*
@@ -1507,9 +1522,7 @@ void cEnemyCannon::MoveByAutomation()
 
 void cCoin::Update() 
 {
-	if (FocusPos.x - 50 < pos.x && FocusPos.x + 50 > pos.x)
-		if (FocusPos.y - 50 < pos.y && FocusPos.y + 50 > pos.y)
-			getcoin = true;
+	
 }
 
 void cCoin::Render(int image[]) 
