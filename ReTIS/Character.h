@@ -5,6 +5,7 @@ extern VECTOR FocusOld;
 extern VECTOR FocusCam;
 extern VECTOR MouseAdd;
 extern bool	  IsClearFlag, IsOverFlag;
+extern int mp;
 
 extern int coin, ecoin, rcoin;
 
@@ -60,6 +61,7 @@ public:
 		type = Player;
 		IsClearFlag = false;
 		IsOverFlag  = false;
+		mp = 150;
 		coin = 0, ecoin = 0, rcoin = 0;
 	}
 	~cPlayer() {}

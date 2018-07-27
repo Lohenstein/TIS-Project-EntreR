@@ -108,7 +108,7 @@ void cCamera::Render(int handle) {
 	imageid = 3;
 	for (int i = 0; i < 2; i++) {
 		bg->bghandle_pos_09[imageid][i].x = -camera_px / 2.f + (i * 2880.f);
-		bg->bghandle_pos_09[imageid][i].y = -camera_py / 4.f;
+		bg->bghandle_pos_09[imageid][i].y = -camera_py / 4.f + 400.f;
 		//DrawGraph(bg->bghandle_pos_09[imageid][i].x, bg->bghandle_pos_09[imageid][i].y, bg->bghandle_09[imageid], true);
 		DrawExtendGraph(bg->bghandle_pos_09[imageid][i].x, bg->bghandle_pos_09[imageid][i].y, bg->bghandle_pos_09[imageid][i].x + 2880, bg->bghandle_pos_09[imageid][i].y + 720, bg->bghandle_09[imageid], true);
 	}

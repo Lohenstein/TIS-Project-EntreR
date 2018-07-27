@@ -4,6 +4,7 @@ VECTOR FocusPos, FocusOld, WirePos ,FocusCam,MouseAdd;
 bool	AnchorStretch = true;
 bool	IsClearFlag, IsOverFlag;
 int		coin, ecoin, rcoin;
+int		mp;
 
 using namespace std;
 
@@ -119,13 +120,13 @@ void	cCharacterBase::HitAction(cObject *hit) {
 		}
 		break; 
 	case NormalCoin:
-		coin++;
+		if (possess) coin++;
 		break;
 	case EneCoin:
-		ecoin++;
+		if (possess) ecoin++;
 		break;
 	case RareCoin:
-		rcoin++;
+		if (possess) rcoin++;
 		break;
 	}
 }
@@ -134,8 +135,6 @@ void	cCharacterBase::Damaged() {
 		invincible = true;
 		invincible_time = 0;
 		hp--;
-		if (hp <= 0) {
-		}
 	}
 }
 void	cCharacterBase::Collision(cObject *hit) {
@@ -254,6 +253,7 @@ void	cCharacterManager::Update() {
 	}
 	PossessListener();
 	DeleteDeathCharacters();
+	if (mp > 300) mp = 300;
 }
 void	cCharacterManager::PossessListener() {
 	bool IsEnemyHavePossess = false;
