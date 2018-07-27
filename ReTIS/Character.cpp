@@ -495,8 +495,8 @@ void cEnemyJumpman::Update()
 			attack_flag = false;
 		}
 	}
-	if (hp == 0)
-		possess = false;
+//	if (hp == 0)
+	//	possess = false;
 	Physical();
 }
 
@@ -1527,5 +1527,5 @@ void cCoin::Update()
 
 void cCoin::Render(int image[]) 
 {
-	DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[cointype], true);
+	DrawRotaGraph(pos.x, pos.y, 0.7, 10 ,image[cointype], TRUE , FALSE);
 }
