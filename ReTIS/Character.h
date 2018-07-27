@@ -600,7 +600,7 @@ public:
 	cObject *GetDropFloor(int num) { return (cObject*)dropfloor[num]; }
 	cObject *GetMoveFloor(int num) { return (cObject*)movefloor[num]; }
 	cObject *GetCoin(int num) { return (cObject*)coin[num]; }
-	
+
 	int		GetPlayerHp() { return player->GetHp(); }
 
 };
