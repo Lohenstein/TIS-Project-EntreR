@@ -19,11 +19,11 @@ void	cCharacterBase::MoveByAutomation() {
 void	cCharacterBase::MoveByPlayer() {
 	old = pos;	// ‰ß‹ŽÀ•W
 
-	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
-		if (key[KEY_INPUT_LEFT] == 2) {
+	if (key[KEY_INPUT_A] == 2 || key[KEY_INPUT_D] == 2) {
+		if (key[KEY_INPUT_A] == 2) {
 			inertia -= 4;				// ˆÚ“®—ÊƒÆ‚ðŒ¸­
 		}
-		if (key[KEY_INPUT_RIGHT] == 2) {
+		if (key[KEY_INPUT_D] == 2) {
 			inertia += 4;				// ˆÚ“®—ÊƒÆ‚ð‘‰Á
 		}
 	}
@@ -36,7 +36,8 @@ void	cCharacterBase::MoveByPlayer() {
 		jump = 20.f;
 		++jump_count;
 	}
-	if (key[KEY_INPUT_X] == 1) {
+	if (key[KEY_INPUT_C] == 1 && mp >= 300) {
+		mp = 0;
 		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, 0, PlayerBullet);
 	}
 	// ŒŠ‚É—Ž‚Á‚±‚¿‚½
@@ -107,9 +108,7 @@ void	cCharacterBase::HitAction(cObject *hit) {
 		possess = true;
 		break;
 	case PlayerAttack:
-		if (this->GetType() != Player) {
 			Damaged();
-		}
 		break;
 	case MapTile:
 		Collision(hit);
@@ -603,11 +602,11 @@ void cEnemyJumpman::Render(int image[120])
 					player_attack = pos;
 					if (direction == true) {
 						player_attack.x += 100;
-						bullet.Shot(player_attack, { 10,10,0 }, 0, 180, PlayerAttack);
+						bullet.Shot(player_attack, { 10,10,0 }, 0, 180, EnemyBullet);
 					}
 					else {
 						player_attack.x -= 100;
-						bullet.Shot(player_attack, { 10,10,0 }, 0, 180, PlayerAttack);
+						bullet.Shot(player_attack, { 10,10,0 }, 0, 180, EnemyBullet);
 					}
 					if (image_change < 30 || image_change > 59)
 						image_change = 30;

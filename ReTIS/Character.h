@@ -61,7 +61,7 @@ public:
 		type = Player;
 		IsClearFlag = false;
 		IsOverFlag  = false;
-		mp = 150;
+		mp = 300;
 		coin = 0, ecoin = 0, rcoin = 0;
 	}
 	~cPlayer() {}
@@ -556,6 +556,7 @@ public:
 	int		circularsaw_img[5];
 	int		cannon_img[20];
 	int		coin_img[3];
+	int		floorimg;
 
 	void	Update();
 	void	Render();

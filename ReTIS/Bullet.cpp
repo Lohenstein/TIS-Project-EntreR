@@ -19,7 +19,7 @@ void cBullet::Update() {
 }
 
 void cBullet::Render() {
-	DrawCircleAA(GetPos().x, GetPos().y, 10.f, 10, 0xFFFFFF, true);
+	if (this->GetType() != EnemyBullet) DrawCircleAA(GetPos().x, GetPos().y, 10.f, 10, 0xFFFFFF, true);
 }
 
 void cBullet::HitAction(cObject *hit) {
