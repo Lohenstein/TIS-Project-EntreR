@@ -6,6 +6,8 @@ extern VECTOR FocusCam;
 extern VECTOR MouseAdd;
 extern bool	  IsClearFlag, IsOverFlag;
 
+extern int coin, ecoin, rcoin;
+
 using namespace std;
 
 class cCharacterBase : public cObject {
@@ -58,6 +60,7 @@ public:
 		type = Player;
 		IsClearFlag = false;
 		IsOverFlag  = false;
+		coin = 0, ecoin = 0, rcoin = 0;
 	}
 	~cPlayer() {}
 	void	Render();
@@ -492,18 +495,30 @@ public:
 	int  cointype;
 
 	VECTOR CoinPos;
-	cCoin(float w, float h, float x, float y, float t) {
-		CoinPos = { x, y, 0.f };
-		size = { w, h, 0.f };
-		type = Coin;
+	cCoin(int x, int y, int ctype) {
+		pos = { (float)x, (float)y, 0.f };
+		cointype = ctype;
+		switch (ctype) {
+		case 0: // 普通のコイン
+			type = NormalCoin;
+			size = { 32.f, 32.f, 0.f };
+			break;
+		case 1: // エネルギーコイン
+			type = EneCoin;
+			size = { 32.f, 32.f, 0.f };
+			break;
+		case 2: // レアコイン
+			type = RareCoin;
+			size = { 64.f, 64.f, 0.f };
+			break;
+		}
 		hp = 1;
-
-		pos = CoinPos;
-		cointype = t;
-		getcoin = false;
 	}
-	void Update();
-	void Render(int image[]);
+	void	Update();
+	void	Render(int image[]);
+	void	HitAction(cObject *hit) {
+		hp = 0;
+	}
 };
 
 
@@ -529,7 +544,7 @@ public:
 	cEnemyCannon					*cannon[ENEMY_MAX];
 	cDropFloor						*dropfloor[ENEMY_MAX];
 	cMoveFloor						*movefloor[ENEMY_MAX];
-	cCoin							*coin[3];
+	cCoin							*coin[ENEMY_MAX];
 
 	int		wireman_img[273];
 	int		jumpman_img[120];

@@ -9,7 +9,7 @@
 
 #define		ENTITY_MAX (128)
 #define		BULLET_MAX (128)
-#define		ENEMY_MAX  (128)
+#define		ENEMY_MAX  (32)
 
 #define		d2r(deg) (((deg) / 360) * 2 * PI)
 #define		r2d(rad) (((rad) / 2 / PI) * 360)
