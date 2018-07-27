@@ -239,7 +239,9 @@ void	cGame::RenderGui() {
 	if (time >= 60) {
 		time = 0;
 		sec--;
+		mp += 4;
 		if (sec < 0) {
+			mp += 100;
 			rectime++;
 			sec = 59;
 			min--;
@@ -253,5 +255,13 @@ void	cGame::RenderGui() {
 	else {
 		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_TIME], "0%d:%d", min, sec);
 		DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 20, 0xFFFFFF, font_handle[FONT_TIME], "0%d:%d", min, sec);
+	}
+
+	DrawGraph(10, 70, imghandle[2], true);
+	if (mp >= 300) {
+		if (time % 3 != 0) DrawRectGraph(10, 70, 0, 0, mp, 16, imghandle[1], false, true);
+	}
+	else {
+		DrawRectGraph(10, 70, 0, 0, mp, 16, imghandle[1], false, true);
 	}
 }

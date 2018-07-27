@@ -62,6 +62,8 @@ public:
 
 		// ‰æ‘œ
 		imghandle[0] = LoadGraph("data/img/wall/wallbk.png");
+		imghandle[1] = LoadGraph("data/img/hp/mpbar.png");
+		imghandle[2] = LoadGraph("data/img/hp/mpbarbg.png");
 	}
 	~cGame() { 
 		delete stage;
