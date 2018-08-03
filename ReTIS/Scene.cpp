@@ -239,7 +239,7 @@ void	cGame::RenderGui() {
 	if (time >= 60) {
 		time = 0;
 		sec--;
-		mp += 4;
+		mp += 20;
 		if (sec < 0) {
 			mp += 100;
 			rectime++;

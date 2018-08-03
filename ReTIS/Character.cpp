@@ -19,11 +19,13 @@ void	cCharacterBase::MoveByAutomation() {
 void	cCharacterBase::MoveByPlayer() {
 	old = pos;	// 過去座標
 
-	if (key[KEY_INPUT_A] == 2 || key[KEY_INPUT_D] == 2) {
-		if (key[KEY_INPUT_A] == 2) {
+	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
+		if (key[KEY_INPUT_LEFT] == 2) {
+			rect = true;
 			inertia -= 4;				// 移動量θを減少
 		}
-		if (key[KEY_INPUT_D] == 2) {
+		if (key[KEY_INPUT_RIGHT] == 2) {
+			rect = false;
 			inertia += 4;				// 移動量θを増加
 		}
 	}
@@ -50,6 +52,26 @@ void	cCharacterBase::Physical() {
 
 	if (inertia >  90) inertia = 90;	// はみ出しリミッタ
 	if (inertia < -90) inertia = -90;
+
+	if (landing == true) {
+		if (inertia == 0) {
+			animmode = 1;
+		}
+		else {
+			animmode = 0;
+		}
+		anim++;
+		if (anim >= 30) anim = 0;
+		animjump = 0;
+	}
+	else {
+		if (animjump == 0) anim = 0;
+		animmode = 2;
+		anim++;
+		animjump++;
+		if (anim >= 30) anim = 30;
+	}
+
 
 	pos.x += sin((float)d2r(inertia)) * speed;
 
@@ -187,17 +209,17 @@ void	cCharacterBase::Collision(cObject *hit) {
 | <<< cPlayer >>>
 *------------------------------------------------------------------------------*/
 void	cPlayer::Render() {
+
+	int halfw = 70;
+	int halfh = 65;
+
 	if (invincible) {
 		if (invincible_time % 3 == 0) {
-			DrawBoxAA(GetPos().x - GetSize().x / 2.f, GetPos().y - GetSize().y / 2.f,
-				GetPos().x + GetSize().x / 2.f, GetPos().y + GetSize().y / 2.f,
-				0xFF0000, true);
+			DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
 		}
 	}
 	else {
-		DrawBoxAA(GetPos().x - GetSize().x / 2.f, GetPos().y - GetSize().y / 2.f,
-			GetPos().x + GetSize().x / 2.f, GetPos().y + GetSize().y / 2.f,
-			0xFF0000, true);
+		DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
 	}
 }
 /*------------------------------------------------------------------------------*
