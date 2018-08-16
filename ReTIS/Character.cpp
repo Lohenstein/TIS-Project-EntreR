@@ -1016,32 +1016,18 @@ void cEnemyBossmiddle::MoveByAutomation()
 			break;
 		}
 	}
+	if (hp == 1);
 } 
 
 void cEnemyBossmiddle::Render(int image[])
 {
-	if (hp < 1) {
+	if (hp == 1) {
 		if (image_change < 100 || image_change > 149)
 			image_change = 100;
 		if (image_change != 149)
 			image_change++;
 	}
 
-	else if (hp == 1) {
-		int change = 0;
-		switch (change) {
-		case 0:
-			image_change = 101;
-			change = 0;
-			break;
-		case 1:
-			image_change++;
-			break;
-		}
-		image_change = 100;
-
-	}
-	
 	if (direction == true)
 		DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
 	else if (direction == false)
