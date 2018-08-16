@@ -88,33 +88,28 @@ void	cCharacterBase::HitAction(cObject *hit) {
 		Collision(hit);
 		break;
 	case Enemy:
-		Damaged();
+		if (this->GetType() == Player) Damaged();
 		break;
 	case EnemyBullet:
-		Damaged();
+		if (this->GetType() == Player) Damaged();
 		break;
 	case PlayerBullet:
-		Damaged();
-		break;
-	case PlayerAttack:
-		Damaged();
+		if (this->GetType() != Player) Damaged();
 		break;
 	case MapTile:
 		Collision(hit);
 		break;
 	case Clear:
-		if (this->GetType() == Player) {
-			IsClearFlag = true;
-		}
+		if (this->GetType() == Player) IsClearFlag = true;
 		break; 
 	case NormalCoin:
-		coin++;
+		if (this->GetType() == Player) coin++;
 		break;
 	case EneCoin:
-		ecoin++;
+		if (this->GetType() == Player) ecoin++;
 		break;
 	case RareCoin:
-		rcoin++;
+		if (this->GetType() == Player) rcoin++;
 		break;
 	}
 }
@@ -217,8 +212,8 @@ void	cPlayer::Update() {
 		jump = 20.f;
 		++jump_count;
 	}
-	if ((key[KEY_INPUT_C] == 1 || pad_b[XINPUT_BUTTON_X]) && mp >= 300) {
-		mp = 0;
+	if ((key[KEY_INPUT_C] == 1 || pad_b[XINPUT_BUTTON_X] == 1) && mp >= 10) {
+		mp -= 10;
 		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, PI * rect, PlayerBullet);
 	}
 	// ŒŠ‚É—Ž‚Á‚±‚¿‚½
