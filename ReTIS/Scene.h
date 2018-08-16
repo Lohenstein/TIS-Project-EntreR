@@ -37,10 +37,11 @@ private:
 	cCharacterManager *character;
 	cCamera *camera;
 	cGuiGame *gui;
+	cDialog *dialog;
 
 	int imghandle[10];
-
 	int bghandle;
+
 	string stagepath;
 
 protected:
@@ -57,6 +58,7 @@ public:
 		character = new cCharacterManager(stagepath);
 		camera	  = new cCamera();
 		gui       = new cGuiGame();
+		dialog		= new cDialog("Test Message Dayo!! HogeHoge FugaFuga...!");
 		bghandle  = MakeScreen(stage->GetStageSizeX()*(int)bsize, stage->GetStageSizeY()*(int)bsize, true);
 		camera->SetStageSize(stage->GetStageSizeX(), stage->GetStageSizeY());
 

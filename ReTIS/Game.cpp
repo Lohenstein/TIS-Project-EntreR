@@ -18,7 +18,8 @@ void	game_init(void)
 {
 	scene.reset(new cGame);
 
-	// 軽いやつ読み込み
+	// フォントの読み込み
+	//--------------------------------------------------------------------------
 	LPCSTR font_path = "data/font/みかちゃん-PB.ttf";
 	if (AddFontResourceEx(font_path, FR_PRIVATE, NULL) > 0) {
 	}
@@ -29,6 +30,7 @@ void	game_init(void)
 
 	font_handle[FONT_POSSESSTIME] = CreateFontToHandle("みかちゃん-PB", 48, 2, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
 	font_handle[FONT_TIME]		  = CreateFontToHandle("みかちゃん-PB", 72, 2, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
+	font_handle[FONT_MESSAGE]	  = CreateFontToHandle("みかちゃん-PB", 24, 2, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
 }
 /*------------------------------------------------------------------------------*
 | <<< ゲームメイン >>>

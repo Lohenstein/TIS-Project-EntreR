@@ -118,6 +118,7 @@ void	cGame::Update() {
 		bullet.Update();
 		camera->Update(FocusPos);
 		gui->SetHp(character->GetPlayerHp());
+		dialog->Update();
 		UpdateGui();
 	}
 }
@@ -135,6 +136,7 @@ void	cGame::Render() {
 	SetDrawScreen(DX_SCREEN_BACK);
 
 	camera->Render(bghandle);
+	dialog->Render();
 	gui->Render();
 	RenderGui();
 
