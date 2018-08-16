@@ -155,10 +155,10 @@ public:
 		possess = p;
 		type = Enemy;
 		landing = false;
-		hp = 1;
+		hp = 2;
 
 		attack_count = 0;
-		bulletsize = { 50,50,0 };
+		bulletsize = { 10,10,0 };
 		bulletpos = { 0,0,0 };
 		image_change = 0;
 		move_pattern = 0;
@@ -363,11 +363,34 @@ public:
 		possess = p;
 		landing = false;
 		type = Enemy;
-		hp = 5;
+		hp = 3;
 
 		move_time = 0;
 		move_pattern = 0;
 		move_speed = 1.5f;
+		image_change = 0;
+		direction = false;
+	}
+	void Update();
+	void MoveByAutomation();
+	void Render(int image[]);
+};
+
+class cEnemyBoss :public cEnemy {
+protected:
+public:
+	bool direction;
+	int image_change;
+
+	cEnemyBoss(float x, float y, float w, float h, float s, bool p) {
+		pos = { x, y, 0.f };
+		size = { w, h, 0.f };
+		speed = s;
+		possess = p;
+		landing = false;
+		type = Enemy;
+		hp = 5;
+
 		image_change = 0;
 		direction = false;
 	}
@@ -549,6 +572,7 @@ public:
 	cEnemyWiremanManager			*wmanager[ENEMY_MAX];
 	cEnemyGunman					*gunman[ENEMY_MAX];
 	cEnemyBossmiddle				*bossmiddle[ENEMY_MAX];
+	cEnemyBoss						*boss[ENEMY_MAX];
 
 	// Entity
 	cEnemyCircularSaw				*circularsaw[ENEMY_MAX];
@@ -628,5 +652,8 @@ enum character {
 	eMoveFloor,		// 9
 	eDropFloor,		// 10
 	eClear,			// 11(ÉNÉäÉAîªíË)
-	eCoin			// 12
+	eCoin,			// 12
+	eWireman		// 13
 };
+
+// ç≈ëÂÅ@Å{ 14
