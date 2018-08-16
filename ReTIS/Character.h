@@ -43,7 +43,6 @@ public:
 	cCharacterBase() {};
 	~cCharacterBase() {
 	};
-	bool	possess;	// èÊÇËà⁄ÇÁÇÍÇƒÇ¢ÇÈÇ©
 	void	HitAction(cObject *hit);
 	void	Collision(cObject *hit);
 	void	MoveByAutomation();
@@ -62,7 +61,6 @@ public:
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
 		speed = s;
-		possess = p;
 		type = Player;
 		IsClearFlag = false;
 		IsOverFlag  = false;
@@ -81,6 +79,7 @@ public:
 		}
 	}
 	void	Render();
+	void	Update();
 };
 
 class cEnemy : public cCharacterBase {
@@ -119,7 +118,6 @@ public:
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
 		speed = s;
-		possess = p;
 		type = Enemy;
 		landing = false;
 		hp = 1;
@@ -158,7 +156,6 @@ public:
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
 		speed = s;
-		possess = p;
 		type = Enemy;
 		landing = false;
 		hp = 2;
@@ -198,7 +195,6 @@ public:
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
 		speed = s;
-		possess = p;
 		landing = false;
 		type = Enemy;
 		hp = 6;
@@ -247,7 +243,6 @@ public:
 			pos = { x, y, 0.f };
 			size = { w, h, 0.f };
 			speed = s;
-			possess = p;
 			type = Enemy;
 			landing = false;
 			hp = 6;
@@ -292,7 +287,6 @@ public:
 			pos = { x, y, 0.f };
 			size = { w, h, 0.f };
 			speed = s;
-			possess = p;
 			type = Enemy;
 			landing = false;
 			count = 0;
@@ -327,7 +321,6 @@ public:
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
 		speed = s;
-		possess = p;
 		landing = false;
 		type = Enemy;
 		hp = 2;
@@ -366,7 +359,6 @@ public:
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
 		speed = s;
-		possess = p;
 		landing = false;
 		type = Enemy;
 		hp = 3;
@@ -395,7 +387,6 @@ public:
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
 		speed = s;
-		possess = p;
 		landing = false;
 		type = Enemy;
 		hp = 5;
@@ -424,7 +415,6 @@ public:
 		p = 0.f;
 		now_point = 0;
 		type = Enemy;
-		possess = false;
 
 		SetPoint(0, x1, y1);
 		SetPoint(1, x2, y2);
@@ -452,7 +442,6 @@ public:
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
 		speed = s;
-		possess = p;
 		type = Enemy;
 		landing = false;
 
@@ -482,7 +471,6 @@ public:
 		p = 0.f;
 		now_point = 0;
 		type = MoveFloor;
-		possess = false;
 
 		SetPoint(0, x1, y1);
 		SetPoint(1, x2, y2);
@@ -507,7 +495,6 @@ public:
 		SetPoint(x, y);
 		time = 0;
 		type = DropFloor;
-		possess = false;
 	}
 	void	Render();
 	void	Update();
