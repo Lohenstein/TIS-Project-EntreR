@@ -30,11 +30,15 @@ void cBullet::HitAction(cObject *hit) {
 			break;
 		case EnemyBullet:
 			break;
+		case PlayerAttack:
+			break;
+			flag = false;
 		}
-		flag = false;
 		break;
 	case MapTile:
 		flag = false;
+		break;
+	case Player:
 		break;
 	}
 }
