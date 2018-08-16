@@ -27,18 +27,23 @@ void cBullet::HitAction(cObject *hit) {
 	case Enemy:
 		switch (this->GetType()) {
 		case PlayerBullet:
+			flag = false;
 			break;
 		case EnemyBullet:
 			break;
-		case PlayerAttack:
-			break;
-			flag = false;
 		}
 		break;
 	case MapTile:
 		flag = false;
 		break;
 	case Player:
+		switch (this->GetType()) {
+		case PlayerBullet:
+			break;
+		case EnemyBullet:
+			flag = false;
+			break;
+		}
 		break;
 	}
 }

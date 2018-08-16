@@ -15,8 +15,6 @@ namespace	Game
 	};
 };
 
-
-
 class	cGameManager {
 public:
 	void	Update(void);
