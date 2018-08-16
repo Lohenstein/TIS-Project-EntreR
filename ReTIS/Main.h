@@ -7,9 +7,9 @@
 
 #define		PI (3.14159265358979)
 
-#define		ENTITY_MAX (128)
-#define		BULLET_MAX (128)
-#define		ENEMY_MAX  (32)
+#define		ENTITY_MAX (8)
+#define		BULLET_MAX (64)
+#define		ENEMY_MAX  (24)
 
 #define		d2r(deg) (((deg) / 360) * 2 * PI)
 #define		r2d(rad) (((rad) / 2 / PI) * 360)

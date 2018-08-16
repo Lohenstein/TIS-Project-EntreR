@@ -3,6 +3,8 @@
 int		key[256];
 int		pad_b[16];
 
+short	stick_lx;
+
 // キーボード入力を取得
 void	input_key() {
 
@@ -19,6 +21,7 @@ void	input_key() {
 }
 
 // ゲームパッド入力を取得
+
 void	 input_pad() {
 
 	XINPUT_STATE input_pad;
@@ -31,6 +34,7 @@ void	 input_pad() {
 		}
 		else pad_b[i] = 0;
 	}
+	stick_lx = input_pad.ThumbLX / 100;
 }
 
 // 両方とも取得(グローバル)

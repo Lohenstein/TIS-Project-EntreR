@@ -19,12 +19,12 @@ void	cCharacterBase::MoveByAutomation() {
 void	cCharacterBase::MoveByPlayer() {
 	old = pos;	// ‰ß‹À•W
 
-	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
-		if (key[KEY_INPUT_LEFT] == 2) {
+	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2 || stick_lx >= 100 || stick_lx <= -100 ) {
+		if (key[KEY_INPUT_LEFT] == 2 || stick_lx <= -100) {
 			rect = true;
 			inertia -= 4;				// ˆÚ“®—ÊƒÆ‚ğŒ¸­
 		}
-		if (key[KEY_INPUT_RIGHT] == 2) {
+		if (key[KEY_INPUT_RIGHT] == 2 || stick_lx >= 100) {
 			rect = false;
 			inertia += 4;				// ˆÚ“®—ÊƒÆ‚ğ‘‰Á
 		}
@@ -34,13 +34,13 @@ void	cCharacterBase::MoveByPlayer() {
 		if (inertia > 0) inertia -= 2;
 		if (inertia < 0) inertia += 2;
 	}
-	if (key[KEY_INPUT_SPACE] == 1 && jump_count < 2) {
+	if ((key[KEY_INPUT_SPACE] == 1 || pad_b[XINPUT_BUTTON_A] == 1) && jump_count < 2) {
 		jump = 20.f;
 		++jump_count;
 	}
-	if (key[KEY_INPUT_C] == 1 && mp >= 300) {
+	if ((key[KEY_INPUT_C] == 1 || pad_b[XINPUT_BUTTON_X])&& mp >= 300) {
 		mp = 0;
-		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, 0, PlayerBullet);
+		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, PI * rect, PlayerBullet);
 	}
 	// ŒŠ‚É—‚Á‚±‚¿‚½
 	if (pos.y >= 3520) {
@@ -753,11 +753,14 @@ void cEnemyGunman::MoveByPlayer()
 			if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
 				if (key[KEY_INPUT_LEFT] == 2) {
 					inertia -= 4;			 	// ˆÚ“®—ÊƒÆ‚ğŒ¸­
+												// ‘¬“x‚ª‘¬‚¢“G‚È‚Ì‚Å­‚µã‚°‚Ä‚¢‚Ü‚·
+					rect = false;
 					direction = true;			// ‘¬“x‚ª‘¬‚¢“G‚È‚Ì‚Å­‚µã‚°‚Ä‚¢‚Ü‚·
 				}
 				if (key[KEY_INPUT_RIGHT] == 2) {
 					inertia += 4;				// ˆÚ“®—ÊƒÆ‚ğ‘‰Á
 					direction = false;
+					rect = true;
 				}
 			}
 
