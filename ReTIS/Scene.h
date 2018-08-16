@@ -76,6 +76,7 @@ public:
 		//entity	  = nullptr;
 		camera	  = nullptr;
 		gui		  = nullptr;
+		for (int i = 0; i < 10; i++) { DeleteGraph(imghandle[i]); }
 		DeleteGraph(bghandle);
 	}
 	void	Init();

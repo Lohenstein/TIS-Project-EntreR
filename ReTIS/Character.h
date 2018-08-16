@@ -73,7 +73,13 @@ public:
 		LoadDivGraph("data/img/amecha/jump.png", 30, 1, 30, 606, 558, img[2]);
 		LoadDivGraph("data/img/amecha/shot.png", 30, 1, 30, 606, 544, img[3]);
 	}
-	~cPlayer() {}
+	~cPlayer() {
+		for (int i = 0; i < 30; i++) {
+			for (int j = 0; j < 4; j++) {
+				DeleteGraph(img[j][i]);
+			}
+		}
+	}
 	void	Render();
 };
 
@@ -621,6 +627,15 @@ public:
 	}
 	~cCharacterManager() {
 		DeleteCharacters();
+		for (int i = 0; i < 273; i++) { DeleteGraph(wireman_img[i]); }
+		for (int i = 0; i < 120; i++) { DeleteGraph(jumpman_img[i]); }
+		for (int i = 0; i < 200; i++) { DeleteGraph(bossmiddle_img[i]); }
+		for (int i = 0; i < 123; i++) { DeleteGraph(fryingman_img[i]); }
+		for (int i = 0; i < 234; i++) { DeleteGraph(gunman_img[i]); }
+		for (int i = 0; i <   5; i++) { DeleteGraph(circularsaw_img[i]); }
+		for (int i = 0; i <  20; i++) { DeleteGraph(cannon_img[i]); }
+		for (int i = 0; i <   3; i++) { DeleteGraph(coin_img[i]); }
+		DeleteGraph(floorimg);
 	}
 
 	cObject *GetPlayer() { return (cObject*)player; }

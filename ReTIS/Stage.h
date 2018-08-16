@@ -46,6 +46,7 @@ public:
 		LoadDivGraph("data/img/block/block.png", 3200, 50, 64, bsize, bsize, image);
 	};
 	~cStageManager() {
+		for (int i = 0; i < 3200; i++) { DeleteGraph(image[i]); }
 		for (int i = 0; i < stage_x; i++) { delete[] stage[i]; }
 		delete[] stage;
 		stage = nullptr;
