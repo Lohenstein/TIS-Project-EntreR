@@ -21,7 +21,6 @@ void	input_key() {
 }
 
 // ゲームパッド入力を取得
-
 void	 input_pad() {
 
 	XINPUT_STATE input_pad;
