@@ -183,6 +183,7 @@ void	cGame::UpdateOver() {
 		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
 		ScreenFlip();
 		// èâä˙âª
+		scene.reset();
 		scene.reset(new cGame);
 	}
 }
@@ -195,6 +196,7 @@ void	cGame::UpdateResult() {
 		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
 		ScreenFlip();
 		// èâä˙âª
+		scene.reset();
 		scene.reset(new cGame);
 	}
 }
