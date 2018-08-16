@@ -3,6 +3,7 @@
 #define FONT_MAX			(16)
 #define FONT_TIME			(0)
 #define FONT_POSSESSTIME	(1)
+#define	FONT_MESSAGE		(2)
 
 namespace	Game
 {
