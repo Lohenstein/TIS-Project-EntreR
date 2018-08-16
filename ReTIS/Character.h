@@ -388,6 +388,9 @@ public:
 	bool direction;
 	int image_change;
 
+	short enemy_move;
+
+
 	cEnemyBoss(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
@@ -399,6 +402,7 @@ public:
 
 		image_change = 0;
 		direction = false;
+		enemy_move = 0;
 	}
 	void Update();
 	void MoveByAutomation();
@@ -649,6 +653,7 @@ public:
 	cObject *GetDropFloor(int num) { return (cObject*)dropfloor[num]; }
 	cObject *GetMoveFloor(int num) { return (cObject*)movefloor[num]; }
 	cObject *GetCoin(int num) { return (cObject*)coin[num]; }
+	cObject *GetBoss(int num) { return (cObject*)boss[num]; }
 
 	int		GetPlayerHp() { return player->GetHp(); }
 
@@ -668,7 +673,8 @@ enum character {
 	eDropFloor,		// 10
 	eClear,			// 11(ƒNƒŠƒA”»’è)
 	eCoin,			// 12
-	eWireman		// 13
+	eBoss			// 13
+	//eWireman		// 
 };
 
 // Å‘å@{ 14

@@ -461,6 +461,14 @@ void	cCharacterManager::LoadCharacters(string name) {
 				}
 			}
 			break;
+		case eBoss:
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				if (boss[i] == nullptr) {
+					boss[i] = new cEnemyBoss(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
+					break;
+				}
+			}
+			break;
 		case eCircularsaw:
 			for (int i = 0; i < ENEMY_MAX; i++) {
 				if (circularsaw[i] == nullptr) {
@@ -534,17 +542,17 @@ void cEnemyJumpman::Update()
 void cEnemyJumpman::MoveByPlayer() {
 
 	if (hp > 0) {
-		if (key[KEY_INPUT_C] == 1 && attack_flag == false) {
+		if ((key[KEY_INPUT_C] == 1 && attack_flag == false) || (attack_flag == false && pad_b[XINPUT_BUTTON_X] == 1)) {
 			attack_flag = true;
 		}
 
 		if (attack_flag == false) {
-			if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
-				if (key[KEY_INPUT_LEFT] == 2) {
+			if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2 || stick_lx <= 100 || stick_lx >= -100) {
+				if (key[KEY_INPUT_LEFT] == 2 || stick_lx >= -100) {
 					inertia -=4;			 	// 移動量θを減少
 												// 速度が速い敵なので少し上げています
 				}
-				if (key[KEY_INPUT_RIGHT] == 2) {
+				if (key[KEY_INPUT_RIGHT] == 2 || stick_lx <= 100) {
 					inertia += 4;				// 移動量θを増加
 				}
 			}
@@ -556,7 +564,7 @@ void cEnemyJumpman::MoveByPlayer() {
 			if (inertia >  90) inertia = 90;	// はみ出しリミッタ
 			if (inertia < -90) inertia = -90;
 
-			if (key[KEY_INPUT_SPACE] == 1) {
+			if (key[KEY_INPUT_SPACE] == 1 || pad_b[XINPUT_BUTTON_X] == 1) {
 				jump = 30.f;					// *ジャンプ力を高くするとブロックの衝突判定が正常にされなくなります
 				++jump_count;
 				landing = false;
@@ -613,7 +621,7 @@ void cEnemyJumpman::Render(int image[120])
 				else image_change++;
 			}
 			else if (landing == true) {
-				if (key[KEY_INPUT_LEFT] != 0 && attack_flag == false) {
+				if ((key[KEY_INPUT_LEFT] != 0 || stick_lx <= -100) && attack_flag == false) {
 					if (image_change < 90)
 						image_change = 90;
 					image_change++;
@@ -621,7 +629,7 @@ void cEnemyJumpman::Render(int image[120])
 						image_change = 90;
 					direction = false;
 				}
-				else if (key[KEY_INPUT_RIGHT] != 0 && attack_flag == false) {
+				else if ((key[KEY_INPUT_RIGHT] != 0 || stick_lx >= 100) && attack_flag == false) {
 					if (image_change < 90)
 						image_change = 90;
 					image_change++;
@@ -736,7 +744,7 @@ void cEnemyGunman::MoveByPlayer()
 	if (hp > 0) {
 		switch (player_move_pattern) {
 		case 0:
-			if (key[KEY_INPUT_C] == 1) {
+			if (key[KEY_INPUT_C] == 1 || pad_b[XINPUT_BUTTON_X] == 1) {
 				player_move_pattern = 1;
 				image_change = 40;
 				attack_count = 0;
@@ -746,18 +754,18 @@ void cEnemyGunman::MoveByPlayer()
 
 			if (landing)
 				jump_count = 0;
-			if (key[KEY_INPUT_SPACE] == 1 && jump_count < 2) {
+			if ((key[KEY_INPUT_SPACE] == 1 || pad_b[XINPUT_BUTTON_A] == 1 )&& jump_count < 2) {
 				jump = 20.f;
 				++jump_count;
 			}
-			if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
-				if (key[KEY_INPUT_LEFT] == 2) {
+			if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2 || stick_lx >= 100 || stick_lx <= -100) {
+				if (key[KEY_INPUT_LEFT] == 2 || stick_lx <= -100) {
 					inertia -= 4;			 	// 移動量θを減少
 												// 速度が速い敵なので少し上げています
 					rect = false;
 					direction = true;			// 速度が速い敵なので少し上げています
 				}
-				if (key[KEY_INPUT_RIGHT] == 2) {
+				if (key[KEY_INPUT_RIGHT] == 2 || stick_lx >= 100 ) {
 					inertia += 4;				// 移動量θを増加
 					direction = false;
 					rect = true;
@@ -836,10 +844,10 @@ void cEnemyGunman::Render(int image[])
 		else if (possess == true) {
 			switch (player_move_pattern) {
 			case 0:
-				if (key[KEY_INPUT_SPACE] != 0) {
+				if (key[KEY_INPUT_SPACE] != 0 || pad_b[XINPUT_BUTTON_A] == 1) {
 
 				}
-				if (key[KEY_INPUT_LEFT] != 0) {
+				if (key[KEY_INPUT_LEFT] != 0 || stick_lx <= -100) {
 					if (image_change < 194)
 						image_change = 195;
 					image_change++;
@@ -847,7 +855,7 @@ void cEnemyGunman::Render(int image[])
 						image_change = 195;
 					}
 				}
-				else if (key[KEY_INPUT_RIGHT] != 0) {
+				else if (key[KEY_INPUT_RIGHT] != 0 || stick_lx >= 100) {
 					if (image_change < 194)
 						image_change = 195;
 					image_change++;
@@ -1032,7 +1040,7 @@ void cEnemyWiremanManager::Wireman::WireRender(VECTOR *WirePos, int *AnchorStret
 	DrawFormatString(FocusPos.x, FocusPos.y + 60, 0xfffff, "%d", *AnchorStretch);*/
 }
 
-void	cEnemyWiremanManager::Wireman::MoveByPlayer(VECTOR *WirePos, int *AnchorStretch)
+void cEnemyWiremanManager::Wireman::MoveByPlayer(VECTOR *WirePos, int *AnchorStretch)
 {
 	mouse_state = GetMouseInput();
 	if (*AnchorStretch == 0) {
@@ -1267,7 +1275,7 @@ void cEnemyFryingman::Update()
 	}
 }
 
-void	cEnemyFryingman::MoveByPlayer() {
+void cEnemyFryingman::MoveByPlayer() {
 	old = pos;	// 過去座標
 
 	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
@@ -1472,6 +1480,61 @@ void cEnemyBossmiddle::Render(int image[])
 		DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
 	else if (direction == false)
 		DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
+}
+
+/*------------------------------------------------------------------------------*
+| <<< cEnemyBoss >>>
+*------------------------------------------------------------------------------*/
+
+void cEnemyBoss::Update()
+{
+	if (hp > 1) {
+		MoveByAutomation();
+	}
+	if (image_change == 149) {
+		hp = 0;
+	}
+	Physical();
+
+}
+
+void cEnemyBoss::MoveByAutomation()
+{
+	switch (enemy_move)
+	{
+	case 0:
+		break;
+	case 1:
+		break;
+	case 2:
+		break;
+	case 3:
+		break;
+	default:
+		break;
+	}
+}
+
+void cEnemyBoss::Render(int image[])
+{
+	switch (enemy_move)
+	{
+	case 0:
+		break;
+	case 1:
+		break;
+	case 2:
+		break;
+	case 3:
+		break;
+	default:
+		break;
+	}
+	if (direction == true)
+		DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
+	else if (direction == false)
+		DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
+
 }
 
 /*------------------------------------------------------------------------------*
