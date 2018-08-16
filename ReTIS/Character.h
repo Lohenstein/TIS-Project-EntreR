@@ -242,7 +242,6 @@ public:
 		int image_change;
 		bool direction;			
 
-
 		Wireman(float x, float y, float w, float h, float s, bool p) {
 			pos = { x, y, 0.f };
 			size = { w, h, 0.f };
@@ -288,11 +287,10 @@ public:
 		int move_pattern;
 		int count;
 
-		Anchor(float x, float y, float w, float h, float s, bool p) {
+		Anchor(float x, float y, float w, float h, float s) {
 			pos = { x, y, 0.f };
 			size = { w, h, 0.f };
 			speed = s;
-			possess = p;
 			type = Enemy;
 			landing = false;
 			count = 0;
@@ -514,6 +512,8 @@ public:
 	void	SetPoint(float x, float y);
 	void	HitAction(cObject *hit);
 };
+
+
 
 class cClearCollision : public cEnemy {
 public:

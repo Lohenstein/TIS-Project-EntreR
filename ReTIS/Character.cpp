@@ -447,7 +447,7 @@ void	cCharacterManager::LoadCharacters(string name) {
 			break;
 		/*case eWireman:
 			for (int i = 0; i < ENEMY_MAX; i++) {
-				if (wireman[i] == nullptr) {
+				if (wireman[i] == nullptr) {　ここにアンカーの処理かきたいけど無理かも
 					wireman[i] = new cEnemyWiremanManager::Wireman(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
 					break;
 				}
@@ -1365,6 +1365,7 @@ void cEnemyBossmiddle::MoveByAutomation()
 			if (pos.x < FocusPos.x + 300 && pos.x > FocusPos.x - 300) {
 				move_pattern = 1;
 				image_change = 160;
+				pos.x < FocusPos.x ? direction = false : direction = true;
 			}
 			// ジャンプして近づく
 			else if (pos.x < FocusPos.x + 400 && pos.x > FocusPos.x - 400) {
@@ -1376,7 +1377,13 @@ void cEnemyBossmiddle::MoveByAutomation()
 			// プレイヤーに近づく
 		case 1:
 			// 敵の向きと移動の処理
-			pos.x < FocusPos.x && image_change == 160 ? direction = false : direction = true;
+			if (pos.x < FocusPos.x && image_change == 187) {
+				direction = false;
+			}
+			else if (pos.x >= FocusPos.x && image_change == 187) {
+				direction = true;
+			}
+			//pos.x < FocusPos.x & image_change == 189 ? direction = false : direction = true;
 			direction ? pos.x -= move_speed : pos.x += move_speed;
 			
 			image_change++;
@@ -1386,15 +1393,6 @@ void cEnemyBossmiddle::MoveByAutomation()
 				move_time++;
 			}
 			
-
-			/*if (pos.x < FocusPos.x && image_change == 160) {
-				pos.x += move_speed;
-				direction = false;
-			}
-			else if (pos.x >= FocusPos.x && image_change == 160){
-				pos.x -= move_speed;
-				direction = true;
-			}*/
 			if (move_time == 3) {
 				move_time = 0;
 				move_pattern = 3;
@@ -1406,19 +1404,13 @@ void cEnemyBossmiddle::MoveByAutomation()
 			if (move_time == 0) {
 				jump = 20.f;
 				move_time++;
+				pos.x < FocusPos.x ? direction = false : direction = true;
 			}
 			else if (image_change != 24) {
 				image_change++;
-				if (pos.x < FocusPos.x) {
-					direction = false;
-					pos.x += 10;
-				}
-				else {
-					direction = true;
-					pos.x -= 10;
-				}
+				direction ? pos.x -= 10 : pos.x += 10;
 			}
-			else if (landing == true) {
+			else if (landing) {
 				move_pattern = 3;
 				move_time = 0;
 				image_change = 50;
