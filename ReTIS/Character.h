@@ -335,7 +335,6 @@ public:
 		image_change = 0;
 	}
 	void Update();
-	void MoveByPlayer();
 	void MoveByAutomation();
 	void Render(int image[]);
 };
@@ -351,6 +350,7 @@ public:
 	VECTOR Player_old;
 	VECTOR Attack_pos;
 
+	int change;
 	bool direction;
 	int image_change;
 
@@ -360,13 +360,14 @@ public:
 		speed = s;
 		landing = false;
 		type = Enemy;
-		hp = 3;
+		hp = 2;
 
 		move_time = 0;
 		move_pattern = 0;
 		move_speed = 1.5f;
 		image_change = 0;
 		direction = false;
+		change = 0;
 	}
 	void Update();
 	void MoveByAutomation();
