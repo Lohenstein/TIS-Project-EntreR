@@ -154,7 +154,7 @@ void	cGame::Render() {
 	// ゲームオーバー時
 	if (IsOverFlag) {
 		DrawOver();
-		trans++;
+		trans += 2;
 	}
 
 	//DrawFormatString(10, 10, 0xFFFFFF, "操作キャラの座標:x=%d, y=%d", (int)FocusPos.x, (int)FocusPos.y);
@@ -239,7 +239,7 @@ void	cGame::RenderGui() {
 	if (time >= 60) {
 		time = 0;
 		sec--;
-		mp += 4;
+		mp += 20;
 		if (sec < 0) {
 			mp += 100;
 			rectime++;

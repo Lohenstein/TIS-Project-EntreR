@@ -17,6 +17,10 @@ protected:
 	float	jump = 0.f, gravity = 1.f, inertia = 0; // 重力と慣性
 	int		hp = 5, invincible_time = 0;
 	int		jump_count = 0;
+	bool	rect = false;
+	int		anim = 0;
+	int		animjump = 0;
+	int		animmode = 0;
 	bool	invincible = false;
 	void	Physical();	// ジャンプとかの計算
 
@@ -52,6 +56,7 @@ public:
 
 class cPlayer : public cCharacterBase {
 protected:
+	int img[4][30];
 public:
 	cPlayer(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
@@ -63,6 +68,10 @@ public:
 		IsOverFlag  = false;
 		mp = 300;
 		coin = 0, ecoin = 0, rcoin = 0;
+		LoadDivGraph("data/img/amecha/walk.png", 30, 1, 30, 606, 551, img[0]);
+		LoadDivGraph("data/img/amecha/idol.png", 30, 1, 30, 606, 544, img[1]);
+		LoadDivGraph("data/img/amecha/jump.png", 30, 1, 30, 606, 558, img[2]);
+		LoadDivGraph("data/img/amecha/shot.png", 30, 1, 30, 606, 544, img[3]);
 	}
 	~cPlayer() {}
 	void	Render();
