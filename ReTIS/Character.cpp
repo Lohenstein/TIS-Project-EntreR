@@ -445,14 +445,14 @@ void	cCharacterManager::LoadCharacters(string name) {
 				}
 			}
 			break;
-		case eWireman:
+		/*case eWireman:
 			for (int i = 0; i < ENEMY_MAX; i++) {
 				if (wireman[i] == nullptr) {
 					wireman[i] = new cEnemyWiremanManager::Wireman(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
 					break;
 				}
 			}
-			break;
+			break;*/
 		case eBossmiddle:
 			for (int i = 0; i < ENEMY_MAX; i++) {
 				if (bossmiddle[i] == nullptr) {
