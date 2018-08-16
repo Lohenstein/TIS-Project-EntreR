@@ -943,20 +943,26 @@ void cEnemyBossmiddle::MoveByAutomation()
 			break;
 			// ƒvƒŒƒCƒ„[‚É‹ß‚Ã‚­
 		case 1:
+			// “G‚ÌŒü‚«‚ÆˆÚ“®‚Ìˆ—
+			pos.x < FocusPos.x && image_change == 160 ? direction = false : direction = true;
+			direction ? pos.x -= move_speed : pos.x += move_speed;
+			
 			image_change++;
 
 			if (image_change == 189) {
 				image_change = 160;
 				move_time++;
 			}
-			if (pos.x < FocusPos.x) {
+			
+
+			/*if (pos.x < FocusPos.x && image_change == 160) {
 				pos.x += move_speed;
 				direction = false;
 			}
-			else {
+			else if (pos.x >= FocusPos.x && image_change == 160){
 				pos.x -= move_speed;
 				direction = true;
-			}
+			}*/
 			if (move_time == 3) {
 				move_time = 0;
 				move_pattern = 3;
