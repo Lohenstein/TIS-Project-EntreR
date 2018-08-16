@@ -167,6 +167,33 @@ void	cCharacterBase::Collision(cObject *hit) {
 		break;
 	}
 }
+
+// anchor
+
+void cAnchor::Update(bool *hit, VECTOR *wrpos)
+{
+	if (pad_b[XINPUT_BUTTON_Y] == 1) {
+		shotanchor = true;
+	}
+
+	if (shotanchor) {
+		wrpos->x += 10;
+		wrpos->y -= 10;
+		count = 0;
+	}
+	if (count = 100) {
+		shotanchor = false;
+	}
+
+	if (bottomhit || righthit || lefthit || landing) {
+		*wrpos = pos;
+		*hit = true;
+	}
+
+	DrawBox(pos.x, pos.y, pos.x, pos.y, 0xffffff, true);
+
+}
+
 /*------------------------------------------------------------------------------*
 | <<< cPlayer >>>
 *------------------------------------------------------------------------------*/
@@ -216,6 +243,11 @@ void	cPlayer::Update() {
 		mp -= 10;
 		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, PI * rect, PlayerBullet);
 	}
+
+	if (pad_b[XINPUT_BUTTON_RIGHT_SHOULDER] == 1 || pad_b[XINPUT_BUTTON_Y] == 1) {
+	}
+
+
 	// 穴に落っこちた
 	if (pos.y >= 3520) {
 		IsOverFlag = true;
@@ -248,10 +280,10 @@ void	cCharacterManager::Render() {
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (jumpman[i]		!= nullptr) jumpman[i]		->Render(jumpman_img);
 		if (hardbody[i]		!= nullptr) hardbody[i]		->Render();
-		if (wireman[i]		!= nullptr) wireman[i]		->Render(wireman_img,&wmanager[i]->AnchorStretch,&wmanager[i]->EnemyAnchorStretch);
+		//if (wireman[i]		!= nullptr) wireman[i]		->Render(wireman_img,&wmanager[i]->AnchorStretch,&wmanager[i]->EnemyAnchorStretch);
 		if (fryingman[i]	!= nullptr) fryingman[i]	->Render(fryingman_img);
-		if (wireman[i]		!= nullptr) wireman[i]		->WireRender(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch, &wmanager[i]->EnemyAnchorStretch);
-		if (wireanchor[i]	!= nullptr) wireanchor[i]	->Render();
+		//if (wireman[i]		!= nullptr) wireman[i]		->WireRender(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch, &wmanager[i]->EnemyAnchorStretch);
+		//if (wireanchor[i]	!= nullptr) wireanchor[i]	->Render();
 		if (gunman[i]		!= nullptr)	gunman[i]		->Render(gunman_img);
 		if (bossmiddle[i]	!= nullptr) bossmiddle[i]	->Render(bossmiddle_img);
 		if (circularsaw[i]	!= nullptr) circularsaw[i]	->Render(circularsaw_img);
@@ -266,9 +298,9 @@ void	cCharacterManager::Update() {
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (jumpman[i]		!= nullptr) jumpman[i]		->Update();
 		if (hardbody[i]		!= nullptr) hardbody[i]		->Update();
-		if (wireman[i]		!= nullptr) wireman[i]		->Update(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch, &wmanager[i]->EnemyAnchorStretch);
+		//if (wireman[i]		!= nullptr) wireman[i]		->Update(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch, &wmanager[i]->EnemyAnchorStretch);
 		if (fryingman[i]	!= nullptr) fryingman[i]	->Update();
-		if (wireanchor[i]	!= nullptr) wireanchor[i]	->Update(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch, &wmanager[i]->EnemyAnchorStretch);
+		//if (wireanchor[i]	!= nullptr) wireanchor[i]	->Update(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch, &wmanager[i]->EnemyAnchorStretch);
 		if (gunman[i]		!= nullptr)	gunman[i]		->Update();
 		if (bossmiddle[i]	!= nullptr) bossmiddle[i]	->Update();
 		if (circularsaw[i]	!= nullptr) circularsaw[i]	->Update(5.f, 0, 1);
@@ -290,7 +322,7 @@ void	cCharacterManager::DeleteCharacters() {
 
 		delete jumpman[i];
 		delete hardbody[i];
-		delete wireman[i];
+		//delete wireman[i];
 		delete fryingman[i];
 		delete gunman[i];
 		delete bossmiddle[i];
@@ -299,7 +331,7 @@ void	cCharacterManager::DeleteCharacters() {
 
 		jumpman[i]		= nullptr;
 		hardbody[i]		= nullptr;
-		wireman[i]		= nullptr;
+		//wireman[i]		= nullptr;
 		fryingman[i]	= nullptr;
 		gunman[i]		= nullptr;
 		bossmiddle[i]	= nullptr;
@@ -406,7 +438,7 @@ void	cCharacterManager::LoadCharacters(string name) {
 			break;
 		/*case eWireman:
 			for (int i = 0; i < ENEMY_MAX; i++) {
-				if (wireman[i] == nullptr) {　ここにアンカーの処理かきたいけど無理かも
+				if (wireman[i] == nullptr) {
 					wireman[i] = new cEnemyWiremanManager::Wireman(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
 					break;
 				}
@@ -715,7 +747,9 @@ void cEnemyHardBody::MoveByAutomation()
 /*------------------------------------------------------------------------------*
 | <<< cEnemyWireManager >>>
 *------------------------------------------------------------------------------*/
-void cEnemyWiremanManager::Wireman::MouseStateGet()
+
+
+/*void cEnemyWiremanManager::Wireman::MouseStateGet()
 {
 	SetMouseDispFlag(TRUE);
 	GetMousePoint(&mouse_posx, &mouse_posy);
@@ -762,8 +796,8 @@ void cEnemyWiremanManager::Wireman::WireRender(VECTOR *WirePos, int *AnchorStret
 	DrawFormatString(FocusCam.x, FocusCam.y + 30, 0xfffff, "%f %f", WirePos->x, WirePos->y);
 	DrawCircle(mouse_changeposx, mouse_changeposy, 30, 0xfffff, true);
 	DrawFormatString(FocusPos.x, FocusPos.y + 60, 0xfffff, "%d", *AnchorStretch);*/
-}
-
+//}
+/*
 void cEnemyWiremanManager::Wireman::MoveByAutomation(VECTOR *WirePos, int *AnchorStretch, int *EnemyAnchorStretch)
 {
 	if (hp <= 0) {
@@ -849,7 +883,7 @@ void cEnemyWiremanManager::Wireman::Render(int image[], int *AnchorStretch, int 
 
 	else if (direction == true)
 		DrawRotaGraph(pos.x, pos.y - 15, 0.7, 0, image[image_change], TRUE, TRUE);
-}
+}*/
 
 /*------------------------------------------------------------------------------*
 | <<< cEnemyFryingman >>>

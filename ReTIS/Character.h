@@ -53,6 +53,27 @@ public:
 	int		GetHp() { return hp; }
 };
 
+class cAnchor : public cCharacterBase {
+	bool hitsome;
+	bool shotanchor;
+	short count;
+public:
+
+
+	cAnchor(float x,float y,float w,float h,float s) {
+		pos = { x, y, 0.f };
+		size = { w, h, 0.f };
+		speed = s;
+		type = Player;
+
+		hitsome = false;
+		shotanchor = false;
+		count = 0;
+	}
+	void Update(bool *hit,VECTOR *wrpos);
+	bool hitwall();
+};
+
 class cPlayer : public cCharacterBase {
 protected:
 	int img[4][30];
@@ -213,7 +234,7 @@ public:
 };
 
 
-class cEnemyWiremanManager : public cEnemy {
+/*class cEnemyWiremanManager : public cEnemy {
 public:
 	VECTOR WirePos;
 	int AnchorStretch;
@@ -295,7 +316,7 @@ public:
 		void Update(VECTOR *WirePos, int *AnchorStretch, int *EnemyAnchorStretch);
 		void MoveByAutomation(VECTOR *WirePos, int *AnchorStretch);
 	};
-};
+};*/
 
 
 class cEnemyFryingman : public cEnemy {
@@ -554,6 +575,36 @@ public:
 	}
 };
 
+class cEventsSwitch : public cEnemy{
+public:
+	int attack_count;
+	int move_pattern;
+	float angle;
+
+	int image_change;
+	bool direction;
+	VECTOR bulletpos;
+	VECTOR bulletsize;
+
+	cEventsSwitch(float x, float y, float w, float h, float s, bool p) {
+		pos = { x, y, 0.f };
+		size = { w, h, 0.f };
+		speed = s;
+		type = Enemy;
+		landing = false;
+
+		bulletsize = { 50,50,0 };
+		angle = 0.f;
+		image_change = 0;
+		attack_count = 0;
+		direction = false;
+		move_pattern = 0;
+	}
+	void Update();
+	void Render(int image[]);
+	void MoveByAutomation();
+
+};
 
 class cCharacterManager {
 protected:
@@ -562,13 +613,14 @@ protected:
 public:
 	// Character
 	cPlayer							*player;
+	cAnchor							*anchor;
 	cClearCollision					*clear;
 	cEnemyJumpman					*jumpman[ENEMY_MAX];
 	cEnemyHardBody					*hardbody[ENEMY_MAX];
-	cEnemyWiremanManager::Wireman	*wireman[ENEMY_MAX];
+	////cEnemyWiremanManager::Wireman	*wireman[ENEMY_MAX];
 	cEnemyFryingman					*fryingman[ENEMY_MAX];
-	cEnemyWiremanManager::Anchor	*wireanchor[ENEMY_MAX];
-	cEnemyWiremanManager			*wmanager[ENEMY_MAX];
+	//////cEnemyWiremanManager::Anchor	*wireanchor[ENEMY_MAX];
+	//			*wmanager[ENEMY_MAX];
 	cEnemyGunman					*gunman[ENEMY_MAX];
 	cEnemyBossmiddle				*bossmiddle[ENEMY_MAX];
 	cEnemyBoss						*boss[ENEMY_MAX];
@@ -631,10 +683,10 @@ public:
 	cObject *GetClear() { return (cObject*)clear; }
 	cObject *GetEnemyJumpman(int num) { return (cObject*)jumpman[num]; }
 	cObject *GetEnemyHardBody(int num) { return (cObject*)hardbody[num]; }
-	cObject *GetEnemyWireman(int num) { return (cObject*)wireman[num]; }
+	//cObject *GetEnemyWireman(int num) { return (cObject*)wireman[num]; }
 	cObject *GetEnemyFryingman(int num) { return (cObject*)fryingman[num]; }
-	cObject *GetEnemyWireAnchor(int num) { return (cObject*)wireanchor[num]; }
-	cObject *WireAnchor(int num) { return (cObject*)wireanchor[num]; }
+	//cObject *GetEnemyWireAnchor(int num) { return (cObject*)wireanchor[num]; }
+	//cObject *WireAnchor(int num) { return (cObject*)wireanchor[num]; }
 	cObject *GetEnemyGunman(int num) { return (cObject*)gunman[num]; }
 	cObject *GetEnemyBossmiddle(int num) { return (cObject*)bossmiddle[num]; }
 	cObject *GetCircularSaw(int num) { return (cObject*)circularsaw[num]; }
@@ -662,8 +714,8 @@ enum character {
 	eDropFloor,		// 10
 	eClear,			// 11(ÉNÉäÉAîªíË)
 	eCoin,			// 12
-	eBoss			// 13
-	//eWireman		// 
+	eBoss,			// 13
+	eEvents,			// 14
 };
 
 // ç≈ëÂÅ@Å{ 14
