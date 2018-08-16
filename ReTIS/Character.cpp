@@ -906,7 +906,7 @@ void cEnemyHardBody::Update()
 	Physical();
 }
 
-void	cEnemyHardBody::MoveByPlayer() {
+void cEnemyHardBody::MoveByPlayer() {
 	old = pos;	// 過去座標
 
 	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
@@ -1375,20 +1375,26 @@ void cEnemyBossmiddle::MoveByAutomation()
 			break;
 			// プレイヤーに近づく
 		case 1:
+			// 敵の向きと移動の処理
+			pos.x < FocusPos.x && image_change == 160 ? direction = false : direction = true;
+			direction ? pos.x -= move_speed : pos.x += move_speed;
+			
 			image_change++;
 
 			if (image_change == 189) {
 				image_change = 160;
 				move_time++;
 			}
-			if (pos.x < FocusPos.x) {
+			
+
+			/*if (pos.x < FocusPos.x && image_change == 160) {
 				pos.x += move_speed;
 				direction = false;
 			}
-			else {
+			else if (pos.x >= FocusPos.x && image_change == 160){
 				pos.x -= move_speed;
 				direction = true;
-			}
+			}*/
 			if (move_time == 3) {
 				move_time = 0;
 				move_pattern = 3;
