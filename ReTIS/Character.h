@@ -54,27 +54,6 @@ public:
 	int		GetHp() { return hp; }
 };
 
-class cAnchor : public cCharacterBase {
-	bool hitsome;
-	bool shotanchor;
-	short count;
-public:
-
-
-	cAnchor(float x,float y,float w,float h,float s) {
-		pos = { x, y, 0.f };
-		size = { w, h, 0.f };
-		speed = s;
-		type = Player;
-
-		hitsome = false;
-		shotanchor = false;
-		count = 0;
-	}
-	void Update(bool *hit,VECTOR *wrpos);
-	bool hitwall();
-};
-
 class cPlayer : public cCharacterBase {
 protected:
 	int img[4][30];
@@ -555,30 +534,6 @@ public:
 
 };
 
-	int image_change;
-	bool direction;
-	VECTOR bulletpos;
-	VECTOR bulletsize;
-
-	cEventsSwitch(float x, float y, float w, float h, float s, bool p) {
-		pos = { x, y, 0.f };
-		size = { w, h, 0.f };
-		speed = s;
-		type = Enemy;
-		landing = false;
-
-		bulletsize = { 50,50,0 };
-		angle = 0.f;
-		image_change = 0;
-		attack_count = 0;
-		direction = false;
-		move_pattern = 0;
-	}
-	void Update();
-	void Render(int image[]);
-	void MoveByAutomation();
-
-};
 
 class cCharacterManager {
 protected:
@@ -595,6 +550,7 @@ public:
 	//////cEnemyWiremanManager::Anchor	*wireanchor[ENEMY_MAX];
 	//			*wmanager[ENEMY_MAX];
 	cEnemyGunman					*gunman[ENEMY_MAX];
+	cEnemyJumpman					*jumpman[ENEMY_MAX];
 	cEnemyBossmiddle				*bossmiddle[ENEMY_MAX];
 	cEnemyJugem						*jugem[ENEMY_MAX];
 	cEnemyBoss						*boss[ENEMY_MAX];
