@@ -738,52 +738,7 @@ void cEnemyHardBody::Update()
 
 void cEnemyHardBody::MoveByAutomation()
 {
-	/*f (possess == false) {
-		if (pos.x - 300 <= FocusPos.x && pos.x + 300 >= FocusPos.x && attack_flag == false) {
-			attack_flag = true;
-		}
 
-		switch (attack_time)
-		{
-		case 0:
-			if (attack_flag == true) {
-				attack_time = 1;
-			}
-			break;
-		case 1:
-			if (landing == true && jump_count != 3) {
-				jump = 15.f;
-				jump_count++;
-				landing = false;
-			}
-			else if (jump_count == 3) {
-				jump = 30.f;
-				landing = false;
-				attack_time = 2;
-				jump_count = 0;
-			}
-
-			break;
-		case 2:
-			if (landing == false) {
-				if (pos.x < FocusPos.x)
-					pos.x += 2;
-				else pos.x -= 2;
-			}
-			else if (landing == true) {
-				cool_time++;
-				if (cool_time = 100) {
-					attack_time = 3;
-					cool_time = 0;
-				}
-			}
-			break;
-		case 3:
-			attack_flag = false;
-			attack_time = 0;
-			break;
-		}
-	}*/
 }
 
 /*------------------------------------------------------------------------------*
@@ -976,17 +931,51 @@ void cEnemyJugem::Update()
 	/*if (image_change == 149) {
 		hp = 0;
 	}*/
-	Physical();
+	if (hp == 1)move_pattern = 4;
 }
 
 void cEnemyJugem::MoveByAutomation()
 {
+	switch (move_pattern) {
+		// ˆÚ“®
+	case 0:
+		if (count = 500) {
 
+			move_pattern = 1;
+		}
+		break;
+		// UŒ‚
+	case 1:
+		image_change++;
+		if (count == 100) {
+
+			move_pattern = 2;
+		}
+		break;
+		// ‹­UŒ‚
+	case 2:
+		image_change++;
+		if (count == 200) {
+
+			move_pattern = 0;
+		}
+		break;
+		// —v‚ç‚ñ‚©‚à
+	case 3:
+		break;
+	case 4:
+		// “|‚ê‚½Žž‚Ìˆ—
+		image_change++;
+		if (image_change) {
+			hp = 0;
+		}
+		break;
+	}
 }
 
 void cEnemyJugem::Render(int img[])
 {
-
+	direction ? DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, img[image_change], TRUE): DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, img[image_change],FALSE);
 }
 
 /*------------------------------------------------------------------------------*
@@ -1009,39 +998,55 @@ void cEnemyBoss::MoveByAutomation()
 {
 	switch (enemy_move)
 	{
+	// ƒŒ[ƒU[
 	case 0:
+		if (attack_count == 20) {
+
+			enemy_move = 1;
+		}
 		break;
+	// e
 	case 1:
+		if (attack_count == 10) {
+
+		}
+		enemy_move = 2;
 		break;
+	// ’Í‚Ý‚©‚©‚é
 	case 2:
+		if (attack_count == 50) {
+			lockon = atan2(FocusPos.y - pos.y, FocusPos.x - pos.x);
+			for (int i = 0; i < 4; i++) {
+				attackpos[i] = {pos.x + (cos(lockon) * speed * i),pos.y + (sin(lockon) * speed * i),0};
+			}
+			enemy_move = 3;
+		}
 		break;
+	// FX
 	case 3:
+		if (attack_count == 10) {
+
+			enemy_move = 4;
+		}
 		break;
-	default:
+	// ƒ_ƒEƒ“
+	case 4:
+		// ‹xŒeƒ^ƒCƒ€
+		if (attack_count == 20) {
+
+			attack_count = 0;
+			enemy_move = 0;
+		}
 		break;
 	}
 }
 
 void cEnemyBoss::Render(int image[])
 {
-	switch (enemy_move)
-	{
-	case 0:
-		break;
-	case 1:
-		break;
-	case 2:
-		break;
-	case 3:
-		break;
-	default:
-		break;
-	}
 	if (direction == true)
 		DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
 	else if (direction == false)
 		DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
-
 }
 
 /*------------------------------------------------------------------------------*

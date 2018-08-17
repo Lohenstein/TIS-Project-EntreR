@@ -302,8 +302,8 @@ public:
 	bool direction;
 	int image_change;
 
-	short enemy_move;
-
+	short move_pattern;
+	short count;
 
 	cEnemyJugem(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
@@ -315,7 +315,9 @@ public:
 
 		image_change = 0;
 		direction = false;
-		enemy_move = 0;
+		move_pattern = 0;
+		direction = false;
+		count = 0;
 	}
 	void Update();
 	void MoveByAutomation();
@@ -329,8 +331,9 @@ public:
 	int image_change;
 
 	short enemy_move;
-
-
+	short attack_count;
+	VECTOR attackpos[5];
+	float lockon;
 	cEnemyBoss(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
@@ -342,6 +345,11 @@ public:
 		image_change = 0;
 		direction = false;
 		enemy_move = 0;
+		attack_count = 0;
+		for (int i = 0; i < 4; i++) {
+			attackpos[i] = {0,0,0};
+		}
+		lockon = 0.f;
 	}
 	void Update();
 	void MoveByAutomation();
