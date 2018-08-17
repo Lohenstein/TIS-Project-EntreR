@@ -188,6 +188,7 @@ void	cPlayer::Render() {
 		DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
 	}
 	if (anchor != nullptr) anchor->Render(pos);
+	DrawFormatString(pos.x, pos.y, 0xFFFFFF, "%f, %d", wrad, anchor_dir);
 }
 
 void	cPlayer::UpdateAnchor() {
@@ -205,18 +206,33 @@ void	cPlayer::UpdateAnchor() {
 			// ‚­‚Á‚Â‚¢‚½‚Æ‚«
 			if (!IsAnchored) {
 				savepos = pos;
-				rad2anchor = (DX_PI_F / 2) + atan2f(anchor->GetPos().y - pos.y, anchor->GetPos().x - pos.x);
+				rad2anchor = atan2f(pos.y - anchor->GetPos().y, pos.x - anchor->GetPos().x) - (DX_PI_F / 2.f);
 				dis2anchor = sqrtf((anchor->GetPos().x - pos.x) * (anchor->GetPos().x - pos.x) + (anchor->GetPos().y - pos.y) * (anchor->GetPos().y - pos.y));
 				IsAnchored = true;
-				swing = 0.f;
+				swing = rad2anchor;
 				jump_count = 0;
+				wrad_old = 0;
+				wrad = cos(rad2anchor);// * (rad2anchor / (DX_PI_F / 2.f));
+				if (wrad > wrad_old) anchor_dir = 1;
+				if (wrad < wrad_old) anchor_dir = -1;
 			}
 			else {
-				wrad = cos(swing) * (rad2anchor / (PI / 2.f));
+				// ‚Ô‚ç‰º‚ª‚Á‚Ä‚¢‚é‚Æ‚«
+				if (trigger_r > 55) dis2anchor -= trigger_r / 32.f;
+				if (trigger_l > 55) dis2anchor += trigger_l / 32.f;
+
+				wrad_old = wrad;
+				wrad = cos(swing) * (rad2anchor / (DX_PI_F / 2.f));
+
+				if (wrad > wrad_old) anchor_dir = 1;
+				if (wrad < wrad_old) anchor_dir = -1;
+
 				pos.x = anchor->GetPos().x + cos(wrad + DX_PI_F / 2.f) * dis2anchor;
 				pos.y = anchor->GetPos().y + sin(wrad + DX_PI_F / 2.f) * dis2anchor;
-				swing += DX_PI_F / (dis2anchor / 10.f);
+
+				swing += DX_PI_F / 45.f;
 				jump = 0.f;
+
 			}
 		}
 	}
@@ -233,32 +249,48 @@ void	cPlayer::Update() {
 		if (key[KEY_INPUT_LEFT] == 2 || stick_lx <= -100) {
 			rect = true;
 			inertia -= 4;				// ˆÚ“®—ÊƒÆ‚ðŒ¸­
+			if (IsAnchored) {
+				if (anchor_dir ==  1) rad2anchor += DX_PI_F / 360.f;
+				//if (anchor_dir == -1) rad2anchor -= DX_PI_F / 360.f;
+			}
 		}
 		if (key[KEY_INPUT_RIGHT] == 2 || stick_lx >= 100) {
 			rect = false;
 			inertia += 4;				// ˆÚ“®—ÊƒÆ‚ð‘‰Á
+			if (IsAnchored) {
+				//if (anchor_dir ==  1) rad2anchor -= DX_PI_F / 360.f;
+				if (anchor_dir == -1) rad2anchor += DX_PI_F / 360.f;
+			}
 		}
 	}
 	else {
 		// ƒL[‰Ÿ‚µ‰º‚°ŽžˆÈŠO‚ÍŽû‘©‚·‚é
 		if (inertia > 0) inertia -= 2;
 		if (inertia < 0) inertia += 2;
+		if (IsAnchored) {
+			if (rad2anchor > 0.f) rad2anchor -= DX_PI_F / 1440.f;
+		}
 	}
 
 	if ((key[KEY_INPUT_SPACE] == 1 || pad_b[XINPUT_BUTTON_A] == 1) && jump_count < 2) {
 		jump = 20.f;
 		++jump_count;
+		if (anchor != nullptr) {
+			delete anchor;
+			IsAnchored = false;
+			anchor = nullptr;
+		}
 	}
 	if ((key[KEY_INPUT_C] == 1 || pad_b[XINPUT_BUTTON_X] == 1) && mp >= 10) {
 		mp -= 10;
 		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, PI * rect, PlayerBullet);
 	}
-
 	if (pad_b[XINPUT_BUTTON_Y] == 1) {
 		delete anchor;
 		IsAnchored = false;
+		IsFall = false;
 		anchor = nullptr;
-		anchor = new cAnchor(pos, { 10.f, 10.f, 10.f }, 20.f, -stick_rad, WireAnchor);
+		anchor = new cAnchor(pos, { 10.f, 10.f, 10.f }, 30.f, -stick_rad, WireAnchor);
 	}
 	// ŒŠ‚É—Ž‚Á‚±‚¿‚½
 	if (pos.y >= 3520) {

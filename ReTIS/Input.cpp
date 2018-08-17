@@ -5,6 +5,7 @@ int		pad_b[16];
 
 short	stick_lx, stick_ly;
 float	stick_rad;
+int		trigger_l, trigger_r;
 
 // キーボード入力を取得
 void	input_key() {
@@ -34,8 +35,13 @@ void	 input_pad() {
 		}
 		else pad_b[i] = 0;
 	}
+
 	stick_lx = input_pad.ThumbLX / 100;
 	stick_ly = input_pad.ThumbLY / 100;
+
+	trigger_l = input_pad.LeftTrigger;
+	trigger_r = input_pad.RightTrigger;
+
 	stick_rad = atan2f(stick_ly, stick_lx);
 }
 

@@ -59,8 +59,10 @@ protected:
 	int img[4][30];
 public:
 	cAnchor *anchor;
-	float	rad2anchor, dis2anchor, wrad, swing;
+	float	rad2anchor, dis2anchor, wrad, wrad_old, swing;
 	bool	IsAnchored = false;
+	bool	IsFall = false;
+	int 	anchor_dir = 0;
 	VECTOR	savepos;
 	cPlayer(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
