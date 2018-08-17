@@ -623,7 +623,6 @@ public:
 	cPlayer							*player;
 	cAnchor							*anchor;
 	cClearCollision					*clear;
-	cEnemyJumpman					*jumpman[ENEMY_MAX];
 	cEnemyHardBody					*hardbody[ENEMY_MAX];
 	////cEnemyWiremanManager::Wireman	*wireman[ENEMY_MAX];
 	cEnemyFryingman					*fryingman[ENEMY_MAX];
