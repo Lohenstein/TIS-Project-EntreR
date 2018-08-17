@@ -542,6 +542,23 @@ public:
 
 };
 
+class cSpring : public cEnemy {
+protected:
+	bool	flag;
+	float	sx, sy;
+	int		num = 0;
+public:
+	cSpring(int x, int y) {
+		pos = {(float)x, (float)y, 0.f};
+		flag = false;
+		size = { 250.f, 250.f, 0.f };
+		type = Spring;
+	}
+	void	Render(int image[30]);
+	void	Update();
+	int		GetNum() { return num; }
+	void	HitAction(cObject *hit);
+};
 
 class cCharacterManager {
 protected:
@@ -569,6 +586,8 @@ public:
 	cMoveFloor						*movefloor[ENEMY_MAX];
 	cCoin							*coin[ENEMY_MAX];
 	cEventsSwitch					*eventswitch;
+	cSpring							*spring[ENEMY_MAX];
+
 
 	int		wireman_img[273];
 	int		jumpman_img[120];
@@ -579,6 +598,7 @@ public:
 	int		circularsaw_img[5];
 	int		cannon_img[20];
 	int		coin_img[3];
+	int		spring_img[30];
 	int		floorimg;
 
 	void	Update();
@@ -605,6 +625,7 @@ public:
 		coin_img[0] = LoadGraph("data/img/enemy/NormalCoin.PNG");
 		coin_img[1] = LoadGraph("data/img/enemy/BigCoin.PNG");
 		coin_img[2] = LoadGraph("data/img/enemy/EnergyCoin.PNG");
+		LoadDivGraph("data/img/enemy/spring.png", 30, 30, 1, 250, 250, spring_img);
 	}
 	~cCharacterManager() {
 		DeleteCharacters();
@@ -634,6 +655,7 @@ public:
 	cObject *GetCoin(int num) { return (cObject*)coin[num]; }
 	cObject *GetJugem(int num) { return (cObject*)jugem[num]; }
 	cObject *GetBoss(int num) { return (cObject*)boss[num]; }
+	cObject *GetSpring(int num) { return (cObject*)spring[num]; }
 
 	int		GetPlayerHp() { return player->GetHp(); }
 
@@ -655,7 +677,8 @@ enum character {
 	eCoin,			// 12
 	eBoss,			// 13
 	eEvents,		// 14
-	eJugem			// 15
+	eJugem,			// 15
+	eSpring			// 16
 };
 
 // ç≈ëÂÅ@Å{ 14
