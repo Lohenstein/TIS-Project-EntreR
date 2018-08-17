@@ -534,6 +534,7 @@ public:
 
 };
 
+
 class cCharacterManager {
 protected:
 	int		possess_time = 0;
@@ -542,13 +543,13 @@ public:
 	// Character
 	cPlayer							*player;
 	cClearCollision					*clear;
-	cEnemyJumpman					*jumpman[ENEMY_MAX];
 	cEnemyHardBody					*hardbody[ENEMY_MAX];
 	////cEnemyWiremanManager::Wireman	*wireman[ENEMY_MAX];
 	cEnemyFryingman					*fryingman[ENEMY_MAX];
 	//////cEnemyWiremanManager::Anchor	*wireanchor[ENEMY_MAX];
 	//			*wmanager[ENEMY_MAX];
 	cEnemyGunman					*gunman[ENEMY_MAX];
+	cEnemyJumpman					*jumpman[ENEMY_MAX];
 	cEnemyBossmiddle				*bossmiddle[ENEMY_MAX];
 	cEnemyJugem						*jugem[ENEMY_MAX];
 	cEnemyBoss						*boss[ENEMY_MAX];
