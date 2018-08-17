@@ -9,10 +9,12 @@
 #include <cmath>
 #include <memory>
 #include <random>
+#include <ctime>
 
 // ƒwƒbƒ_
 #include "Easing.h"
 #include "Gui.h"
+#include "Dialog.h"
 #include "Camera.h"
 #include "Collision.h"
 #include "Input.h"

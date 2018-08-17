@@ -40,10 +40,10 @@ protected:
 
 
 public:
+
 	cCharacterBase() {};
 	~cCharacterBase() {
 	};
-	bool	possess;	// èÊÇËà⁄ÇÁÇÍÇƒÇ¢ÇÈÇ©
 	void	HitAction(cObject *hit);
 	void	Collision(cObject *hit);
 	void	MoveByAutomation();
@@ -58,11 +58,16 @@ class cPlayer : public cCharacterBase {
 protected:
 	int img[4][30];
 public:
+	cAnchor *anchor;
+	float	rad2anchor, dis2anchor, wrad, wrad_old, swing;
+	bool	IsAnchored = false;
+	bool	IsFall = false;
+	int 	anchor_dir = 0;
+	VECTOR	savepos;
 	cPlayer(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
 		speed = s;
-		possess = p;
 		type = Player;
 		IsClearFlag = false;
 		IsOverFlag  = false;
@@ -73,8 +78,18 @@ public:
 		LoadDivGraph("data/img/amecha/jump.png", 30, 1, 30, 606, 558, img[2]);
 		LoadDivGraph("data/img/amecha/shot.png", 30, 1, 30, 606, 544, img[3]);
 	}
-	~cPlayer() {}
+	~cPlayer() {
+		for (int i = 0; i < 30; i++) {
+			for (int j = 0; j < 4; j++) {
+				DeleteGraph(img[j][i]);
+			}
+		}
+	}
+	void	UpdateAnchor();
 	void	Render();
+	void	Update();
+	void	HitAction(cObject *hit);
+	cObject *GetAnchor() { return (cObject*)anchor; }
 };
 
 class cEnemy : public cCharacterBase {
@@ -113,7 +128,6 @@ public:
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
 		speed = s;
-		possess = p;
 		type = Enemy;
 		landing = false;
 		hp = 1;
@@ -152,13 +166,12 @@ public:
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
 		speed = s;
-		possess = p;
 		type = Enemy;
 		landing = false;
-		hp = 1;
+		hp = 2;
 
 		attack_count = 0;
-		bulletsize = { 50,50,0 };
+		bulletsize = { 10,10,0 };
 		bulletpos = { 0,0,0 };
 		image_change = 0;
 		move_pattern = 0;
@@ -174,7 +187,7 @@ public:
 	void MoveByAutomation();
 	void MoveByPlayer();
 	void Update();
-	void Render(int image[]);
+	void Render(int image[],int imagedead[]);
 };
 
 
@@ -192,7 +205,6 @@ public:
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
 		speed = s;
-		possess = p;
 		landing = false;
 		type = Enemy;
 		hp = 6;
@@ -210,95 +222,6 @@ public:
 	void MoveByAutomation();
 };
 
-
-class cEnemyWiremanManager : public cEnemy {
-public:
-	VECTOR WirePos;
-	int AnchorStretch;
-	int EnemyAnchorStretch;
-
-	class Wireman : public cEnemy {
-	public:
-		int enemy_count;
-		int EnemyAnchorStretch;
-
-		int mouse_state;
-		int mouse_posx;
-		int mouse_posy;
-		float move_speedx;
-		float move_speedy;
-		float anchor_speed;
-		float wire_radian;
-		float mouse_changeposx;
-		float mouse_changeposy;
-
-		int debug_int;
-		int image_change;
-		bool direction;			
-
-
-		Wireman(float x, float y, float w, float h, float s, bool p) {
-			pos = { x, y, 0.f };
-			size = { w, h, 0.f };
-			speed = s;
-			possess = p;
-			type = Enemy;
-			landing = false;
-			hp = 6;
-
-			enemy_count = 0;
-
-			mouse_state = 0;
-			mouse_posx = 0;
-			mouse_posy = 0;
-			move_speedx = 0.f;
-			move_speedy = 0.f;
-			anchor_speed = 10.f;
-			wire_radian = 0.f;
-			mouse_changeposx = 0.f;
-			mouse_changeposy = 0.f;
-			debug_int = 0;
-			image_change = 0;
-
-			direction = true;
-		}
-		void Update(VECTOR *WirePos, int *AnchorStretch, int *EnemyAnchorStretch);
-		void MoveByPlayer(VECTOR *WirePos, int *AnchorStretch);
-		void MoveByAutomation(VECTOR *WirePos, int *AnchorStretch, int *EnemyAnchorStretch);
-		void WireRender(VECTOR *WirePos, int *AnchorStretch, int *EnemyAnchorStretch);
-		void MouseStateGet();
-		void Render(int image[],int *AnchorStretch, int *EnemyAnchorStretch);
-	};
-
-	class Anchor : public cEnemy
-	{
-	public:
-		VECTOR  wirepos;
-
-		bool dir;
-		float wire_angle;
-		float wire_speed;
-		float move_speed;
-		int move_pattern;
-		int count;
-
-		Anchor(float x, float y, float w, float h, float s, bool p) {
-			pos = { x, y, 0.f };
-			size = { w, h, 0.f };
-			speed = s;
-			possess = p;
-			type = Enemy;
-			landing = false;
-			count = 0;
-
-			wirepos = { x,y,0.f };
-		}
-		void Update(VECTOR *WirePos, int *AnchorStretch, int *EnemyAnchorStretch);
-		void MoveByAutomation(VECTOR *WirePos, int *AnchorStretch);
-	};
-};
-
-
 class cEnemyFryingman : public cEnemy {
 protected:
 public:
@@ -311,7 +234,7 @@ public:
 	int radian;
 	int length;
 	int move_flow;		// 0,ç~â∫ 1,âÒì] 2,î≠ñC 3,è„è∏Åiè¡Ç¶ÇÈÅj
-	int rotation_time;	// Ç«ÇÃÇ≠ÇÁÇ¢âÒÇ¡ÇƒÇ¢ÇÈÇ©
+	int cooltime;	
 	bool firing;
 	int time_sub;
 	float lockon;
@@ -321,7 +244,6 @@ public:
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
 		speed = s;
-		possess = p;
 		landing = false;
 		type = Enemy;
 		hp = 2;
@@ -330,14 +252,13 @@ public:
 		angle = 30.f;
 		radian = 0;
 		length = 180;
-		move_flow = -1;
-		rotation_time = 200;
+		move_flow = 0;
+		cooltime = 0;
 		firing = false;
 		bulletsize = { 50,50,0 };
 		image_change = 0;
 	}
 	void Update();
-	void MoveByPlayer();
 	void MoveByAutomation();
 	void Render(int image[]);
 };
@@ -353,6 +274,7 @@ public:
 	VECTOR Player_old;
 	VECTOR Attack_pos;
 
+	int change;
 	bool direction;
 	int image_change;
 
@@ -360,16 +282,76 @@ public:
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
 		speed = s;
-		possess = p;
 		landing = false;
 		type = Enemy;
-		hp = 5;
+		hp = 2;
 
 		move_time = 0;
 		move_pattern = 0;
 		move_speed = 1.5f;
 		image_change = 0;
 		direction = false;
+		change = 0;
+	}
+	void Update();
+	void MoveByAutomation();
+	void Render(int image[]);
+};
+
+class cEnemyJugem :public cEnemy {
+protected:
+public:
+	bool direction;
+	int image_change;
+
+	short move_pattern;
+	short count;
+
+	cEnemyJugem(float x, float y, float w, float h, float s, bool p) {
+		pos = { x, y, 0.f };
+		size = { w, h, 0.f };
+		speed = s;
+		landing = false;
+		type = Enemy;
+		hp = 5;
+
+		image_change = 0;
+		direction = false;
+		move_pattern = 0;
+		direction = false;
+		count = 0;
+	}
+	void Update();
+	void MoveByAutomation();
+	void Render(int image[]);
+};
+
+class cEnemyBoss :public cEnemy {
+protected:
+public:
+	bool direction;
+	int image_change;
+
+	short enemy_move;
+	short attack_count;
+	VECTOR attackpos[5];
+	float lockon;
+	cEnemyBoss(float x, float y, float w, float h, float s, bool p) {
+		pos = { x, y, 0.f };
+		size = { w, h, 0.f };
+		speed = s;
+		landing = false;
+		type = Enemy;
+		hp = 5;
+
+		image_change = 0;
+		direction = false;
+		enemy_move = 0;
+		attack_count = 0;
+		for (int i = 0; i < 4; i++) {
+			attackpos[i] = {0,0,0};
+		}
+		lockon = 0.f;
 	}
 	void Update();
 	void MoveByAutomation();
@@ -391,7 +373,6 @@ public:
 		p = 0.f;
 		now_point = 0;
 		type = Enemy;
-		possess = false;
 
 		SetPoint(0, x1, y1);
 		SetPoint(1, x2, y2);
@@ -419,7 +400,6 @@ public:
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
 		speed = s;
-		possess = p;
 		type = Enemy;
 		landing = false;
 
@@ -449,7 +429,6 @@ public:
 		p = 0.f;
 		now_point = 0;
 		type = MoveFloor;
-		possess = false;
 
 		SetPoint(0, x1, y1);
 		SetPoint(1, x2, y2);
@@ -474,13 +453,14 @@ public:
 		SetPoint(x, y);
 		time = 0;
 		type = DropFloor;
-		possess = false;
 	}
 	void	Render();
 	void	Update();
 	void	SetPoint(float x, float y);
 	void	HitAction(cObject *hit);
 };
+
+
 
 class cClearCollision : public cEnemy {
 public:
@@ -532,6 +512,55 @@ public:
 	}
 };
 
+class cEventsSwitch : public cEnemy{
+public:
+	int attack_count;
+	int move_pattern;
+	float angle;
+
+	int image_change;
+	bool direction;
+	VECTOR bulletpos;
+	VECTOR bulletsize;
+
+	cEventsSwitch(float x, float y, float w, float h, float s, bool p) {
+		pos = { x, y, 0.f };
+		size = { w, h, 0.f };
+		speed = s;
+		type = Enemy;
+		landing = false;
+		hp = 2;
+
+		bulletsize = { 50,50,0 };
+		angle = 0.f;
+		image_change = 0;
+		attack_count = 0;
+		direction = false;
+		move_pattern = 0;
+	}
+	void Update();
+	void Render(int image[]);
+	void MoveByAutomation();
+
+};
+
+class cSpring : public cEnemy {
+protected:
+	bool	flag;
+	float	sx, sy;
+	int		num = 0;
+public:
+	cSpring(int x, int y) {
+		pos = {(float)x, (float)y, 0.f};
+		flag = false;
+		size = { 250.f, 250.f, 0.f };
+		type = Spring;
+	}
+	void	Render(int image[30]);
+	void	Update();
+	int		GetNum() { return num; }
+	void	HitAction(cObject *hit);
+};
 
 class cCharacterManager {
 protected:
@@ -541,14 +570,16 @@ public:
 	// Character
 	cPlayer							*player;
 	cClearCollision					*clear;
-	cEnemyJumpman					*jumpman[ENEMY_MAX];
 	cEnemyHardBody					*hardbody[ENEMY_MAX];
-	cEnemyWiremanManager::Wireman	*wireman[ENEMY_MAX];
+	////cEnemyWiremanManager::Wireman	*wireman[ENEMY_MAX];
 	cEnemyFryingman					*fryingman[ENEMY_MAX];
-	cEnemyWiremanManager::Anchor	*wireanchor[ENEMY_MAX];
-	cEnemyWiremanManager			*wmanager[ENEMY_MAX];
+	//////cEnemyWiremanManager::Anchor	*wireanchor[ENEMY_MAX];
+	//			*wmanager[ENEMY_MAX];
 	cEnemyGunman					*gunman[ENEMY_MAX];
+	cEnemyJumpman					*jumpman[ENEMY_MAX];
 	cEnemyBossmiddle				*bossmiddle[ENEMY_MAX];
+	cEnemyJugem						*jugem[ENEMY_MAX];
+	cEnemyBoss						*boss[ENEMY_MAX];
 
 	// Entity
 	cEnemyCircularSaw				*circularsaw[ENEMY_MAX];
@@ -556,15 +587,20 @@ public:
 	cDropFloor						*dropfloor[ENEMY_MAX];
 	cMoveFloor						*movefloor[ENEMY_MAX];
 	cCoin							*coin[ENEMY_MAX];
+	cEventsSwitch					*eventswitch;
+	cSpring							*spring[ENEMY_MAX];
+
 
 	int		wireman_img[273];
 	int		jumpman_img[120];
 	int		bossmiddle_img[200];
 	int		fryingman_img[123];
-	int		gunman_img[234];
+	int		gunman_imgdead[234];
+	int		gunman_img[111];
 	int		circularsaw_img[5];
 	int		cannon_img[20];
 	int		coin_img[3];
+	int		spring_img[30];
 	int		floorimg;
 
 	void	Update();
@@ -579,9 +615,10 @@ public:
 		wireanchor[0] = new cEnemyWiremanManager::Anchor(100, -100, 10, 10, 2, false);
 		wmanager[0]   = new cEnemyWiremanManager;
 		*/
-		LoadCharacters(name);
+		LoadCharacters(name);//24 5
 		LoadDivGraph("data/img/enemy/Jumpman.PNG", 120, 30, 4, 300, 300, jumpman_img);
-		LoadDivGraph("data/img/enemy/Gunman.PNG", 234, 39, 6, 300, 300, gunman_img);
+		LoadDivGraph("data/img/enemy/Gunman.PNG", 234, 39, 6, 300, 300, gunman_imgdead);
+		LoadDivGraph("data/img/enemy/GUNMAN1.PNG", 111, 37, 6, 300, 300, gunman_img);
 		LoadDivGraph("data/img/enemy/Fryingman.PNG", 123, 41, 3, 300, 300, fryingman_img);
 		LoadDivGraph("data/img/enemy/Bossmiddle.PNG", 200, 50, 4, 300, 300, bossmiddle_img);
 		LoadDivGraph("data/img/enemy/Wireman.PNG", 273, 39, 7, 300, 300, wireman_img);
@@ -590,19 +627,27 @@ public:
 		coin_img[0] = LoadGraph("data/img/enemy/NormalCoin.PNG");
 		coin_img[1] = LoadGraph("data/img/enemy/BigCoin.PNG");
 		coin_img[2] = LoadGraph("data/img/enemy/EnergyCoin.PNG");
+		LoadDivGraph("data/img/enemy/spring.png", 30, 30, 1, 250, 250, spring_img);
 	}
 	~cCharacterManager() {
 		DeleteCharacters();
+		for (int i = 0; i < 273; i++) { DeleteGraph(wireman_img[i]); }
+		for (int i = 0; i < 120; i++) { DeleteGraph(jumpman_img[i]); }
+		for (int i = 0; i < 200; i++) { DeleteGraph(bossmiddle_img[i]); }
+		for (int i = 0; i < 123; i++) { DeleteGraph(fryingman_img[i]); }
+		for (int i = 0; i < 234; i++) { DeleteGraph(gunman_img[i]); }
+		for (int i = 0; i <   5; i++) { DeleteGraph(circularsaw_img[i]); }
+		for (int i = 0; i <  20; i++) { DeleteGraph(cannon_img[i]); }
+		for (int i = 0; i <   3; i++) { DeleteGraph(coin_img[i]); }
+		DeleteGraph(floorimg);
 	}
 
 	cObject *GetPlayer() { return (cObject*)player; }
+	cObject *GetAnchor() { return (cObject*)player->GetAnchor(); }
 	cObject *GetClear() { return (cObject*)clear; }
 	cObject *GetEnemyJumpman(int num) { return (cObject*)jumpman[num]; }
 	cObject *GetEnemyHardBody(int num) { return (cObject*)hardbody[num]; }
-	cObject *GetEnemyWireman(int num) { return (cObject*)wireman[num]; }
 	cObject *GetEnemyFryingman(int num) { return (cObject*)fryingman[num]; }
-	cObject *GetEnemyWireAnchor(int num) { return (cObject*)wireanchor[num]; }
-	cObject *WireAnchor(int num) { return (cObject*)wireanchor[num]; }
 	cObject *GetEnemyGunman(int num) { return (cObject*)gunman[num]; }
 	cObject *GetEnemyBossmiddle(int num) { return (cObject*)bossmiddle[num]; }
 	cObject *GetCircularSaw(int num) { return (cObject*)circularsaw[num]; }
@@ -610,6 +655,9 @@ public:
 	cObject *GetDropFloor(int num) { return (cObject*)dropfloor[num]; }
 	cObject *GetMoveFloor(int num) { return (cObject*)movefloor[num]; }
 	cObject *GetCoin(int num) { return (cObject*)coin[num]; }
+	cObject *GetJugem(int num) { return (cObject*)jugem[num]; }
+	cObject *GetBoss(int num) { return (cObject*)boss[num]; }
+	cObject *GetSpring(int num) { return (cObject*)spring[num]; }
 
 	int		GetPlayerHp() { return player->GetHp(); }
 
@@ -628,5 +676,11 @@ enum character {
 	eMoveFloor,		// 9
 	eDropFloor,		// 10
 	eClear,			// 11(ÉNÉäÉAîªíË)
-	eCoin			// 12
+	eCoin,			// 12
+	eBoss,			// 13
+	eEvents,		// 14
+	eJugem,			// 15
+	eSpring			// 16
 };
+
+// ç≈ëÂÅ@Å{ 14

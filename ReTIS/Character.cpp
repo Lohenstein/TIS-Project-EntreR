@@ -17,36 +17,9 @@ void	cCharacterBase::MoveByAutomation() {
 	if (inertia < 0) inertia += 2;
 }
 void	cCharacterBase::MoveByPlayer() {
-	old = pos;	// 過去座標
-
-	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
-		if (key[KEY_INPUT_LEFT] == 2) {
-			rect = true;
-			inertia -= 4;				// 移動量θを減少
-		}
-		if (key[KEY_INPUT_RIGHT] == 2) {
-			rect = false;
-			inertia += 4;				// 移動量θを増加
-		}
-	}
-	else {
-		// キー押し下げ時以外は収束する
-		if (inertia > 0) inertia -= 2;
-		if (inertia < 0) inertia += 2;
-	}
-	if (key[KEY_INPUT_SPACE] == 1 && jump_count < 2) {
-		jump = 20.f;
-		++jump_count;
-	}
-	if (key[KEY_INPUT_C] == 1 && mp >= 300) {
-		mp = 0;
-		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, 0, PlayerBullet);
-	}
-	// 穴に落っこちた
-	if (pos.y >= 3520) {
-		IsOverFlag = true;
-	}
+	
 }
+
 void	cCharacterBase::Physical() {
 
 	if (inertia >  90) inertia = 90;	// はみ出しリミッタ
@@ -79,14 +52,9 @@ void	cCharacterBase::Physical() {
 }
 void	cCharacterBase::Update() {
 	// 乗り移る
-	if (possess) {
-		MoveByPlayer();		// 乗り移っていたら手動操作
-		FocusOld = FocusPos;
-		FocusPos = pos;
-	}
-	else {
-		MoveByAutomation();	// その他は自動
-	}
+	FocusOld = FocusPos;
+	FocusPos = pos;
+
 	// 無敵時間
 	if (invincible) {
 		const int invicible_time_max = 200;
@@ -117,33 +85,31 @@ void	cCharacterBase::HitAction(cObject *hit) {
 		Collision(hit);
 		break;
 	case Enemy:
-		Damaged();
+		if (this->GetType() == Player) Damaged();
 		break;
 	case EnemyBullet:
-		Damaged();
+		if (this->GetType() == Player) Damaged();
 		break;
 	case PlayerBullet:
-		possess = true;
-		break;
-	case PlayerAttack:
-			Damaged();
+		if (this->GetType() != Player) Damaged();
 		break;
 	case MapTile:
 		Collision(hit);
 		break;
 	case Clear:
-		if (this->GetType() == Player) {
-			IsClearFlag = true;
-		}
+		if (this->GetType() == Player) IsClearFlag = true;
 		break; 
 	case NormalCoin:
-		if (possess) coin++;
+		if (this->GetType() == Player) coin++;
 		break;
 	case EneCoin:
-		if (possess) ecoin++;
+		if (this->GetType() == Player) ecoin++;
 		break;
 	case RareCoin:
-		if (possess) rcoin++;
+		if (this->GetType() == Player) rcoin++;
+		break;
+	case Spring:
+		jump = 40.f;
 		break;
 	}
 }
@@ -201,6 +167,7 @@ void	cCharacterBase::Collision(cObject *hit) {
 		break;
 	}
 }
+
 /*------------------------------------------------------------------------------*
 | <<< cPlayer >>>
 *------------------------------------------------------------------------------*/
@@ -216,6 +183,172 @@ void	cPlayer::Render() {
 	}
 	else {
 		DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
+	}
+	if (anchor != nullptr) anchor->Render(pos);
+	DrawFormatString(pos.x, pos.y, 0xFFFFFF, "%f, %d", wrad, anchor_dir);
+}
+
+void	cPlayer::UpdateAnchor() {
+	if (anchor != nullptr) {
+		// 飛んでるとき
+		if (anchor->GetFlag()) {
+			anchor->Update();
+			if (sqrtf((anchor->GetPos().x - pos.x) * (anchor->GetPos().x - pos.x) + (anchor->GetPos().y - pos.y) * (anchor->GetPos().y - pos.y)) >= 600.f) {
+				delete anchor;
+				anchor = nullptr;
+				IsAnchored = false;
+			}
+		}
+		else {
+			// くっついたとき
+			if (!IsAnchored) {
+				savepos = pos;
+				rad2anchor = atan2f(pos.y - anchor->GetPos().y, pos.x - anchor->GetPos().x) - (DX_PI_F / 2.f);
+				dis2anchor = sqrtf((anchor->GetPos().x - pos.x) * (anchor->GetPos().x - pos.x) + (anchor->GetPos().y - pos.y) * (anchor->GetPos().y - pos.y));
+				IsAnchored = true;
+				swing = rad2anchor;
+				jump_count = 0;
+				wrad_old = 0;
+				wrad = cos(rad2anchor);// * (rad2anchor / (DX_PI_F / 2.f));
+				if (wrad > wrad_old) anchor_dir = 1;
+				if (wrad < wrad_old) anchor_dir = -1;
+			}
+			else {
+				// ぶら下がっているとき
+				if (trigger_r > 55) dis2anchor -= trigger_r / 32.f;
+				if (trigger_l > 55) dis2anchor += trigger_l / 32.f;
+
+				wrad_old = wrad;
+				wrad = cos(swing) * (rad2anchor / (DX_PI_F / 2.f));
+
+				if (wrad > wrad_old) anchor_dir = 1;
+				if (wrad < wrad_old) anchor_dir = -1;
+
+				pos.x = anchor->GetPos().x + cos(wrad + DX_PI_F / 2.f) * dis2anchor;
+				pos.y = anchor->GetPos().y + sin(wrad + DX_PI_F / 2.f) * dis2anchor;
+
+				swing += DX_PI_F / 45.f;
+				jump = 0.f;
+
+			}
+		}
+	}
+}
+
+void	cPlayer::Update() {
+	old = pos;	// 過去座標
+
+	// 乗り移る
+	FocusOld = FocusPos;
+	FocusPos = pos;
+
+	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2 || stick_lx >= 100 || stick_lx <= -100) {
+		if (key[KEY_INPUT_LEFT] == 2 || stick_lx <= -100) {
+			rect = true;
+			inertia -= 4;				// 移動量θを減少
+			if (IsAnchored) {
+				if (anchor_dir ==  1) rad2anchor += DX_PI_F / 360.f;
+				//if (anchor_dir == -1) rad2anchor -= DX_PI_F / 360.f;
+			}
+		}
+		if (key[KEY_INPUT_RIGHT] == 2 || stick_lx >= 100) {
+			rect = false;
+			inertia += 4;				// 移動量θを増加
+			if (IsAnchored) {
+				//if (anchor_dir ==  1) rad2anchor -= DX_PI_F / 360.f;
+				if (anchor_dir == -1) rad2anchor += DX_PI_F / 360.f;
+			}
+		}
+	}
+	else {
+		// キー押し下げ時以外は収束する
+		if (inertia > 0) inertia -= 2;
+		if (inertia < 0) inertia += 2;
+		if (IsAnchored) {
+			if (rad2anchor > 0.f) rad2anchor -= DX_PI_F / 1440.f;
+		}
+	}
+
+	if ((key[KEY_INPUT_SPACE] == 1 || pad_b[XINPUT_BUTTON_A] == 1) && jump_count < 2) {
+		jump = 20.f;
+		++jump_count;
+		if (anchor != nullptr) {
+			delete anchor;
+			IsAnchored = false;
+			anchor = nullptr;
+		}
+	}
+	if ((key[KEY_INPUT_C] == 1 || pad_b[XINPUT_BUTTON_X] == 1) && mp >= 10) {
+		mp -= 10;
+		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, PI * rect, PlayerBullet);
+	}
+	if (pad_b[XINPUT_BUTTON_Y] == 1) {
+		delete anchor;
+		IsAnchored = false;
+		IsFall = false;
+		anchor = nullptr;
+		anchor = new cAnchor(pos, { 10.f, 10.f, 10.f }, 30.f, -stick_rad, WireAnchor);
+	}
+	// 穴に落っこちた
+	if (pos.y >= 3520) {
+		IsOverFlag = true;
+	}
+
+	// 無敵時間
+	if (invincible) {
+		const int invicible_time_max = 200;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
+	}
+	// 重力
+	Physical();
+	UpdateAnchor();
+}
+void	cPlayer::HitAction(cObject *hit) {
+
+	switch (hit->GetType()) {
+		// ----マップタイルとの当たり判定-----------------------------------------------------------
+	case MoveFloor:
+		Collision(hit);
+		if (landing) {
+			pos.x += hit->GetPos().x - hit->GetOld().x;
+			jump = -4.f;
+		}
+		break;
+	case DropFloor:
+		Collision(hit);
+		break;
+	case Enemy:
+		if (this->GetType() == Player) Damaged();
+		break;
+	case EnemyBullet:
+		if (this->GetType() == Player) Damaged();
+		break;
+	case PlayerBullet:
+		if (this->GetType() != Player) Damaged();
+		break;
+	case MapTile:
+		Collision(hit);
+		if (anchor != nullptr) {
+			IsAnchored = false;
+			delete anchor;
+			anchor = nullptr;
+			pos = old;
+		}
+		break;
+	case Clear:
+		if (this->GetType() == Player) IsClearFlag = true;
+		break;
+	case NormalCoin:
+		if (this->GetType() == Player) coin++;
+		break;
+	case EneCoin:
+		if (this->GetType() == Player) ecoin++;
+		break;
+	case RareCoin:
+		if (this->GetType() == Player) rcoin++;
+		break;
 	}
 }
 /*------------------------------------------------------------------------------*
@@ -233,71 +366,38 @@ void	cCharacterManager::Render() {
 	player->Render();
 	clear->DebugRender();
 	for (int i = 0; i < ENEMY_MAX; i++) {
-		if (jumpman[i]		!= nullptr) jumpman[i]->Render(jumpman_img);
-		if (hardbody[i]		!= nullptr) hardbody[i]->Render();
-		if (wireman[i]		!= nullptr) wireman[i]->Render(wireman_img,&wmanager[i]->AnchorStretch,&wmanager[i]->EnemyAnchorStretch);
-		if (fryingman[i]	!= nullptr) fryingman[i]->Render(fryingman_img);
-		if (wireman[i]		!= nullptr) wireman[i]->WireRender(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch, &wmanager[i]->EnemyAnchorStretch);
-		if (wireanchor[i]	!= nullptr) wireanchor[i]->Render();
-		if (gunman[i]		!= nullptr)	gunman[i]->Render(gunman_img);
-		if (bossmiddle[i]	!= nullptr) bossmiddle[i]->Render(bossmiddle_img);
-		if (circularsaw[i]	!= nullptr) circularsaw[i]->Render(circularsaw_img);
-		if (cannon[i]		!= nullptr) cannon[i]->Render(cannon_img);
-		if (movefloor[i]	!= nullptr) movefloor[i]->Render();
-		if (dropfloor[i]	!= nullptr) dropfloor[i]->Render();
-		if (coin[i]			!= nullptr) coin[i]->Render(coin_img);
-	}
-	if (possess_time != 0) {
-		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "%d", (600 - possess_time) / 60);
-		DrawFormatStringToHandle(FocusPos.x - w / 2, FocusPos.y - 120, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "%d", (600 - possess_time) / 60);
+		if (jumpman[i]		!= nullptr) jumpman[i]		->Render(jumpman_img);
+		if (hardbody[i]		!= nullptr) hardbody[i]		->Render();
+		if (fryingman[i]	!= nullptr) fryingman[i]	->Render(fryingman_img);
+		if (gunman[i]		!= nullptr)	gunman[i]		->Render(gunman_img,gunman_imgdead);
+		if (bossmiddle[i]	!= nullptr) bossmiddle[i]	->Render(bossmiddle_img);
+		if (circularsaw[i]	!= nullptr) circularsaw[i]	->Render(circularsaw_img);
+		if (cannon[i]		!= nullptr) cannon[i]		->Render(cannon_img);
+		if (movefloor[i]	!= nullptr) movefloor[i]	->Render();
+		if (dropfloor[i]	!= nullptr) dropfloor[i]	->Render();
+		if (coin[i]			!= nullptr) coin[i]			->Render(coin_img);
+		if (spring[i]		!= nullptr) spring[i]		->Render(spring_img);
 	}
 }
 void	cCharacterManager::Update() {
 	player->Update();
 	for (int i = 0; i < ENEMY_MAX; i++) {
-		if (jumpman[i]		!= nullptr) jumpman[i]->Update();
-		if (hardbody[i]		!= nullptr) hardbody[i]->Update();
-		if (wireman[i]		!= nullptr) wireman[i]->Update(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch, &wmanager[i]->EnemyAnchorStretch);
-		if (fryingman[i]	!= nullptr) fryingman[i]->Update();
-		if (wireanchor[i]	!= nullptr) wireanchor[i]->Update(&wmanager[i]->WirePos, &wmanager[i]->AnchorStretch, &wmanager[i]->EnemyAnchorStretch);
-		if (gunman[i]		!= nullptr)	gunman[i]->Update();
-		if (bossmiddle[i]	!= nullptr) bossmiddle[i]->Update();
-		if (circularsaw[i]	!= nullptr) circularsaw[i]->Update(5.f, 0, 1);
-		if (cannon[i]		!= nullptr) cannon[i]->Update();
-		if (movefloor[i]	!= nullptr) movefloor[i]->Update(3.f, 0, 1);
-		if (dropfloor[i]	!= nullptr) dropfloor[i]->Update();
-		if (coin[i]			!= nullptr) coin[i]->Update();
+		if (jumpman[i]		!= nullptr) jumpman[i]		->Update();
+		if (hardbody[i]		!= nullptr) hardbody[i]		->Update();
+		if (fryingman[i]	!= nullptr) fryingman[i]	->Update();
+		if (gunman[i]		!= nullptr)	gunman[i]		->Update();
+		if (bossmiddle[i]	!= nullptr) bossmiddle[i]	->Update();
+		if (circularsaw[i]	!= nullptr) circularsaw[i]	->Update(5.f, 0, 1);
+		if (cannon[i]		!= nullptr) cannon[i]		->Update();
+		if (movefloor[i]	!= nullptr) movefloor[i]	->Update(3.f, 0, 1);
+		if (dropfloor[i]	!= nullptr) dropfloor[i]	->Update();
+		if (coin[i]			!= nullptr) coin[i]			->Update();
 	}
-	PossessListener();
 	DeleteDeathCharacters();
 	if (mp > 300) mp = 300;
 }
-void	cCharacterManager::PossessListener() {
-	bool IsEnemyHavePossess = false;
-	for (int i = 0; i < ENEMY_MAX; i++) {
-		if (jumpman[i]   != nullptr) if (jumpman[i]->possess   == true) IsEnemyHavePossess = true;
-		if (hardbody[i]  != nullptr) if (hardbody[i]->possess  == true) IsEnemyHavePossess = true;
-		if (wireman[i]   != nullptr) if (wireman[i]->possess   == true) IsEnemyHavePossess = true;
-		if (fryingman[i] != nullptr) if (fryingman[i]->possess == true) IsEnemyHavePossess = true;
-		if (gunman[i]    != nullptr) if (gunman[i]->possess    == true) IsEnemyHavePossess = true;
-	}
-	if (IsEnemyHavePossess) {
-		player->possess = false;
-		possess_time++;
-		const int possess_time_max = 60 * 10; // 10秒
-		if (possess_time >= possess_time_max) {
-			for (int i = 0; i < ENEMY_MAX; i++) {
-				if (jumpman[i]   != nullptr) jumpman[i]->possess   = false;
-				if (hardbody[i]  != nullptr) hardbody[i]->possess  = false;
-				if (wireman[i]   != nullptr) wireman[i]->possess   = false;
-				if (fryingman[i] != nullptr) fryingman[i]->possess = false;
-				if (gunman[i]    != nullptr) gunman[i]->possess    = false;
-			}
-			player->possess = true;
-			possess_time = 0;
-		}
-	}
-}
+
+
 void	cCharacterManager::DeleteCharacters() {
 
 	delete player;
@@ -306,21 +406,19 @@ void	cCharacterManager::DeleteCharacters() {
 
 		delete jumpman[i];
 		delete hardbody[i];
-		delete wireman[i];
 		delete fryingman[i];
 		delete gunman[i];
 		delete bossmiddle[i];
 		delete dropfloor[i];
 		delete movefloor[i];
 
-		jumpman[i] = nullptr;
-		hardbody[i] = nullptr;
-		wireman[i] = nullptr;
-		fryingman[i] = nullptr;
-		gunman[i] = nullptr;
-		bossmiddle[i] = nullptr;
-		dropfloor[i] = nullptr;
-		movefloor[i] = nullptr;
+		jumpman[i]		= nullptr;
+		hardbody[i]		= nullptr;
+		fryingman[i]	= nullptr;
+		gunman[i]		= nullptr;
+		bossmiddle[i]	= nullptr;
+		dropfloor[i]	= nullptr;
+		movefloor[i]	= nullptr;
 
 	}
 }
@@ -331,50 +429,30 @@ void	cCharacterManager::DeleteDeathCharacters() {
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (jumpman[i] != nullptr) {
 			if (jumpman[i]->GetHp() <= 0) {
-				if (jumpman[i]->possess) {
-					player->possess = true;
-					possess_time = 0;
-				}
 				delete jumpman[i];
 				jumpman[i] = nullptr;
 			}
 		}
 		if (hardbody[i] != nullptr) {
 			if (hardbody[i]->GetHp() <= 0) {
-				if (hardbody[i]->possess) {
-					player->possess = true;
-					possess_time = 0;
-				}
 				delete hardbody[i];
 				hardbody[i] = nullptr;
 			}
 		}
 		if (fryingman[i] != nullptr) {
 			if (fryingman[i]->GetHp() <= 0) {
-				if (fryingman[i]->possess) {
-					player->possess = true;
-					possess_time = 0;
-				}
 				delete fryingman[i];
 				fryingman[i] = nullptr;
 			}
 		}
 		if (gunman[i] != nullptr) {
 			if (gunman[i]->GetHp() <= 0) {
-				if (gunman[i]->possess) {
-					player->possess = true;
-					possess_time = 0;
-				}
 				delete gunman[i];
 				gunman[i] = nullptr;
 			}
 		}
 		if (bossmiddle[i] != nullptr) {
 			if (bossmiddle[i]->GetHp() <= 0) {
-				if (bossmiddle[i]->possess) {
-					player->possess = true;
-					possess_time = 0;
-				}
 				delete bossmiddle[i];
 				bossmiddle[i] = nullptr;
 			}
@@ -446,6 +524,14 @@ void	cCharacterManager::LoadCharacters(string name) {
 				}
 			}
 			break;
+		case eBoss:
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				if (boss[i] == nullptr) {
+					boss[i] = new cEnemyBoss(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
+					break;
+				}
+			}
+			break;
 		case eCircularsaw:
 			for (int i = 0; i < ENEMY_MAX; i++) {
 				if (circularsaw[i] == nullptr) {
@@ -486,6 +572,14 @@ void	cCharacterManager::LoadCharacters(string name) {
 				}
 			}
 			break;
+		case eSpring:
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				if (spring[i] == nullptr) {
+					spring[i] = new cSpring(stoi(str.at(1)), stoi(str.at(2)));
+					break;
+				}
+			}
+			break;
 		default:
 			MessageBox(NULL, "キャラクターシート読み込み時に\n存在しないパラメータが読み込まれました。", "Debug - Error", MB_OK);
 			break;
@@ -499,53 +593,14 @@ void	cCharacterManager::LoadCharacters(string name) {
 void cEnemyJumpman::Update()
 {
 	if (hp > 0) {
-		if (possess) {
-			MoveByPlayer();		// 乗り移っていたら手動操作
-			FocusOld = FocusPos;
-			FocusPos = pos;
-		}
-		else {
-			MoveByAutomation();	// その他は自動
-			attack_flag = false;
-		}
+		MoveByAutomation();	// その他は自動
+		attack_flag = false;
 	}
+	if (image_change == 89)
+		hp = 0;
 //	if (hp == 0)
 	//	possess = false;
 	Physical();
-}
-
-void	cEnemyJumpman::MoveByPlayer() {
-
-	if (hp > 0) {
-		if (key[KEY_INPUT_C] == 1 && attack_flag == false) {
-			attack_flag = true;
-		}
-
-		if (attack_flag == false) {
-			if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
-				if (key[KEY_INPUT_LEFT] == 2) {
-					inertia -=4;			 	// 移動量θを減少
-												// 速度が速い敵なので少し上げています
-				}
-				if (key[KEY_INPUT_RIGHT] == 2) {
-					inertia += 4;				// 移動量θを増加
-				}
-			}
-			else {
-				// キー押し下げ時以外は収束する
-				if (inertia > 0) inertia -= 2;
-				if (inertia < 0) inertia += 2;
-			}
-			if (inertia >  90) inertia = 90;	// はみ出しリミッタ
-			if (inertia < -90) inertia = -90;
-
-			if (key[KEY_INPUT_SPACE] == 1) {
-				jump = 30.f;					// *ジャンプ力を高くするとブロックの衝突判定が正常にされなくなります
-				++jump_count;
-				landing = false;
-			}
-		}
-	}
 }
 
 void cEnemyJumpman::MoveByAutomation()
@@ -575,66 +630,17 @@ void cEnemyJumpman::MoveByAutomation()
 
 void cEnemyJumpman::Render(int image[120])
 {
-	if (hp > 0) {
-		if (possess == false) {
-			if (landing == false) {
-				if (image_change > 28) {
-					image_change = 0;
-				}
-				if (image_change != 28)
-					image_change++;
-			}
-			if (landing == true)
+	if (hp >= 1) {
+		if (landing == false) {
+			if (image_change > 28)
 				image_change = 0;
+			if (image_change != 28)
+				image_change++;
 		}
-		else if (possess == true) {
-			if (landing == false) {
-				if (image_change > 29)
-					image_change = 0;
-				if (image_change == 28)
-					image_change = 28;
-				else image_change++;
-			}
-			else if (landing == true) {
-				if (key[KEY_INPUT_LEFT] != 0 && attack_flag == false) {
-					if (image_change < 90)
-						image_change = 90;
-					image_change++;
-					if (image_change > 119)
-						image_change = 90;
-					direction = false;
-				}
-				else if (key[KEY_INPUT_RIGHT] != 0 && attack_flag == false) {
-					if (image_change < 90)
-						image_change = 90;
-					image_change++;
-					if (image_change > 119)
-						image_change = 90;
-					direction = true;
-				}
-				else if (attack_flag == true) {
-					inertia = 0;
-					player_attack = pos;
-					if (direction == true) {
-						player_attack.x += 100;
-						bullet.Shot(player_attack, { 10,10,0 }, 0, 180, EnemyBullet);
-					}
-					else {
-						player_attack.x -= 100;
-						bullet.Shot(player_attack, { 10,10,0 }, 0, 180, EnemyBullet);
-					}
-					if (image_change < 30 || image_change > 59)
-						image_change = 30;
-					image_change++;
-					if (image_change == 59) {
-						attack_flag = false;
-					}
-				}
-				else image_change = 0;
-			}
-		}
+		if (landing == true)
+			image_change = 0;
 	}
-	else {
+	else if (hp == 1){
 		// 死んだ処理
 		if (image_change < 60 || image_change > 90)
 			image_change = 60;
@@ -664,183 +670,72 @@ void cEnemyGunman::MoveByAutomation()
 				attack_flag = true;
 				attack_count = 0;
 				move_pattern = 1;
-				image_change = 40;
-				if (pos.x < FocusPos.x) {
-					bulletpos.x += 100;
-					direction = false;
-				}
-				else {
-					bulletpos.x -= 100;
-					direction = true;
-				}
 			}
 			break;
 		case 1:
 			attack_count++;
-			if (attack_flag == true) {
-				attack_flag = false;
-				if (direction == false)
-					bullet.Shot(bulletpos, bulletsize, -10, PI, EnemyBullet);
-				else bullet.Shot(bulletpos, bulletsize, 10, PI, EnemyBullet);
+			if (attack_count == 1) {
+				pos.x < FocusPos.x ? direction = false : direction = true;
+				
 			}
-			if (attack_count == 200) {
+			if (attack_flag) {
+				attack_flag = false;
+				bulletpos = pos;
+				if (direction) {
+					bulletpos.y -= 40;
+					bulletpos.x -= 40;
+				}
+				else {
+
+					bulletpos.y -= 40;
+					bulletpos.x += 40;
+				}
+				direction ? bullet.Shot(bulletpos, bulletsize, 10, lockon, EnemyBullet) : bullet.Shot(bulletpos, bulletsize, -10, PI, EnemyBullet);
+			}
+			if (attack_count == 100) {
 				attack_count = 0;
 				move_pattern = 2;
 			}
 			break;
 		case 2:
 			attack_count++;
-			if (attack_count == 200) {
+			if (attack_count == 100) {
 				move_pattern = 0;
 				attack_count = 0;
 			}
 			break;
-		case 3:
-			if (image_change < 156 && image_change > 194)
-				image_change = 156;
-			image_change++;
-			if (image_change == 194)
-				image_change == 194;
-			break;
 		}
 	}
 }
 
-void cEnemyGunman::MoveByPlayer()
-{
-	if (hp > 0) {
-		switch (player_move_pattern) {
-		case 0:
-			if (key[KEY_INPUT_C] == 1) {
-				player_move_pattern = 1;
-				image_change = 40;
-				attack_count = 0;
-				bulletpos = pos;
-				inertia = 0;
-			}
-
-			if (landing == true)
-				jump_count = 0;
-			if (key[KEY_INPUT_SPACE] == 1 && jump_count < 2) {
-				jump = 20.f;
-				++jump_count;
-			}
-			if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
-				if (key[KEY_INPUT_LEFT] == 2) {
-					inertia -= 4;			 	// 移動量θを減少
-												// 速度が速い敵なので少し上げています
-				}
-				if (key[KEY_INPUT_RIGHT] == 2) {
-					inertia += 4;				// 移動量θを増加
-				}
-			}
-			else {
-				// キー押し下げ時以外は収束する
-				if (inertia > 0) inertia -= 2;
-				if (inertia < 0) inertia += 2;
-			}
-			if (inertia >  90) inertia = 90;	// はみ出しリミッタ
-			if (inertia < -90) inertia = -90;
-			break;
-		case 1:
-			if (attack_count == 0) {
-				if (direction == false) {
-					//bulletpos.x += 100;
-					bullet.Shot(bulletpos, bulletsize, -10, PI, PlayerAttack);
-				}
-
-				else {
-					//bulletpos.x -= 100;
-					bullet.Shot(bulletpos, bulletsize, 10, PI, PlayerAttack);
-				}
-			}
-
-			attack_count++;
-			if (attack_count == 90) {
-				player_move_pattern = 0;
-				attack_count = 0;
-			}
-			break;
-		case 2:
-			break;
-		case 3:
-			break;
-		}
-	}
-
-}
 
 void cEnemyGunman::Update()
 {
-	if (possess) {
-		MoveByPlayer();		// 乗り移っていたら手動操作
-		FocusOld = FocusPos;
-		FocusPos = pos;
-		move_pattern = 0;
-	}
-	else {
-		MoveByAutomation();	// その他は自動
-		player_move_pattern = 0;
-	}
+
+	MoveByAutomation();	// その他は自動
+	player_move_pattern = 0;
+
+	if (image_change == 179)
+		hp = 0;
 	Physical();
 }
 
-void cEnemyGunman::Render(int image[])
+void cEnemyGunman::Render(int image[],int imagedead[])
 {
-	if (hp > 0) {
-		if (possess == false) {
-			switch (move_pattern) {
-			case 0:
-				image_change = 195;
-				break;
-			case 1:
-				if (image_change != 63)
-					image_change++;
-				bulletpos.x++;
-				//			image_change = 40;
-				break;
-			case 2:
-				image_change = 1;
-				break;
-			}
-		}
-		else if (possess == true) {
-			switch (player_move_pattern) {
-			case 0:
-				if (key[KEY_INPUT_SPACE] != 0) {
-
-				}
-				if (key[KEY_INPUT_LEFT] != 0) {
-					if (image_change < 194)
-						image_change = 195;
-					direction = true;
-					image_change++;
-					if (image_change >= 233) {
-						image_change = 195;
-					}
-				}
-				else if (key[KEY_INPUT_RIGHT] != 0) {
-					if (image_change < 194)
-						image_change = 195;
-					direction = false;
-					image_change++;
-					if (image_change >= 233) {
-						image_change = 195;
-					}
-				}
-				else image_change = 195;
-				break;
-			case 1:
-				if (image_change != 63)
-					image_change++;
-				bulletpos.x++;
-				break;
-			case 2:
-				break;
-			}
+	if (hp > 1) {
+		switch (move_pattern) {
+		case 0:
+			image_change = 0;
+			break;
+		case 1:
+			//			image_change = 40;
+			break;
+		case 2:
+			break;
 		}
 	}
-	else {
+	else if (hp == 1){
+		
 		if (image_change < 156 || image_change > 181)
 			image_change = 156;
 
@@ -848,11 +743,26 @@ void cEnemyGunman::Render(int image[])
 			image_change = 180;
 		else		image_change++;
 	}
-
-	if (direction == true)
-		DrawRotaGraph(pos.x, pos.y - 15, 0.7, 0, image[image_change], TRUE, FALSE);
-	else if (direction == false)
-		DrawRotaGraph(pos.x, pos.y - 15, 0.7, 0, image[image_change], TRUE, TRUE);
+	if (hp != 1) {
+		if (direction == true) {
+			DrawRotaGraph(pos.x, pos.y - 15, 0.7, 0, image[image_change], TRUE, FALSE);
+			DrawRotaGraph(pos.x, pos.y - 15, 0.7, lockon, image[37], TRUE, FALSE);
+			DrawRotaGraph(pos.x, pos.y - 15, 0.7, lockon, image[74], TRUE, FALSE);
+		}
+		else if (direction == false) {
+			DrawRotaGraph(pos.x, pos.y - 15, 0.7, 0, image[image_change], TRUE, TRUE);
+			DrawRotaGraph(pos.x, pos.y - 15, 0.7, lockon, image[37], TRUE, TRUE);
+			DrawRotaGraph(pos.x, pos.y - 15, 0.7, lockon, image[74], TRUE, TRUE);
+		}
+	}
+	else if (hp == 1) {
+		if (direction == true) {
+			DrawRotaGraph(pos.x, pos.y - 15, 0.7, 0, imagedead[image_change], TRUE, FALSE);
+		}
+		else if (direction == false) {
+			DrawRotaGraph(pos.x, pos.y - 15, 0.7, 0, imagedead[image_change], TRUE, TRUE);
+		}
+	}
 }
 
 /*------------------------------------------------------------------------------*
@@ -860,368 +770,14 @@ void cEnemyGunman::Render(int image[])
 *------------------------------------------------------------------------------*/
 void cEnemyHardBody::Update()
 {
-	if (possess) {
-		MoveByPlayer();
-		FocusOld = FocusPos;
-		FocusPos = pos;
-	}
-	else {
-		MoveByAutomation();
-	}
+	MoveByAutomation();
 	Physical();
 }
 
-void	cEnemyHardBody::MoveByPlayer() {
-	old = pos;	// 過去座標
-
-	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
-		if (key[KEY_INPUT_LEFT] == 2) {
-			inertia -= 4;				// 移動量θを減少
-		}
-		if (key[KEY_INPUT_RIGHT] == 2) {
-			inertia += 4;				// 移動量θを増加
-		}
-	}
-	else {
-		// キー押し下げ時以外は収束する
-		if (inertia > 0) inertia -= 2;
-		if (inertia < 0) inertia += 2;
-	}
-	if (landing == true)
-		jump_count = 0;
-	if (key[KEY_INPUT_SPACE] == 1 && jump_count < 2) {
-		jump = 20.f;
-		++jump_count;
-	}
-}
 
 void cEnemyHardBody::MoveByAutomation()
 {
-	if (possess == false) {
-		if (pos.x - 300 <= FocusPos.x && pos.x + 300 >= FocusPos.x && attack_flag == false) {
-			attack_flag = true;
-		}
 
-		switch (attack_time)
-		{
-		case 0:
-			if (attack_flag == true) {
-				attack_time = 1;
-			}
-			break;
-		case 1:
-			if (landing == true && jump_count != 3) {
-				jump = 15.f;
-				jump_count++;
-				landing = false;
-			}
-			else if (jump_count == 3) {
-				jump = 30.f;
-				landing = false;
-				attack_time = 2;
-				jump_count = 0;
-			}
-
-			break;
-		case 2:
-			if (landing == false) {
-				if (pos.x < FocusPos.x)
-					pos.x += 2;
-				else pos.x -= 2;
-			}
-			else if (landing == true) {
-				cool_time++;
-				if (cool_time = 100) {
-					attack_time = 3;
-					cool_time = 0;
-				}
-			}
-			break;
-		case 3:
-			attack_flag = false;
-			attack_time = 0;
-			break;
-		}
-	}
-}
-
-/*------------------------------------------------------------------------------*
-| <<< cEnemyWireManager >>>
-*------------------------------------------------------------------------------*/
-void cEnemyWiremanManager::Wireman::MouseStateGet()
-{
-	SetMouseDispFlag(TRUE);
-	GetMousePoint(&mouse_posx, &mouse_posy);
-	mouse_changeposx = mouse_posx + MouseAdd.x - WINDOW_SIZE_X / 2;
-	mouse_changeposy = mouse_posy + MouseAdd.y - WINDOW_SIZE_Y / 2;
-}
-
-void cEnemyWiremanManager::Anchor::Update(VECTOR *WirePos, int *AnchorStretch, int *EnemyAnchorStretch)
-{
-	if (*AnchorStretch == 0 && *EnemyAnchorStretch == 0) {
-		pos.x = -100;
-		pos.y = -100;
-	}
-	else pos = *WirePos;
-	if (ceiling == true && *AnchorStretch == 1) {
-		*AnchorStretch = 2;
-		ceiling = false;
-	}
-	if (ceiling == true && *EnemyAnchorStretch == 1) {
-		*EnemyAnchorStretch = 2;
-		ceiling = false;
-	}
-}
-
-void cEnemyWiremanManager::Anchor::MoveByAutomation(VECTOR *WirePos, int *AnchorStretch)
-{
-
-}
-
-void cEnemyWiremanManager::Wireman::Update(VECTOR *WirePos, int *AnchorStretch, int *EnemyAnchorStretch)
-{
-	if (possess) {
-		MoveByPlayer(WirePos, AnchorStretch);
-		FocusOld = FocusPos;
-		FocusPos = pos;
-		*EnemyAnchorStretch = 0;
-	}
-	else {
-		MoveByAutomation(WirePos, AnchorStretch, EnemyAnchorStretch);
-		*AnchorStretch = 0;
-	}
-	Physical();
-	MouseStateGet();
-}
-
-void cEnemyWiremanManager::Wireman::WireRender(VECTOR *WirePos, int *AnchorStretch, int *EnemyAnchorStretch)
-{
-	if (*AnchorStretch != 0 || *EnemyAnchorStretch != 0) {
-		DrawLineAA(pos.x, pos.y, WirePos->x, WirePos->y, 0xffffff);
-	}
-	/*DrawFormatString(FocusCam.x, FocusCam.y + 20, 0xfffff, "%f %f", MouseAdd.x, MouseAdd.y);
-	DrawFormatString(FocusCam.x, FocusCam.y + 30, 0xfffff, "%f %f", WirePos->x, WirePos->y);
-	DrawCircle(mouse_changeposx, mouse_changeposy, 30, 0xfffff, true);
-	DrawFormatString(FocusPos.x, FocusPos.y + 60, 0xfffff, "%d", *AnchorStretch);*/
-}
-
-void	cEnemyWiremanManager::Wireman::MoveByPlayer(VECTOR *WirePos, int *AnchorStretch)
-{
-	mouse_state = GetMouseInput();
-	if (*AnchorStretch == 0) {
-
-	}
-	if (*AnchorStretch == 0 && (mouse_state & MOUSE_INPUT_LEFT)) {
-
-		*AnchorStretch = 1;
-		*WirePos = pos;
-		wire_radian = atan2(mouse_changeposy - pos.y, mouse_changeposx - pos.x);
-	}
-
-	else if (*AnchorStretch == 1 && (mouse_state & MOUSE_INPUT_LEFT)) {
-		WirePos->x += anchor_speed * cos(wire_radian);
-		WirePos->y += anchor_speed * sin(wire_radian);
-	}
-	else if (*AnchorStretch == 2 && (mouse_state & MOUSE_INPUT_LEFT)) {
-		if (WirePos->x < pos.x) {
-
-			if (move_speedx < 15)
-				move_speedx += 5;
-			pos.x -= 1 + move_speedx;
-			debug_int = 1;
-
-			if (WirePos->y <= pos.y) {
-				move_speedy += 5;
-			}
-			else {
-				move_speedy -= 5;
-			}
-			if (bottomhit == true || WirePos->y > pos.y) {
-				bottomhit = false;
-				move_speedy = 5.f;
-			}
-			pos.y -= 1 + move_speedy;
-		}
-		else {
-			if (move_speedx > -15)
-				move_speedx -= 5;
-			pos.x -= move_speedx;
-			debug_int = 2;
-
-			if (WirePos->y <= pos.y) {
-				move_speedy += 5;
-			}
-			else {
-				move_speedy -= 5;
-			}
-			if (bottomhit == true || WirePos->y > pos.y) {
-				bottomhit = false;
-				move_speedy = 5.f;
-			}
-		}
-		pos.y -= move_speedy;
-
-	}
-	else if (*AnchorStretch == 2) {
-		inertia += move_speedx;
-		if (move_speedy > 0)
-			jump -= move_speedy;
-		*AnchorStretch = 3;
-	}
-	else {
-		*AnchorStretch = 0;
-		wire_radian = 0.f;
-		move_speedx = 0.f;
-		move_speedy = 0.f;
-	}
-
-	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
-		if (key[KEY_INPUT_LEFT] == 2) {
-			inertia -= 4;				// 移動量θを減少
-		}
-		if (key[KEY_INPUT_RIGHT] == 2) {
-			inertia += 4;				// 移動量θを増加
-		}
-	}
-	else {
-		// キー押し下げ時以外は収束する
-		if (inertia > 0) inertia -= 2;
-		if (inertia < 0) inertia += 2;
-	}
-	if (landing == true)
-		jump_count = 0;
-	if (key[KEY_INPUT_SPACE] == 1 && jump_count < 2) {
-		jump = 20.f;
-		++jump_count;
-	}
-}
-
-void cEnemyWiremanManager::Wireman::MoveByAutomation(VECTOR *WirePos, int *AnchorStretch, int *EnemyAnchorStretch)
-{
-	if (hp <= 0) {
-		*EnemyAnchorStretch == 3;
-	}
-
-	if (*EnemyAnchorStretch == 0) {
-		enemy_count++;
-		if (direction == true)
-			pos.x += 4;
-		else pos.x -= 4;
-		if (enemy_count >= 100) {
-			*EnemyAnchorStretch = 1;
-			*WirePos = pos;
-			enemy_count = 0;
-			image_change = 116;
-		}
-	}
-	else if (*EnemyAnchorStretch == 1) {
-		if (direction == true) {
-			WirePos->x += 5;
-			WirePos->y -= 5;
-		}
-		else {
-			WirePos->x -= 5;
-			WirePos->y -= 5;
-		}
-		enemy_count++;
-
-		if (enemy_count >= 60) {
-			*EnemyAnchorStretch = 0;
-			enemy_count = 0;
-			wire_radian = atan2(WirePos->y - pos.y, WirePos->x - pos.x);
-			if (direction == false)
-				direction = true;
-			else direction = false;
-		}
-	}
-	else if (*EnemyAnchorStretch == 2) {
-		pos.x += anchor_speed * cos(wire_radian);
-		pos.y += anchor_speed * sin(wire_radian);
-		if (ceiling == true) {
-			*EnemyAnchorStretch = 0;
-			bottomhit = false;
-			ceiling = false;
-			if (direction == false)
-				direction = true;
-			else direction = false;
-		}
-	}
-	else {
-		*EnemyAnchorStretch = 0;
-	}
-}
-
-void cEnemyWiremanManager::Wireman::Render(int image[], int *AnchorStretch, int *EnemyAnchorStretch)
-{
-	if (possess == false) {
-		switch (*EnemyAnchorStretch) {
-		case 0:
-			if (image_change > 38)
-				image_change = 0;
-			image_change++;
-			if (image_change == 38)
-				image_change = 0;
-			break;
-		case 1:
-			if (image_change <= 133)
-				image_change++;
-			break;
-		case 2:
-
-			break;
-		case 3:
-			if (image_change < 40 || image_change > 77)
-				image_change = 40;
-			image_change++;
-			if (image_change == 77)
-				image_change = 77;
-			break;
-		}
-	}
-	else {
-		switch (*AnchorStretch) {
-		case 0:
-			if (key[KEY_INPUT_SPACE] != 0) {
-
-			}
-			else if (key[KEY_INPUT_LEFT] != 0) {
-				direction = false;
-				image_change++;
-				if (image_change >= 40) {
-					image_change = 0;
-				}
-			}
-			else if (key[KEY_INPUT_RIGHT] != 0) {
-				direction = true;
-				image_change++;
-				if (image_change >= 40) {
-					image_change = 0;
-				}
-			}
-			else if (mouse_state & (MOUSE_INPUT_LEFT)) {
-				image_change = 116;
-			}
-			else image_change = 0;
-			break;
-		case 1:
-			if (image_change < 120)
-				image_change = 120;
-			if (image_change <= 132)
-				image_change++;
-			break;
-		case 2:
-			if (image_change <= 119)
-				image_change = 120;
-			if (image_change != 146)
-				image_change++;
-			break;
-		}
-	}
-	if (direction == false)
-		DrawRotaGraph(pos.x, pos.y - 15, 0.7, 0, image[image_change], TRUE, FALSE);
-
-	else if (direction == true)
-		DrawRotaGraph(pos.x, pos.y - 15, 0.7, 0, image[image_change], TRUE, TRUE);
 }
 
 /*------------------------------------------------------------------------------*
@@ -1229,61 +785,41 @@ void cEnemyWiremanManager::Wireman::Render(int image[], int *AnchorStretch, int 
 *------------------------------------------------------------------------------*/
 void cEnemyFryingman::Update()
 {
-	if (possess) {
-		MoveByAutomation();
-		FocusOld = FocusPos;
-		FocusPos = pos;
-	}
-	else {
-		MoveByAutomation();
-	}
-}
-
-void	cEnemyFryingman::MoveByPlayer() {
-	old = pos;	// 過去座標
-
-	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2) {
-		if (key[KEY_INPUT_LEFT] == 2) {
-			inertia -= 4;				// 移動量θを減少
-		}
-		if (key[KEY_INPUT_RIGHT] == 2) {
-			inertia += 4;				// 移動量θを増加
-		}
-	}
-	else {
-		// キー押し下げ時以外は収束する
-		if (inertia > 0) inertia -= 2;
-		if (inertia < 0) inertia += 2;
-	}
-	// ファンネルは飛んでいるのでジャンプは必要ないかと思われます
+	MoveByAutomation();
 }
 
 void cEnemyFryingman::MoveByAutomation()
 {
-	if (possess == false) {
-		switch (move_flow) {
-		case -1:
-			if (FocusPos.x + 500 >= pos.x) {
-				move_flow = 0;
-			}
-			break;
-		case 0:
-			pos.x--;
-			if (FocusPos.x + 100 >= pos.x) {
-				move_flow = 1;
-				image_change = 40;
-				bulletpos = pos;
-				lockon = atan2(FocusPos.y - pos.y, FocusPos.x - pos.x);
-				bullet.Shot(bulletpos, bulletsize, 10, lockon, EnemyBullet);
-			}
-			break;
-		case 1:
-			pos.x--;
-			pos.y--;
-			break;
-		case 2:
-			break;
+	pos.x -= speed / 2;
+	switch (move_flow) {
+		// 移動　攻撃
+		
+	case 0:
+
+		if (cooltime <= 100) cooltime++;
+		
+		if (cooltime > 100) {
+			bulletpos = pos;
+			lockon = atan2(FocusPos.y - pos.y, FocusPos.x - pos.x);
+			bullet.Shot(bulletpos, bulletsize, 10, lockon, EnemyBullet);
+			cooltime = 0;
 		}
+		// 左から近づくとき
+		if (FocusPos.x < pos.x && FocusPos.x + 100 > pos.x) {
+			lockon = atan2(FocusPos.y - pos.y, FocusPos.x - pos.x);
+			move_flow = 1;
+			image_change = 41;
+		}
+		break;
+	case 1:
+		image_change != 61 ? image_change++ : image_change = 61;
+		pos.y -= cos(lockon) * speed;
+		if (landing == true || bottomhit == true || lefthit == true || righthit == true) {
+			hp = 0;
+		}
+		break;
+	case 2:
+		break;
 	}
 }
 
@@ -1292,14 +828,6 @@ void cEnemyFryingman::Render(int image[])
 	switch (move_flow) {
 	case 0:
 		image_change = 0;
-		break;
-	case 1:
-		if (image_change != 59)
-			image_change++;
-		break;
-	case 2:
-		break;
-	case 3:
 		break;
 	}
 	DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
@@ -1310,15 +838,18 @@ void cEnemyFryingman::Render(int image[])
 *------------------------------------------------------------------------------*/
 void cEnemyBossmiddle::Update() 
 {
-	if (hp > 0) {
+	if (hp > 1) {
 		MoveByAutomation();
+	}
+	if (image_change == 149) {
+		hp = 0;
 	}
 	Physical();
 }
 
 void cEnemyBossmiddle::MoveByAutomation() 
 {
-	if (hp > 0) {
+	if (hp > 1) {
 		switch (move_pattern) {
 			// 距離を測る
 		case 0:
@@ -1326,9 +857,10 @@ void cEnemyBossmiddle::MoveByAutomation()
 			if (pos.x < FocusPos.x + 300 && pos.x > FocusPos.x - 300) {
 				move_pattern = 1;
 				image_change = 160;
+				pos.x < FocusPos.x ? direction = false : direction = true;
 			}
 			// ジャンプして近づく
-			else if (pos.x < FocusPos.x + 500 && pos.x > FocusPos.x - 500) {
+			else if (pos.x < FocusPos.x + 400 && pos.x > FocusPos.x - 400) {
 				move_pattern = 2;
 				Player_old = FocusPos;
 				image_change = 0;
@@ -1336,20 +868,23 @@ void cEnemyBossmiddle::MoveByAutomation()
 			break;
 			// プレイヤーに近づく
 		case 1:
+			// 敵の向きと移動の処理
+			if (pos.x < FocusPos.x && image_change == 187) {
+				direction = false;
+			}
+			else if (pos.x >= FocusPos.x && image_change == 187) {
+				direction = true;
+			}
+			//pos.x < FocusPos.x & image_change == 189 ? direction = false : direction = true;
+			direction ? pos.x -= move_speed : pos.x += move_speed;
+			
 			image_change++;
 
 			if (image_change == 189) {
 				image_change = 160;
 				move_time++;
 			}
-			if (pos.x < FocusPos.x) {
-				pos.x += move_speed;
-				direction = false;
-			}
-			else {
-				pos.x -= move_speed;
-				direction = true;
-			}
+			
 			if (move_time == 3) {
 				move_time = 0;
 				move_pattern = 3;
@@ -1361,19 +896,13 @@ void cEnemyBossmiddle::MoveByAutomation()
 			if (move_time == 0) {
 				jump = 20.f;
 				move_time++;
+				pos.x < FocusPos.x ? direction = false : direction = true;
 			}
 			else if (image_change != 24) {
 				image_change++;
-				if (pos.x < FocusPos.x) {
-					direction = false;
-					pos.x += 10;
-				}
-				else {
-					direction = true;
-					pos.x -= 10;
-				}
+				direction ? pos.x -= 10 : pos.x += 10;
 			}
-			else if (landing == true) {
+			else if (landing) {
 				move_pattern = 3;
 				move_time = 0;
 				image_change = 50;
@@ -1411,16 +940,148 @@ void cEnemyBossmiddle::MoveByAutomation()
 			break;
 		}
 	}
+	if (hp == 1);
 } 
 
 void cEnemyBossmiddle::Render(int image[])
 {
-	if (hp < 0) {
+	if (hp == 1) {
 		if (image_change < 100 || image_change > 149)
 			image_change = 100;
 		if (image_change != 149)
 			image_change++;
 	}
+
+	if (direction == true)
+		DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
+	else if (direction == false)
+		DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
+}
+
+/*------------------------------------------------------------------------------*
+| <<< cEnemyJugem >>>
+*------------------------------------------------------------------------------*/
+
+void cEnemyJugem::Update()
+{
+	if (hp > 1) {
+		MoveByAutomation();
+	}
+	/*if (image_change == 149) {
+		hp = 0;
+	}*/
+	if (hp == 1)move_pattern = 4;
+}
+
+void cEnemyJugem::MoveByAutomation()
+{
+	switch (move_pattern) {
+		// 移動
+	case 0:
+		if (count = 500) {
+
+			move_pattern = 1;
+		}
+		break;
+		// 攻撃
+	case 1:
+		image_change++;
+		if (count == 100) {
+
+			move_pattern = 2;
+		}
+		break;
+		// 強攻撃
+	case 2:
+		image_change++;
+		if (count == 200) {
+
+			move_pattern = 0;
+		}
+		break;
+		// 要らんかも
+	case 3:
+		break;
+	case 4:
+		// 倒れた時の処理
+		image_change++;
+		if (image_change) {
+			hp = 0;
+		}
+		break;
+	}
+}
+
+void cEnemyJugem::Render(int img[])
+{
+	direction ? DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, img[image_change], TRUE): DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, img[image_change],FALSE);
+}
+
+/*------------------------------------------------------------------------------*
+| <<< cEnemyBoss >>>
+*------------------------------------------------------------------------------*/
+
+void cEnemyBoss::Update()
+{
+	if (hp > 1) {
+		MoveByAutomation();
+	}
+	if (image_change == 149) {
+		hp = 0;
+	}
+	Physical();
+
+}
+
+void cEnemyBoss::MoveByAutomation()
+{
+	switch (enemy_move)
+	{
+	// レーザー
+	case 0:
+		if (attack_count == 20) {
+
+			enemy_move = 1;
+		}
+		break;
+	// 銃
+	case 1:
+		if (attack_count == 10) {
+
+		}
+		enemy_move = 2;
+		break;
+	// 掴みかかる
+	case 2:
+		if (attack_count == 50) {
+			lockon = atan2(FocusPos.y - pos.y, FocusPos.x - pos.x);
+			for (int i = 0; i < 4; i++) {
+				attackpos[i] = {pos.x + (cos(lockon) * speed * i),pos.y + (sin(lockon) * speed * i),0};
+			}
+			enemy_move = 3;
+		}
+		break;
+	// 色々
+	case 3:
+		if (attack_count == 10) {
+
+			enemy_move = 4;
+		}
+		break;
+	// ダウン
+	case 4:
+		// 休憩タイム
+		if (attack_count == 20) {
+
+			attack_count = 0;
+			enemy_move = 0;
+		}
+		break;
+	}
+}
+
+void cEnemyBoss::Render(int image[])
+{
 	if (direction == true)
 		DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
 	else if (direction == false)
@@ -1543,3 +1204,45 @@ void cCoin::Render(int image[])
 {
 	DrawRotaGraph(pos.x, pos.y, 0.7, 10 ,image[cointype], TRUE , FALSE);
 }
+
+/*------------------------------------------------------------------------------*
+| <<< cEventsSwitch >>>
+*------------------------------------------------------------------------------*/
+
+void cEventsSwitch::Update()
+{
+	Physical();
+
+	if (hp == 0) hp= 1;
+}
+
+void cEventsSwitch::MoveByAutomation()
+{
+
+}
+
+void cEventsSwitch::Render(int image[])
+{
+
+}
+
+void	cSpring::HitAction(cObject *hit) {
+	if (hit->GetType() == Player) {
+		flag = true;
+	}
+}
+
+void	cSpring::Update() {
+	if (flag) {
+		num++;
+		if (num >= 30) {
+			num = 0;
+			flag = false;
+		}
+	}
+}
+
+void	cSpring::Render(int image[30]) {
+	DrawGraph(pos.x - size.x / 2.f, pos.y - size.y / 2.f, image[num], true);
+}
+

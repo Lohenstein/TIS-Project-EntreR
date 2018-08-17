@@ -36,14 +36,14 @@ void	cGame::Collision() {
 	CheckHitRectAndRect(character->GetPlayer(), character->GetClear());
 
 	CollisionAroundMaptile(character->GetPlayer());
+	if (character->GetAnchor() != nullptr) CollisionAroundMaptile(character->GetAnchor());
 	for (int k = 0; k < ENEMY_MAX; k++) {
-		if (character->GetEnemyJumpman(k) != nullptr) CollisionAroundMaptile(character->GetEnemyJumpman(k));
-		if (character->GetEnemyHardBody(k) != nullptr) CollisionAroundMaptile(character->GetEnemyHardBody(k));
-		if (character->GetEnemyWireman(k) != nullptr) CollisionAroundMaptile(character->GetEnemyWireman(k));
-		if (character->GetEnemyWireAnchor(k) != nullptr) CollisionAroundMaptile(character->WireAnchor(k));
-		if (character->GetEnemyGunman(k) != nullptr)	CollisionAroundMaptile(character->GetEnemyGunman(k));
-		if (character->GetEnemyBossmiddle(k) != nullptr) CollisionAroundMaptile(character->GetEnemyBossmiddle(k));
-		if (character->GetCannon(k) != nullptr)CollisionAroundMaptile(character->GetCannon(k));
+		if (character->GetEnemyJumpman(k)		!= nullptr) CollisionAroundMaptile(character->GetEnemyJumpman(k));
+		if (character->GetEnemyHardBody(k)		!= nullptr) CollisionAroundMaptile(character->GetEnemyHardBody(k));
+		if (character->GetEnemyGunman(k)		!= nullptr)	CollisionAroundMaptile(character->GetEnemyGunman(k));
+		if (character->GetEnemyBossmiddle(k)	!= nullptr) CollisionAroundMaptile(character->GetEnemyBossmiddle(k));
+		if (character->GetCannon(k)				!= nullptr) CollisionAroundMaptile(character->GetCannon(k));
+		if (character->GetEnemyFryingman(k) != nullptr) CollisionAroundMaptile(character->GetEnemyFryingman(k));
 	}
 	for (int k = 0; k < BULLET_MAX; k++) {
 		if (bullet.GetBullet(k) != nullptr) {
@@ -51,40 +51,33 @@ void	cGame::Collision() {
 		}
 	}
 	for (int i = 0; i < ENEMY_MAX; i++) {
-		if (character->GetCoin(i) != nullptr) {
-			CheckHitRectAndRect(character->GetPlayer(), character->GetCoin(i));
-			for (int j = 0; j < ENEMY_MAX; j++) {
-				if (character->GetEnemyJumpman(j)	 != nullptr) CheckHitRectAndRect(character->GetCoin(i), character->GetEnemyJumpman(j));
-				if (character->GetEnemyHardBody(j)	 != nullptr) CheckHitRectAndRect(character->GetCoin(i), character->GetEnemyHardBody(j));
-				if (character->GetEnemyWireman(j)	 != nullptr) CheckHitRectAndRect(character->GetCoin(i), character->GetEnemyWireman(j));
-				if (character->GetEnemyWireAnchor(j) != nullptr) CheckHitRectAndRect(character->GetCoin(i), character->GetEnemyWireAnchor(j));
-				if (character->GetEnemyGunman(j)	 != nullptr) CheckHitRectAndRect(character->GetCoin(i), character->GetEnemyGunman(j));
-				if (character->GetEnemyBossmiddle(j) != nullptr) CheckHitRectAndRect(character->GetCoin(i), character->GetEnemyBossmiddle(j));
-			}
-		}
-	}
-	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (character->GetMoveFloor(i) != nullptr) {
 			CheckHitRectAndRect(character->GetPlayer(), character->GetMoveFloor(i));
-			for (int j = 0; j < ENEMY_MAX; j++) {
+			/*for (int j = 0; j < ENEMY_MAX; j++) {
 				if (character->GetEnemyJumpman(j)	 != nullptr) CheckHitRectAndRect(character->GetMoveFloor(i), character->GetEnemyJumpman(j));
 				if (character->GetEnemyHardBody(j)	 != nullptr) CheckHitRectAndRect(character->GetMoveFloor(i), character->GetEnemyHardBody(j));
 				if (character->GetEnemyWireman(j)	 != nullptr) CheckHitRectAndRect(character->GetMoveFloor(i), character->GetEnemyWireman(j));
 				if (character->GetEnemyWireAnchor(j) != nullptr) CheckHitRectAndRect(character->GetMoveFloor(i), character->GetEnemyWireAnchor(j));
 				if (character->GetEnemyGunman(j)	 != nullptr) CheckHitRectAndRect(character->GetMoveFloor(i), character->GetEnemyGunman(j));
 				if (character->GetEnemyBossmiddle(j) != nullptr) CheckHitRectAndRect(character->GetMoveFloor(i), character->GetEnemyBossmiddle(j));
-			}
+			}*/
 		}
 		if (character->GetDropFloor(i) != nullptr) {
 			CheckHitRectAndRect(character->GetPlayer(), character->GetDropFloor(i));
-			for (int j = 0; j < ENEMY_MAX; j++) {
+			/*for (int j = 0; j < ENEMY_MAX; j++) {
 				if (character->GetEnemyJumpman(j)	 != nullptr) CheckHitRectAndRect(character->GetDropFloor(i), character->GetEnemyJumpman(j));
 				if (character->GetEnemyHardBody(j)	 != nullptr) CheckHitRectAndRect(character->GetDropFloor(i), character->GetEnemyHardBody(j));
 				if (character->GetEnemyWireman(j)	 != nullptr) CheckHitRectAndRect(character->GetDropFloor(i), character->GetEnemyWireman(j));
 				if (character->GetEnemyWireAnchor(j) != nullptr) CheckHitRectAndRect(character->GetDropFloor(i), character->GetEnemyWireAnchor(j));
 				if (character->GetEnemyGunman(j)	 != nullptr) CheckHitRectAndRect(character->GetDropFloor(i), character->GetEnemyGunman(j));
 				if (character->GetEnemyBossmiddle(j) != nullptr) CheckHitRectAndRect(character->GetDropFloor(i), character->GetEnemyBossmiddle(j));
-			}
+			}*/
+		}
+		if (character->GetCoin(i) != nullptr) {
+			CheckHitRectAndRect(character->GetPlayer(), character->GetCoin(i));
+		}
+		if (character->GetSpring(i) != nullptr) {
+			CheckHitRectAndRect(character->GetPlayer(), character->GetSpring(i));
 		}
 	}
 
@@ -93,22 +86,22 @@ void	cGame::Collision() {
 		if (bullet.GetBullet(i) != nullptr) {
 			CheckHitRectAndRect(character->GetPlayer(), bullet.GetBullet(i));
 			for (int j = 0; j < ENEMY_MAX; j++) {
-				if (character->GetEnemyJumpman(j) != nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyJumpman(j));
-				if (character->GetEnemyHardBody(j) != nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyHardBody(j));
-				if (character->GetEnemyWireman(j) != nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyWireman(j));
-				if (character->GetEnemyGunman(j) != nullptr)CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyGunman(j));
-				if (character->GetEnemyBossmiddle(j) != nullptr)CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyBossmiddle(j));
+				if (character->GetEnemyJumpman(j)	!= nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyJumpman(j));
+				if (character->GetEnemyHardBody(j)	!= nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyHardBody(j));
+				if (character->GetEnemyGunman(j)	!= nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyGunman(j));
+				if (character->GetEnemyBossmiddle(j)!= nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyBossmiddle(j));
+				if (character->GetEnemyFryingman(j) != nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyFryingman(j));
 			}
 		}
 	}
 	// キャラクタ同士
 	for (int i = 0; i < ENEMY_MAX; i++) {
-		if (character->GetEnemyJumpman(i) != nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyJumpman(i));
-		if (character->GetEnemyHardBody(i) != nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyHardBody(i));
-		if (character->GetEnemyWireman(i) != nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyWireman(i));
-		if (character->GetEnemyGunman(i) != nullptr)CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyGunman(i));
-		if (character->GetEnemyBossmiddle(i) != nullptr)CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyBossmiddle(i));
-		if (character->GetCircularSaw(i) != nullptr)CheckHitRectAndRect(character->GetPlayer(), character->GetCircularSaw(i));
+		if (character->GetEnemyJumpman(i)	!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyJumpman(i));
+		if (character->GetEnemyHardBody(i)	!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyHardBody(i));
+		if (character->GetEnemyGunman(i)	!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyGunman(i));
+		if (character->GetEnemyBossmiddle(i)!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyBossmiddle(i));
+		if (character->GetCircularSaw(i)	!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetCircularSaw(i));
+		if (character->GetEnemyFryingman(i) != nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyFryingman(i));
 	}
 }
 
@@ -126,6 +119,7 @@ void	cGame::Update() {
 		bullet.Update();
 		camera->Update(FocusPos);
 		gui->SetHp(character->GetPlayerHp());
+		dialog->Update();
 		UpdateGui();
 	}
 }
@@ -143,6 +137,7 @@ void	cGame::Render() {
 	SetDrawScreen(DX_SCREEN_BACK);
 
 	camera->Render(bghandle);
+	dialog->Render();
 	gui->Render();
 	RenderGui();
 
@@ -154,7 +149,7 @@ void	cGame::Render() {
 	// ゲームオーバー時
 	if (IsOverFlag) {
 		DrawOver();
-		trans++;
+		trans += 2;
 	}
 
 	//DrawFormatString(10, 10, 0xFFFFFF, "操作キャラの座標:x=%d, y=%d", (int)FocusPos.x, (int)FocusPos.y);
@@ -176,25 +171,27 @@ void	cGame::DrawOver() {
 }
 
 void	cGame::UpdateOver() {
-	if (key[KEY_INPUT_R] == 1 && trans > 235) {
+	if ((key[KEY_INPUT_R] == 1 || pad_b[XINPUT_BUTTON_START] == 1) && trans > 235) {
 		// なうろ
 		DrawGraph(0, 0, imghandle[0], false);
 		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
 		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
 		ScreenFlip();
 		// 初期化
+		scene.reset();
 		scene.reset(new cGame);
 	}
 }
 
 void	cGame::UpdateResult() {
-	if (key[KEY_INPUT_R] == 1 && trans > 335) {
+	if ((key[KEY_INPUT_R] == 1 || pad_b[XINPUT_BUTTON_START] == 1) && trans > 335) {
 		// なうろ
 		DrawGraph(0, 0, imghandle[0], false);
 		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
 		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
 		ScreenFlip();
 		// 初期化
+		scene.reset();
 		scene.reset(new cGame);
 	}
 }
@@ -239,7 +236,7 @@ void	cGame::RenderGui() {
 	if (time >= 60) {
 		time = 0;
 		sec--;
-		mp += 20;
+		mp += 5;
 		if (sec < 0) {
 			mp += 100;
 			rectime++;
