@@ -47,7 +47,6 @@ void	cCharacterBase::MoveByPlayer() {
 		IsOverFlag = true;
 	}
 }
-
 void	cCharacterBase::Physical() {
 
 	if (inertia >  90) inertia = 90;	// はみ出しリミッタ
@@ -78,7 +77,6 @@ void	cCharacterBase::Physical() {
 	pos.y -= jump;
 	jump -= gravity;
 }
-
 void	cCharacterBase::Update() {
 	// 乗り移る
 	if (possess) {
@@ -99,13 +97,11 @@ void	cCharacterBase::Update() {
 	// 重力
 	Physical();
 }
-
 void	cCharacterBase::Render() {
 	DrawBoxAA(pos.x - GetSize().x / 2.f, pos.y - GetSize().y / 2.f,
 		pos.x + GetSize().x / 2.f, pos.y + GetSize().y / 2.f,
 		0xFFFFFF, false);
 }
-
 void	cCharacterBase::HitAction(cObject *hit) {
 
 	switch (hit->GetType()) {
@@ -302,7 +298,6 @@ void	cCharacterManager::PossessListener() {
 		}
 	}
 }
-
 void	cCharacterManager::DeleteCharacters() {
 
 	delete player;
@@ -329,8 +324,6 @@ void	cCharacterManager::DeleteCharacters() {
 
 	}
 }
-
-
 void	cCharacterManager::DeleteDeathCharacters() {
 	if (player->GetHp() <= 0) {
 		IsOverFlag = true;
