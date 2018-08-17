@@ -559,7 +559,6 @@ protected:
 public:
 	// Character
 	cPlayer							*player;
-	cAnchor							*anchor;
 	cClearCollision					*clear;
 	cEnemyHardBody					*hardbody[ENEMY_MAX];
 	////cEnemyWiremanManager::Wireman	*wireman[ENEMY_MAX];
