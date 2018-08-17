@@ -21,6 +21,29 @@ public:
 	bool	GetFlag() { return flag; }
 };
 
+class cAnchor : public cObject {
+protected:
+	float speed;
+	float rad;
+	float distance;
+	bool  flag;
+public:
+	cAnchor(VECTOR p, VECTOR s, float sp, float r, eObjectType t) {
+		pos = p;
+		size = s;
+		speed = sp;
+		distance = 0.f;
+		rad = r;
+		flag = true;
+		type = t;
+	}
+	~cAnchor() {};
+	void	Update();
+	void	Render(VECTOR cpos);
+	void	HitAction(cObject *hit);
+	bool	GetFlag() { return flag; }
+};
+
 class cBulletManager {
 protected:
 	cBullet *bullet[BULLET_MAX];

@@ -40,6 +40,7 @@ protected:
 
 
 public:
+
 	cCharacterBase() {};
 	~cCharacterBase() {
 	};
@@ -57,6 +58,10 @@ class cPlayer : public cCharacterBase {
 protected:
 	int img[4][30];
 public:
+	cAnchor *anchor;
+	float	rad2anchor, dis2anchor, wrad, swing;
+	bool	IsAnchored = false;
+	VECTOR	savepos;
 	cPlayer(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
@@ -78,8 +83,11 @@ public:
 			}
 		}
 	}
+	void	UpdateAnchor();
 	void	Render();
 	void	Update();
+	void	HitAction(cObject *hit);
+	cObject *GetAnchor() { return (cObject*)anchor; }
 };
 
 class cEnemy : public cCharacterBase {
@@ -628,6 +636,7 @@ public:
 	}
 
 	cObject *GetPlayer() { return (cObject*)player; }
+	cObject *GetAnchor() { return (cObject*)player->GetAnchor(); }
 	cObject *GetClear() { return (cObject*)clear; }
 	cObject *GetEnemyJumpman(int num) { return (cObject*)jumpman[num]; }
 	cObject *GetEnemyHardBody(int num) { return (cObject*)hardbody[num]; }

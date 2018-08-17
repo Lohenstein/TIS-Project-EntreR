@@ -29,7 +29,8 @@ enum eObjectType {
 	Clear,			// クリア判定
 	NormalCoin,		// コイン
 	EneCoin,
-	RareCoin
+	RareCoin,
+	WireAnchor
 };
 
 extern void		CheckHitRectAndRect(cObject *obj1, cObject *obj2);
