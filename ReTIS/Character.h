@@ -40,6 +40,7 @@ protected:
 
 
 public:
+
 	cCharacterBase() {};
 	~cCharacterBase() {
 	};
@@ -53,10 +54,35 @@ public:
 	int		GetHp() { return hp; }
 };
 
+class cAnchor : public cCharacterBase {
+	bool hitsome;
+	bool shotanchor;
+	short count;
+public:
+
+
+	cAnchor(float x,float y,float w,float h,float s) {
+		pos = { x, y, 0.f };
+		size = { w, h, 0.f };
+		speed = s;
+		type = Player;
+
+		hitsome = false;
+		shotanchor = false;
+		count = 0;
+	}
+	void Update(bool *hit,VECTOR *wrpos);
+	bool hitwall();
+};
+
 class cPlayer : public cCharacterBase {
 protected:
 	int img[4][30];
 public:
+	cAnchor *anchor;
+	float	rad2anchor, dis2anchor, wrad, swing;
+	bool	IsAnchored = false;
+	VECTOR	savepos;
 	cPlayer(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
@@ -78,8 +104,11 @@ public:
 			}
 		}
 	}
+	void	UpdateAnchor();
 	void	Render();
 	void	Update();
+	void	HitAction(cObject *hit);
+	cObject *GetAnchor() { return (cObject*)anchor; }
 };
 
 class cEnemy : public cCharacterBase {
@@ -526,6 +555,31 @@ public:
 
 };
 
+	int image_change;
+	bool direction;
+	VECTOR bulletpos;
+	VECTOR bulletsize;
+
+	cEventsSwitch(float x, float y, float w, float h, float s, bool p) {
+		pos = { x, y, 0.f };
+		size = { w, h, 0.f };
+		speed = s;
+		type = Enemy;
+		landing = false;
+
+		bulletsize = { 50,50,0 };
+		angle = 0.f;
+		image_change = 0;
+		attack_count = 0;
+		direction = false;
+		move_pattern = 0;
+	}
+	void Update();
+	void Render(int image[]);
+	void MoveByAutomation();
+
+};
+
 class cCharacterManager {
 protected:
 	int		possess_time = 0;
@@ -533,6 +587,7 @@ protected:
 public:
 	// Character
 	cPlayer							*player;
+	cAnchor							*anchor;
 	cClearCollision					*clear;
 	cEnemyJumpman					*jumpman[ENEMY_MAX];
 	cEnemyHardBody					*hardbody[ENEMY_MAX];
@@ -603,6 +658,7 @@ public:
 	}
 
 	cObject *GetPlayer() { return (cObject*)player; }
+	cObject *GetAnchor() { return (cObject*)player->GetAnchor(); }
 	cObject *GetClear() { return (cObject*)clear; }
 	cObject *GetEnemyJumpman(int num) { return (cObject*)jumpman[num]; }
 	cObject *GetEnemyHardBody(int num) { return (cObject*)hardbody[num]; }

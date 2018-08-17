@@ -184,6 +184,39 @@ void	cPlayer::Render() {
 	else {
 		DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
 	}
+	if (anchor != nullptr) anchor->Render(pos);
+}
+
+void	cPlayer::UpdateAnchor() {
+	if (anchor != nullptr) {
+		// 飛んでるとき
+		if (anchor->GetFlag()) {
+			anchor->Update();
+			if (sqrtf((anchor->GetPos().x - pos.x) * (anchor->GetPos().x - pos.x) + (anchor->GetPos().y - pos.y) * (anchor->GetPos().y - pos.y)) >= 400.f) {
+				delete anchor;
+				anchor = nullptr;
+				IsAnchored = false;
+			}
+		}
+		else {
+			// くっついたとき
+			if (!IsAnchored) {
+				savepos = pos;
+				rad2anchor = (DX_PI_F / 2) + atan2f(anchor->GetPos().y - pos.y, anchor->GetPos().x - pos.x);
+				dis2anchor = sqrtf((anchor->GetPos().x - pos.x) * (anchor->GetPos().x - pos.x) + (anchor->GetPos().y - pos.y) * (anchor->GetPos().y - pos.y));
+				IsAnchored = true;
+				swing = 0.f;
+				jump_count = 0;
+			}
+			else {
+				wrad = cos(swing) * (rad2anchor / (PI / 2.f));
+				pos.x = anchor->GetPos().x + cos(wrad + DX_PI_F / 2.f) * dis2anchor;
+				pos.y = anchor->GetPos().y + sin(wrad + DX_PI_F / 2.f) * dis2anchor;
+				swing += DX_PI_F / 90;
+				jump = 0.f;
+			}
+		}
+	}
 }
 
 void	cPlayer::Update() {
@@ -218,6 +251,12 @@ void	cPlayer::Update() {
 		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, PI * rect, PlayerBullet);
 	}
 
+	if (pad_b[XINPUT_BUTTON_Y] == 1) {
+		delete anchor;
+		IsAnchored = false;
+		anchor = nullptr;
+		anchor = new cAnchor(pos, { 10.f, 10.f, 10.f }, 20.f, -stick_rad, WireAnchor);
+	}
 	// 穴に落っこちた
 	if (pos.y >= 3520) {
 		IsOverFlag = true;
@@ -232,6 +271,53 @@ void	cPlayer::Update() {
 	}
 	// 重力
 	Physical();
+	UpdateAnchor();
+}
+void	cPlayer::HitAction(cObject *hit) {
+
+	switch (hit->GetType()) {
+		// ----マップタイルとの当たり判定-----------------------------------------------------------
+	case MoveFloor:
+		Collision(hit);
+		if (landing) {
+			pos.x += hit->GetPos().x - hit->GetOld().x;
+			jump = -4.f;
+		}
+		break;
+	case DropFloor:
+		Collision(hit);
+		break;
+	case Enemy:
+		if (this->GetType() == Player) Damaged();
+		break;
+	case EnemyBullet:
+		if (this->GetType() == Player) Damaged();
+		break;
+	case PlayerBullet:
+		if (this->GetType() != Player) Damaged();
+		break;
+	case MapTile:
+		Collision(hit);
+		if (anchor != nullptr) {
+			IsAnchored = false;
+			delete anchor;
+			anchor = nullptr;
+			pos = old;
+		}
+		break;
+	case Clear:
+		if (this->GetType() == Player) IsClearFlag = true;
+		break;
+	case NormalCoin:
+		if (this->GetType() == Player) coin++;
+		break;
+	case EneCoin:
+		if (this->GetType() == Player) ecoin++;
+		break;
+	case RareCoin:
+		if (this->GetType() == Player) rcoin++;
+		break;
+	}
 }
 /*------------------------------------------------------------------------------*
 | <<< cEnemy >>>

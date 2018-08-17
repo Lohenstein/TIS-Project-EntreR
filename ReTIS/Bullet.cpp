@@ -3,7 +3,23 @@
 
 cBulletManager bullet;
 
-void cBullet::Update() {
+void	cAnchor::HitAction(cObject *hit) {
+	if (hit->GetType() == MapTile) {
+		flag = false;
+	}
+}
+
+void	cAnchor::Update() {
+	pos.x += cos(rad) * speed;
+	pos.y += sin(rad) * speed;
+}
+
+void	cAnchor::Render(VECTOR cpos) {
+	DrawCircleAA(GetPos().x, GetPos().y, 10.f, 10, 0xFF0000, true);
+	DrawLineAA(GetPos().x, GetPos().y, cpos.x, cpos.y, 0xFF00000);
+}
+
+void	cBullet::Update() {
 
 	pos.x += cos(rad) * speed;
 	pos.y += sin(rad) * speed;
@@ -18,11 +34,11 @@ void cBullet::Update() {
 	}
 }
 
-void cBullet::Render() {
+void	cBullet::Render() {
 	DrawCircleAA(GetPos().x, GetPos().y, 10.f, 10, 0xFFFFFF, true);
 }
 
-void cBullet::HitAction(cObject *hit) {
+void	cBullet::HitAction(cObject *hit) {
 	switch (hit->GetType()) {
 	case Enemy:
 		switch (this->GetType()) {
@@ -48,7 +64,7 @@ void cBullet::HitAction(cObject *hit) {
 	}
 }
 
-void cBulletManager::Update() {
+void	 cBulletManager::Update() {
 
 	for (int i = 0; i < BULLET_MAX; i++) {
 		if (bullet[i] != nullptr) {

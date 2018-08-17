@@ -36,6 +36,7 @@ void	cGame::Collision() {
 	CheckHitRectAndRect(character->GetPlayer(), character->GetClear());
 
 	CollisionAroundMaptile(character->GetPlayer());
+	if (character->GetAnchor() != nullptr) CollisionAroundMaptile(character->GetAnchor());
 	for (int k = 0; k < ENEMY_MAX; k++) {
 		if (character->GetEnemyJumpman(k)		!= nullptr) CollisionAroundMaptile(character->GetEnemyJumpman(k));
 		if (character->GetEnemyHardBody(k)		!= nullptr) CollisionAroundMaptile(character->GetEnemyHardBody(k));
@@ -117,6 +118,7 @@ void	cGame::Update() {
 		bullet.Update();
 		camera->Update(FocusPos);
 		gui->SetHp(character->GetPlayerHp());
+		dialog->Update();
 		UpdateGui();
 	}
 }
@@ -134,6 +136,7 @@ void	cGame::Render() {
 	SetDrawScreen(DX_SCREEN_BACK);
 
 	camera->Render(bghandle);
+	dialog->Render();
 	gui->Render();
 	RenderGui();
 
@@ -167,7 +170,7 @@ void	cGame::DrawOver() {
 }
 
 void	cGame::UpdateOver() {
-	if (key[KEY_INPUT_R] == 1 && trans > 235) {
+	if ((key[KEY_INPUT_R] == 1 || pad_b[XINPUT_BUTTON_START] == 1) && trans > 235) {
 		// ‚È‚¤‚ë
 		DrawGraph(0, 0, imghandle[0], false);
 		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
@@ -180,7 +183,7 @@ void	cGame::UpdateOver() {
 }
 
 void	cGame::UpdateResult() {
-	if (key[KEY_INPUT_R] == 1 && trans > 335) {
+	if ((key[KEY_INPUT_R] == 1 || pad_b[XINPUT_BUTTON_START] == 1) && trans > 335) {
 		// ‚È‚¤‚ë
 		DrawGraph(0, 0, imghandle[0], false);
 		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
