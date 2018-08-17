@@ -86,7 +86,7 @@ void	cGame::Collision() {
 			for (int j = 0; j < ENEMY_MAX; j++) {
 				if (character->GetEnemyJumpman(j)	!= nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyJumpman(j));
 				if (character->GetEnemyHardBody(j)	!= nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyHardBody(j));
-				if (character->GetEnemyWireman(j)	!= nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyWireman(j));
+				//if (character->GetEnemyWireman(j)	!= nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyWireman(j));
 				if (character->GetEnemyGunman(j)	!= nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyGunman(j));
 				if (character->GetEnemyBossmiddle(j)!= nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyBossmiddle(j));
 			}
@@ -96,7 +96,7 @@ void	cGame::Collision() {
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (character->GetEnemyJumpman(i)	!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyJumpman(i));
 		if (character->GetEnemyHardBody(i)	!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyHardBody(i));
-		if (character->GetEnemyWireman(i)	!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyWireman(i));
+		//if (character->GetEnemyWireman(i)	!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyWireman(i));
 		if (character->GetEnemyGunman(i)	!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyGunman(i));
 		if (character->GetEnemyBossmiddle(i)!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyBossmiddle(i));
 		if (character->GetCircularSaw(i)	!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetCircularSaw(i));
