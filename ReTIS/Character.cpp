@@ -111,6 +111,9 @@ void	cCharacterBase::HitAction(cObject *hit) {
 	case RareCoin:
 		if (this->GetType() == Player) rcoin++;
 		break;
+	case Spring:
+		jump = 40.f;
+		break;
 	}
 }
 void	cCharacterBase::Damaged() {
@@ -192,7 +195,7 @@ void	cPlayer::UpdateAnchor() {
 		// ”ò‚ñ‚Å‚é‚Æ‚«
 		if (anchor->GetFlag()) {
 			anchor->Update();
-			if (sqrtf((anchor->GetPos().x - pos.x) * (anchor->GetPos().x - pos.x) + (anchor->GetPos().y - pos.y) * (anchor->GetPos().y - pos.y)) >= 400.f) {
+			if (sqrtf((anchor->GetPos().x - pos.x) * (anchor->GetPos().x - pos.x) + (anchor->GetPos().y - pos.y) * (anchor->GetPos().y - pos.y)) >= 600.f) {
 				delete anchor;
 				anchor = nullptr;
 				IsAnchored = false;
@@ -212,7 +215,7 @@ void	cPlayer::UpdateAnchor() {
 				wrad = cos(swing) * (rad2anchor / (PI / 2.f));
 				pos.x = anchor->GetPos().x + cos(wrad + DX_PI_F / 2.f) * dis2anchor;
 				pos.y = anchor->GetPos().y + sin(wrad + DX_PI_F / 2.f) * dis2anchor;
-				swing += DX_PI_F / 90;
+				swing += DX_PI_F / (dis2anchor / 10.f);
 				jump = 0.f;
 			}
 		}
@@ -344,6 +347,7 @@ void	cCharacterManager::Render() {
 		if (movefloor[i]	!= nullptr) movefloor[i]	->Render();
 		if (dropfloor[i]	!= nullptr) dropfloor[i]	->Render();
 		if (coin[i]			!= nullptr) coin[i]			->Render(coin_img);
+		if (spring[i]		!= nullptr) spring[i]		->Render(spring_img);
 	}
 }
 void	cCharacterManager::Update() {
@@ -537,6 +541,14 @@ void	cCharacterManager::LoadCharacters(string name) {
 			for (int i = 0; i < ENEMY_MAX; i++) {
 				if (coin[i] == nullptr) {
 					coin[i] = new cCoin(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)));
+					break;
+				}
+			}
+			break;
+		case eSpring:
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				if (spring[i] == nullptr) {
+					spring[i] = new cSpring(stoi(str.at(1)), stoi(str.at(2)));
 					break;
 				}
 			}
@@ -1181,3 +1193,24 @@ void cEventsSwitch::Render(int image[])
 {
 
 }
+
+void	cSpring::HitAction(cObject *hit) {
+	if (hit->GetType() == Player) {
+		flag = true;
+	}
+}
+
+void	cSpring::Update() {
+	if (flag) {
+		num++;
+		if (num >= 30) {
+			num = 0;
+			flag = false;
+		}
+	}
+}
+
+void	cSpring::Render(int image[30]) {
+	DrawGraph(pos.x - size.x / 2.f, pos.y - size.y / 2.f, image[num], true);
+}
+

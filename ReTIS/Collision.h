@@ -30,7 +30,8 @@ enum eObjectType {
 	NormalCoin,		// ÉRÉCÉì
 	EneCoin,
 	RareCoin,
-	WireAnchor
+	WireAnchor,
+	Spring
 };
 
 extern void		CheckHitRectAndRect(cObject *obj1, cObject *obj2);

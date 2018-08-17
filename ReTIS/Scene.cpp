@@ -51,11 +51,6 @@ void	cGame::Collision() {
 		}
 	}
 	for (int i = 0; i < ENEMY_MAX; i++) {
-		if (character->GetCoin(i) != nullptr) {
-			CheckHitRectAndRect(character->GetPlayer(), character->GetCoin(i));
-		}
-	}
-	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (character->GetMoveFloor(i) != nullptr) {
 			CheckHitRectAndRect(character->GetPlayer(), character->GetMoveFloor(i));
 			/*for (int j = 0; j < ENEMY_MAX; j++) {
@@ -77,6 +72,12 @@ void	cGame::Collision() {
 				if (character->GetEnemyGunman(j)	 != nullptr) CheckHitRectAndRect(character->GetDropFloor(i), character->GetEnemyGunman(j));
 				if (character->GetEnemyBossmiddle(j) != nullptr) CheckHitRectAndRect(character->GetDropFloor(i), character->GetEnemyBossmiddle(j));
 			}*/
+		}
+		if (character->GetCoin(i) != nullptr) {
+			CheckHitRectAndRect(character->GetPlayer(), character->GetCoin(i));
+		}
+		if (character->GetSpring(i) != nullptr) {
+			CheckHitRectAndRect(character->GetPlayer(), character->GetSpring(i));
 		}
 	}
 
