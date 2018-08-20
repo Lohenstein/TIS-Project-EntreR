@@ -2,6 +2,8 @@
 
 using namespace std;
 
+extern	int menumode;
+
 class cBase
 {
 public:
@@ -29,6 +31,27 @@ protected:
 
 };
 
+class cTitle : public cBase 
+{
+public:
+	int		titlebg;
+	int		menu_mode;
+
+	char *title_str[4] = { "GAME START", "STAGE SELECT", "OPTION", "QUIT GAME" };
+	char *stage_str[4] = { "²“¡Šî’n", "¬—ÑŠî’n", "“¡ˆäŠî’n", "–ß‚é" };
+
+	cTitle() {
+		titlebg = LoadGraph("data/img/wall/titlebg.png");
+		menumode = 0;
+	}
+
+	void	Init();
+	void	Update();
+	void	Render();
+	void	DrawTitle();
+	void	DrawStageSelect();
+};
+
 class cGame : public cBase
 {
 private:
@@ -42,8 +65,6 @@ private:
 	int imghandle[10];
 	int bghandle;
 
-	string stagepath;
-
 protected:
 	// §ŒÀŽžŠÔ‚Æ‚©
 	int min  = 5;
@@ -53,7 +74,7 @@ protected:
 	int trans = 0;
 public:
 	cGame() { 
-		stagepath = "data/map/tenji/";
+		//stagepath = "data/map/stage3/";
 		stage	  = new cStageManager(stagepath);
 		character = new cCharacterManager(stagepath);
 		camera	  = new cCamera();
@@ -66,6 +87,8 @@ public:
 		imghandle[0] = LoadGraph("data/img/wall/wallbk.png");
 		imghandle[1] = LoadGraph("data/img/hp/mpbar.png");
 		imghandle[2] = LoadGraph("data/img/hp/mpbarbg.png");
+		imghandle[3] = LoadGraph("data/img/wall/overbg.png");
+		imghandle[4] = LoadGraph("data/img/wall/resultbg.png");
 	}
 	~cGame() { 
 		delete stage;
@@ -99,4 +122,5 @@ public:
 	int		StageSizeY() { return stage->GetStageSizeY(); }
 };
 
-extern std::unique_ptr<cBase> scene;
+extern std::unique_ptr<cGame> scene;
+extern std::unique_ptr<cTitle> title;

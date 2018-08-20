@@ -1,6 +1,6 @@
 
 #include "Main.h"
-VECTOR FocusPos, FocusOld, WirePos ,FocusCam, MouseAdd;
+VECTOR	FocusPos, FocusOld, WirePos ,FocusCam, MouseAdd;
 bool	AnchorStretch = true;
 bool	IsClearFlag, IsOverFlag;
 int		coin, ecoin, rcoin;
@@ -345,7 +345,10 @@ void	cPlayer::HitAction(cObject *hit) {
 		if (this->GetType() == Player) coin++;
 		break;
 	case EneCoin:
-		if (this->GetType() == Player) ecoin++;
+		if (this->GetType() == Player) {
+			ecoin++;
+			mp += 300;
+		}
 		break;
 	case RareCoin:
 		if (this->GetType() == Player) rcoin++;

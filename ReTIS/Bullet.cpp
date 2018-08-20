@@ -50,7 +50,6 @@ void	cBullet::Update() {
 			//‰æ–ÊŠO‚È‚çÁ‚·
 			flag = false;
 		}
-		
 	}
 	anim++;
 		if (anim >= 3) anim = 0;

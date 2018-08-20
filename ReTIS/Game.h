@@ -28,3 +28,7 @@ extern	void	game_init(void);
 extern	void	game_main(void);
 extern	void	game_end(void);
 
+extern int gamemode;
+
+extern std::string stagepath;
+

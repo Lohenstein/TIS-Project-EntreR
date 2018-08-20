@@ -1,6 +1,9 @@
 #include "Main.h"
 
-std::unique_ptr<cBase> scene;
+std::unique_ptr<cGame> scene;
+std::unique_ptr<cTitle> title;
+
+int		menumode;
 
 /*------------------------------------------------------------------------------*
 | <<< ゲーム >>>
@@ -166,14 +169,11 @@ void	cGame::Render() {
 void	cGame::DrawOver() {
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, trans >= 255 ? 255 : trans);
 
-	DrawGraph(0, 0, imghandle[0], false);
-	int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_TIME], "Game Over!!");
-	DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 150, 0xFFFFFF, font_handle[FONT_TIME], "Game Over!!");
-
+	DrawGraph(0, 0, imghandle[3], false);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	if (trans > 235 && trans % 30 != 0) {
-		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "R key: Retry / X key : Lab", time);
+		int w =  GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "R key: Retry / X key : Lab", time);
 		DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 550, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "R key: Retry / X key : Lab", time);
 	}
 }
@@ -189,6 +189,16 @@ void	cGame::UpdateOver() {
 		scene.reset();
 		scene.reset(new cGame);
 	}
+	if (pad_b[XINPUT_BUTTON_A] == 1 && trans > 235) {
+		DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
+		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
+		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
+		ScreenFlip();
+
+		title.reset(new cTitle);
+		gamemode = Game::mode_title;
+		scene.reset();
+	}
 }
 
 void	cGame::UpdateResult() {
@@ -202,16 +212,25 @@ void	cGame::UpdateResult() {
 		scene.reset();
 		scene.reset(new cGame);
 	}
+	if (pad_b[XINPUT_BUTTON_A] == 1 && trans > 235) {
+		DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
+		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
+		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
+		ScreenFlip();
+
+		title.reset(new cTitle);
+		gamemode = Game::mode_title;
+		scene.reset();
+	}
 }
 
 void	cGame::DrawResult() {
 	// 薄暗くする
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, trans >= 255 ? 255 : trans);
 
-	DrawGraph(0, 0, imghandle[0], false);
-	int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_TIME], "Stage Clear!!");
-	DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 150, 0xFFFFFF, font_handle[FONT_TIME], "Stage Clear!!");
-
+	int w;
+	DrawGraph(0, 0, imghandle[4], false);
+	
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	if (trans > 255) {
@@ -268,5 +287,90 @@ void	cGame::RenderGui() {
 	}
 	else {
 		DrawRectGraph(10, 70, 0, 0, mp, 16, imghandle[1], false, true);
+	}
+}
+
+/*------------------------------------------------------------------------------*
+| <<< メニュー >>>
+*------------------------------------------------------------------------------*/
+void	cTitle::Init() {
+
+}
+void	cTitle::Update() {
+	input();
+	SetDrawScreen(DX_SCREEN_BACK);
+}
+void	cTitle::Render() {
+	DrawGraph(0, 0, titlebg, false);
+	switch (menumode) {
+	case 0:
+		DrawTitle();
+		break;
+	case 1:
+		DrawStageSelect();
+		break;
+	}
+}
+void	cTitle::DrawTitle() {
+	int w;
+	// 各メニューへ移動
+	switch (menu.draw(550, 280, 4, title_str)) {
+		// GAME START
+	case 0:
+		break;
+		// STAGE EDITOR
+	case 1:
+		menumode = 1;
+		break;
+		// QUIT GAME
+	case 4:
+		
+		break;
+	default:
+		break;
+	}
+}
+
+void	cTitle::DrawStageSelect() {
+	int w;
+	// 各メニューへ移動
+	switch (stageselect.draw(550, 280, 4, stage_str)) {
+		// GAME START
+	case 0:
+		DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
+		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
+		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
+		ScreenFlip();
+		stagepath = "data/map/stage1/";
+		scene.reset(new cGame);
+		gamemode = Game::mode_game;
+		title.reset();
+		break;
+		// STAGE EDITOR
+	case 1:
+
+		DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
+		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
+		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
+		ScreenFlip();
+		stagepath = "data/map/stage2/";
+		scene.reset(new cGame);
+		gamemode = Game::mode_game;
+		title.reset();
+		break;
+		// QUIT GAME
+	case 2:
+		DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
+		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
+		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
+		ScreenFlip();
+		stagepath = "data/map/stage3/";
+		scene.reset(new cGame);
+		gamemode = Game::mode_game;
+		title.reset();
+		break;
+	case 3:
+		menumode = 0;
+		break;
 	}
 }

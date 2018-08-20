@@ -3,11 +3,13 @@
 
 namespace Game
 {
-	int mode = mode_game;
 
 }
 
+int		gamemode = Game::mode_game;
 int		font_handle[FONT_MAX];
+std::string stagepath;
+
 
 using	namespace Game;
 
@@ -16,7 +18,8 @@ using	namespace Game;
 *------------------------------------------------------------------------------*/
 void	game_init(void)
 {
-	scene.reset(new cGame);
+	title.reset(new cTitle);
+	gamemode = mode_title;
 
 	// ƒtƒHƒ“ƒg‚Ì“Ç‚İ‚İ
 	//--------------------------------------------------------------------------
@@ -40,9 +43,10 @@ void	game_init(void)
 void	game_main(void)
 {
 	// ˆ—
-	switch (mode)
+	switch (gamemode)
 	{
 	case mode_title:
+		title->Update();
 		break;
 	case mode_lobby:
 		break;
@@ -54,9 +58,10 @@ void	game_main(void)
 	}
 
 	// •`‰æ
-	switch (mode)
+	switch (gamemode)
 	{
 	case mode_title:
+		title->Render();
 		break;
 	case mode_game:
 		scene->Render();
