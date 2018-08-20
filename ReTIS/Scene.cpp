@@ -3,6 +3,8 @@
 std::unique_ptr<cGame> scene;
 std::unique_ptr<cTitle> title;
 
+int		menumode;
+
 /*------------------------------------------------------------------------------*
 | <<< ゲーム >>>
 *------------------------------------------------------------------------------*/
@@ -300,7 +302,14 @@ void	cTitle::Update() {
 }
 void	cTitle::Render() {
 	DrawGraph(0, 0, titlebg, false);
-	DrawTitle();
+	switch (menumode) {
+	case 0:
+		DrawTitle();
+		break;
+	case 1:
+		DrawStageSelect();
+		break;
+	}
 }
 void	cTitle::DrawTitle() {
 	int w;
@@ -311,21 +320,57 @@ void	cTitle::DrawTitle() {
 		break;
 		// STAGE EDITOR
 	case 1:
-
-		DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
-		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
-		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
-		ScreenFlip();
-
-		scene.reset(new cGame);
-		gamemode = Game::mode_game;
-		title.reset();
+		menumode = 1;
 		break;
 		// QUIT GAME
 	case 4:
 		
 		break;
 	default:
+		break;
+	}
+}
+
+void	cTitle::DrawStageSelect() {
+	int w;
+	// 各メニューへ移動
+	switch (stageselect.draw(550, 280, 4, stage_str)) {
+		// GAME START
+	case 0:
+		DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
+		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
+		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
+		ScreenFlip();
+		stagepath = "data/map/stage1/";
+		scene.reset(new cGame);
+		gamemode = Game::mode_game;
+		title.reset();
+		break;
+		// STAGE EDITOR
+	case 1:
+
+		DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
+		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
+		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
+		ScreenFlip();
+		stagepath = "data/map/stage2/";
+		scene.reset(new cGame);
+		gamemode = Game::mode_game;
+		title.reset();
+		break;
+		// QUIT GAME
+	case 2:
+		DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
+		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
+		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
+		ScreenFlip();
+		stagepath = "data/map/stage3/";
+		scene.reset(new cGame);
+		gamemode = Game::mode_game;
+		title.reset();
+		break;
+	case 3:
+		menumode = 0;
 		break;
 	}
 }

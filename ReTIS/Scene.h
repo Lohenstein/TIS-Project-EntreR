@@ -2,6 +2,8 @@
 
 using namespace std;
 
+extern	int menumode;
+
 class cBase
 {
 public:
@@ -36,15 +38,18 @@ public:
 	int		menu_mode;
 
 	char *title_str[4] = { "GAME START", "STAGE SELECT", "OPTION", "QUIT GAME" };
+	char *stage_str[4] = { "²“¡Šî’n", "¬—ÑŠî’n", "“¡ˆäŠî’n", "–ß‚é" };
 
 	cTitle() {
 		titlebg = LoadGraph("data/img/wall/titlebg.png");
+		menumode = 0;
 	}
 
 	void	Init();
 	void	Update();
 	void	Render();
 	void	DrawTitle();
+	void	DrawStageSelect();
 };
 
 class cGame : public cBase
@@ -69,7 +74,7 @@ protected:
 	int trans = 0;
 public:
 	cGame() { 
-		stagepath = "data/map/stage3/";
+		//stagepath = "data/map/stage3/";
 		stage	  = new cStageManager(stagepath);
 		character = new cCharacterManager(stagepath);
 		camera	  = new cCamera();

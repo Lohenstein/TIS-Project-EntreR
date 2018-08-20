@@ -1,6 +1,7 @@
 #include "Main.h"
 
 cMenu	menu;
+cMenu	stageselect;
 
 int cMenu::draw(int mx, int my, int n, char **str) {
 
