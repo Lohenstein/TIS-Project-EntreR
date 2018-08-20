@@ -1,6 +1,6 @@
 
 #include "Main.h"
-VECTOR FocusPos, FocusOld, WirePos ,FocusCam, MouseAdd;
+VECTOR	FocusPos, FocusOld, WirePos ,FocusCam, MouseAdd;
 bool	AnchorStretch = true;
 bool	IsClearFlag, IsOverFlag;
 int		coin, ecoin, rcoin;
