@@ -11,9 +11,8 @@ extern int coin, ecoin, rcoin;
 
 using namespace std;
 
-class cCharacterBase : public cObject {
+class cCharacterBase :  public cObject {
 protected:
-	float	speed;
 	float	jump = 0.f, gravity = 1.f, inertia = 0; // 重力と慣性
 	int		hp = 5, invincible_time = 0;
 	int		jump_count = 0;
@@ -133,7 +132,7 @@ public:
 		speed = s;
 		type = Enemy;
 		landing = false;
-		hp = 1;
+		hp = 2;
 
 		move_flag = false;
 		jump_count = 0;
@@ -143,7 +142,6 @@ public:
 	}
 	~cEnemyJumpman() {}
 	void Update();
-	void MoveByPlayer();
 	void MoveByAutomation();
 	void Render(int image[120]);
 };
@@ -171,7 +169,7 @@ public:
 		speed = s;
 		type = Enemy;
 		landing = false;
-		hp = 2;
+		hp = 3;
 
 		attack_count = 0;
 		bulletsize = { 10,10,0 };
@@ -188,41 +186,65 @@ public:
 	~cEnemyGunman() {}
 
 	void MoveByAutomation();
-	void MoveByPlayer();
 	void Update();
 	void Render(int image[],int imagedead[]);
 };
 
-
 class cEnemyHardBody : public cEnemy {
-public:
-	float move_speed;
-	int life;
-	int attack_time;
+protected:
 	bool attack_flag;
-	int jump_count;
-	int cool_time;
-	int image_change;
-
+	short count;
+	short image_change;
+	short move_pattern;
+	bool direction;
+	short rolling_count;
+	float rectx;
+	float recty;
+	float lockon;
+	
+public:
+	VECTOR bulletpos;
+	VECTOR bulletsize;
 	cEnemyHardBody(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
 		speed = s;
 		landing = false;
 		type = Enemy;
-		hp = 6;
+		hp = 1;		//hpが2以上のとき倒れなくなる
 		
-		move_speed = 0.8f;
-		life = 100;
-		attack_time = 0;
+		rectx = x;
+		recty = y;
+		rad = 45;
 		attack_flag = false;
 		jump_count = 0;
-		cool_time = 0;
+		count = 0;
 		image_change = 0;
+		direction = false;
+		bulletsize = { 10,10,0 };
+		rolling_count = 0;
+		angle = 45;
+		move_pattern = 0;
+		lockon = 0.f;
 	}
 	void Update();
-	void MoveByPlayer();
 	void MoveByAutomation();
+	void Render(int img[]);
+	float GetPosx() { return rectx; }
+	float GetPosy() { return recty; }
+	float GetRadrightbottom()  { return cos(rad); }
+	float GetRadleftbottom() { 
+		rad = d2r(angle * 2);
+		return cos(rad);
+	}
+	float GetRadlefttop() {
+		rad = d2r(angle * 3);
+		return sin(rad);
+	}
+	float GetRadrighttop() {
+		rad = d2r(angle * 4);
+		return sin(rad);
+	}
 };
 
 class cEnemyFryingman : public cEnemy {
@@ -266,7 +288,6 @@ public:
 	void Render(int image[]);
 };
 
-
 class cEnemyBossmiddle :public cEnemy {
 protected:
 public:
@@ -287,7 +308,7 @@ public:
 		speed = s;
 		landing = false;
 		type = Enemy;
-		hp = 2;
+		hp = 10;
 
 		move_time = 0;
 		move_pattern = 0;
@@ -309,20 +330,24 @@ public:
 
 	short move_pattern;
 	short count;
-
+	float lockon;
+	VECTOR bulletsize;
+	int		bulletspeed;
 	cEnemyJugem(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
 		speed = s;
 		landing = false;
 		type = Enemy;
-		hp = 5;
+		hp = 1;
 
 		image_change = 0;
 		direction = false;
 		move_pattern = 0;
-		direction = false;
 		count = 0;
+		lockon = 0.f;
+		bulletsize = { 10,10,0 };
+		bulletspeed = 15;
 	}
 	void Update();
 	void MoveByAutomation();
@@ -338,7 +363,9 @@ public:
 	short enemy_move;
 	short attack_count;
 	VECTOR attackpos[5];
+	VECTOR bulletsize;
 	float lockon;
+	int rad;
 	cEnemyBoss(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
@@ -355,6 +382,9 @@ public:
 			attackpos[i] = {0,0,0};
 		}
 		lockon = 0.f;
+		rad = 0;
+		bulletsize = {10,10,0};
+		
 	}
 	void Update();
 	void MoveByAutomation();
@@ -463,8 +493,6 @@ public:
 	void	HitAction(cObject *hit);
 };
 
-
-
 class cClearCollision : public cEnemy {
 public:
 	bool IsClear = false; // クリア判定
@@ -487,6 +515,7 @@ class cCoin : public cEnemy {
 public:
 	bool getcoin;
 	int  cointype;
+	int	 image_change;
 
 	VECTOR CoinPos;
 	cCoin(int x, int y, int ctype) {
@@ -496,20 +525,24 @@ public:
 		case 0: // 普通のコイン
 			type = NormalCoin;
 			size = { 32.f, 32.f, 0.f };
+			image_change = 0;
 			break;
 		case 1: // エネルギーコイン
 			type = EneCoin;
 			size = { 32.f, 32.f, 0.f };
+			image_change = 39;
 			break;
 		case 2: // レアコイン
 			type = RareCoin;
 			size = { 64.f, 64.f, 0.f };
+			image_change = 78;
 			break;
 		}
 		hp = 1;
 	}
 	void	Update();
 	void	Render(int image[]);
+	void	MoveByAutomation();
 	void	HitAction(cObject *hit) {
 		hp = 0;
 	}
@@ -574,15 +607,12 @@ public:
 	cPlayer							*player;
 	cClearCollision					*clear;
 	cEnemyHardBody					*hardbody[ENEMY_MAX];
-	////cEnemyWiremanManager::Wireman	*wireman[ENEMY_MAX];
 	cEnemyFryingman					*fryingman[ENEMY_MAX];
-	//////cEnemyWiremanManager::Anchor	*wireanchor[ENEMY_MAX];
-	//			*wmanager[ENEMY_MAX];
 	cEnemyGunman					*gunman[ENEMY_MAX];
 	cEnemyJumpman					*jumpman[ENEMY_MAX];
 	cEnemyBossmiddle				*bossmiddle[ENEMY_MAX];
 	cEnemyJugem						*jugem[ENEMY_MAX];
-	cEnemyBoss						*boss[ENEMY_MAX];
+	cEnemyBoss						*boss;
 
 	// Entity
 	cEnemyCircularSaw				*circularsaw[ENEMY_MAX];
@@ -597,14 +627,17 @@ public:
 	int		wireman_img[273];
 	int		jumpman_img[120];
 	int		bossmiddle_img[200];
+	int		hardbody_img[20];
 	int		fryingman_img[123];
-	int		gunman_imgdead[234];
+	int		gunman_imgdead[24];
 	int		gunman_img[111];
 	int		circularsaw_img[5];
 	int		cannon_img[20];
-	int		coin_img[3];
 	int		spring_img[30];
 	int		floorimg;
+	int		boss_img[280];
+	int		jugem_img[123];
+	int		allcoin_img[117];
 
 	void	Update();
 	void	Render();
@@ -613,35 +646,37 @@ public:
 	void	DeleteCharacters();
 	void	DeleteDeathCharacters();
 	cCharacterManager(string name) {
-		/*
-		wireman[0]	  = new cEnemyWiremanManager::Wireman(300.f, 100.f, 80.f, 220.f, 2.f, false);
-		wireanchor[0] = new cEnemyWiremanManager::Anchor(100, -100, 10, 10, 2, false);
-		wmanager[0]   = new cEnemyWiremanManager;
-		*/
-		LoadCharacters(name);//24 5
+		LoadCharacters(name);
 		LoadDivGraph("data/img/enemy/Jumpman.PNG", 120, 30, 4, 300, 300, jumpman_img);
-		LoadDivGraph("data/img/enemy/Gunman.PNG", 234, 39, 6, 300, 300, gunman_imgdead);
-		LoadDivGraph("data/img/enemy/GUNMAN1.PNG", 111, 37, 6, 300, 300, gunman_img);
-		LoadDivGraph("data/img/enemy/Fryingman.PNG", 123, 41, 3, 300, 300, fryingman_img);
+		LoadDivGraph("data/img/enemy/Gunman.PNG", 24, 24, 1, 300, 300, gunman_imgdead);
+		LoadDivGraph("data/img/enemy/GUNMAN1.PNG", 111, 37, 2, 300, 300, gunman_img);
+		LoadDivGraph("data/img/enemy/BigGun.PNG", 20, 20, 1, 300, 300, cannon_img);
+		LoadDivGraph("data/img/enemy/hardbody.PNG", 30, 15, 2, 300, 300, hardbody_img);
+		LoadDivGraph("data/img/enemy/Fryingman.PNG", 120, 40, 3, 300, 300, fryingman_img);
+		LoadDivGraph("data/img/enemy/Jugem.PNG", 100, 40, 3, 300, 300, jugem_img);
 		LoadDivGraph("data/img/enemy/Bossmiddle.PNG", 200, 50, 4, 300, 300, bossmiddle_img);
 		LoadDivGraph("data/img/enemy/Wireman.PNG", 273, 39, 7, 300, 300, wireman_img);
 		LoadDivGraph("data/img/enemy/CircularSaw.PNG", 5, 5, 1, 300, 300, circularsaw_img);
-		LoadDivGraph("data/img/enemy/BigGun.PNG", 20, 20, 1, 300, 300, cannon_img);
-		coin_img[0] = LoadGraph("data/img/enemy/NormalCoin.PNG");
-		coin_img[1] = LoadGraph("data/img/enemy/BigCoin.PNG");
-		coin_img[2] = LoadGraph("data/img/enemy/EnergyCoin.PNG");
-		LoadDivGraph("data/img/enemy/spring.png", 30, 30, 1, 250, 250, spring_img);
+		LoadDivGraph("data/img/enemy/BigGun.PNG", 10, 10, 1, 300, 300, cannon_img);
+		LoadDivGraph("data/img/enemy/AllCoin.PNG", 117, 39, 3, 300, 300, allcoin_img);
+		LoadDivGraph("data/img/enemy/BigGun.PNG", 10, 10, 1, 300, 300, cannon_img);
+		LoadDivGraph("data/img/enemy/Boss.PNG", 280, 40, 7, 300, 300, boss_img);
+		LoadDivGraph("data/img/enemy/spring.png", 30, 30, 1, 300, 300, spring_img);
 	}
 	~cCharacterManager() {
 		DeleteCharacters();
 		for (int i = 0; i < 273; i++) { DeleteGraph(wireman_img[i]); }
 		for (int i = 0; i < 120; i++) { DeleteGraph(jumpman_img[i]); }
 		for (int i = 0; i < 200; i++) { DeleteGraph(bossmiddle_img[i]); }
+		for (int i = 0; i < 30; i++) { DeleteGraph(hardbody_img[i]); }
 		for (int i = 0; i < 123; i++) { DeleteGraph(fryingman_img[i]); }
-		for (int i = 0; i < 234; i++) { DeleteGraph(gunman_img[i]); }
+		for (int i = 0; i < 24; i++) { DeleteGraph(gunman_imgdead[i]); }
+		for (int i = 0; i < 111; i++) { DeleteGraph(gunman_img[i]); }
 		for (int i = 0; i <   5; i++) { DeleteGraph(circularsaw_img[i]); }
 		for (int i = 0; i <  20; i++) { DeleteGraph(cannon_img[i]); }
-		for (int i = 0; i <   3; i++) { DeleteGraph(coin_img[i]); }
+		for (int i = 0; i < 117; i++) { DeleteGraph(allcoin_img[i]); }
+		for (int i = 0; i < 280; i++) { DeleteGraph(boss_img[i]); }
+		for (int i = 0; i < 123; i++) { DeleteGraph(jugem_img[i]); }
 		DeleteGraph(floorimg);
 	}
 
@@ -658,8 +693,8 @@ public:
 	cObject *GetDropFloor(int num) { return (cObject*)dropfloor[num]; }
 	cObject *GetMoveFloor(int num) { return (cObject*)movefloor[num]; }
 	cObject *GetCoin(int num) { return (cObject*)coin[num]; }
-	cObject *GetJugem(int num) { return (cObject*)jugem[num]; }
-	cObject *GetBoss(int num) { return (cObject*)boss[num]; }
+	cObject *GetEnemyJugem(int num) { return (cObject*)jugem[num]; }
+	cObject *GetEnemyBoss() { return (cObject*)boss; }
 	cObject *GetSpring(int num) { return (cObject*)spring[num]; }
 
 	int		GetPlayerHp() { return player->GetHp(); }
@@ -683,7 +718,5 @@ enum character {
 	eBoss,			// 13
 	eEvents,		// 14
 	eJugem,			// 15
-	eSpring			// 16
+	eSpring,		// 16
 };
-
-// 最大　＋ 14
