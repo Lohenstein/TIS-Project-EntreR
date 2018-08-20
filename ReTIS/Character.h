@@ -372,7 +372,7 @@ public:
 		speed = s;
 		landing = false;
 		type = Enemy;
-		hp = 5;
+		hp = 1;
 
 		image_change = 0;
 		direction = false;

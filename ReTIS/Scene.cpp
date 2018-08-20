@@ -37,7 +37,7 @@ void	cGame::Collision() {
 
 	CollisionAroundMaptile(character->GetPlayer());
 	if (character->GetAnchor() != nullptr) CollisionAroundMaptile(character->GetAnchor());
-	//if (character->GetEnemyBoss() != nullptr) CollisionAroundMaptile(character->GetEnemyBoss());
+	if (character->GetEnemyBoss() != nullptr) CollisionAroundMaptile(character->GetEnemyBoss());
 
 	for (int k = 0; k < ENEMY_MAX; k++) {
 		if (character->GetEnemyJumpman(k)		!= nullptr) CollisionAroundMaptile(character->GetEnemyJumpman(k));

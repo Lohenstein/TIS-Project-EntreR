@@ -1118,14 +1118,9 @@ void cEnemyJugem::Render(int img[])
 
 void cEnemyBoss::Update()
 {
-	if (hp > 1) {
-		MoveByAutomation();
-	}
-	if (image_change == 149) {
-		hp = 0;
-	}
-	//Physical();
-
+	MoveByAutomation();
+	hp = 0;
+	Physical();
 }
 
 void cEnemyBoss::MoveByAutomation()
@@ -1134,40 +1129,65 @@ void cEnemyBoss::MoveByAutomation()
 	{
 	// レーザー
 	case 0:
+		image_change++;
+		if (image_change > 200) {
+			image_change = 0;
+		}
+		/*if (image_change > 239 || 200 > image_change) {
+			image_change = 200;
+		}
+		image_change++;
+		if (image_change > 239) image_change = 239;
+
 		if (attack_count == 0) {
 			attackpos[0] = pos;
 			bullet.Shot(attackpos[0], bulletsize, 10, PI, EnemyBullet);
 		}
-		if (image_change > 39) image_change = 0;
-
-		if (image_change < 40) image_change = 39;
 		attack_count++;
-		if (attack_count == 20) {
-
+		if (attack_count == 100) {
 			rad = -90;
 			enemy_move = 1;
-		}
+		}*/
 		break;
 	// 銃
 	case 1:
+		if (image_change > 239 || 200 > image_change) {
+			image_change = 200;
+		}
+		image_change++;
+		if (image_change > 239) image_change = 239;
+
 		if (attack_count > 10 || rad > 90) {
 			rad += 3;
 			bullet.Shot(pos,bulletsize,10,d2r(rad),EnemyBullet);
 		}
-		enemy_move = 2;
+		//enemy_move = 2;
 		break;
 	// 掴みかかる
 	case 2:
-		if (attack_count == 50) {
+		if (image_change > 279 || 240 > image_change) {
+			image_change = 200;
+		}
+		image_change++;
+		if (image_change > 279) image_change = 279;
+
+		if (attack_count == 200) {
 			lockon = atan2(FocusPos.y - pos.y, FocusPos.x - pos.x);
 			for (int i = 0; i < 4; i++) {
 				attackpos[i] = {pos.x + (cos(lockon) * speed * i),pos.y + (sin(lockon) * speed * i),0};
 			}
 			enemy_move = 3;
 		}
+		attack_count++;
 		break;
 	// 色々
 	case 3:
+		if (image_change > 239 || 200 > image_change) {
+			image_change = 200;
+		}
+		image_change++;
+		if (image_change > 239) image_change = 239;
+
 		if (attack_count == 10) {
 
 			enemy_move = 4;
@@ -1176,6 +1196,12 @@ void cEnemyBoss::MoveByAutomation()
 	// ダウン
 	case 4:
 		// 休憩タイム
+		if (image_change > 0 || 39 > image_change) {
+			image_change = 200;
+		}
+		image_change++;
+		if (image_change > 39) image_change = 39;
+
 		if (attack_count == 20) {
 
 			attack_count = 0;
@@ -1187,19 +1213,18 @@ void cEnemyBoss::MoveByAutomation()
 
 void cEnemyBoss::Render(int image[])
 {
-	DrawRotaGraph(pos.x - 300 / 2, pos.y - 300 / 2,2, image[image_change], TRUE,FALSE);
-	/*if (enemy_move == 1) {
+	DrawRotaGraph(pos.x - 300 / 2, pos.y - 300 / 2,2,0, image[image_change], TRUE);
+	if (enemy_move == 1) {
 		if (direction == true)
-			DrawGraph(pos.x - 250 / 2, pos.y - 250 / 2, image[image_change], TRUE);
+			DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
 		else if (direction == false)
-			DrawTurnGraph(pos.x - 250 / 2, pos.y - 250 / 2, image[image_change], TRUE);
+			DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
 
 	}
 	if (direction == true)
-		DrawGraph(pos.x - 250 / 2, pos.y - 250 / 2, image[image_change], TRUE);
+		DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
 	else if (direction == false)
-		DrawTurnGraph(pos.x - 250 / 2, pos.y - 250 / 2, image[image_change], TRUE);
-		*/
+		DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
 }
 
 /*------------------------------------------------------------------------------*
