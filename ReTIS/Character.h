@@ -21,6 +21,7 @@ protected:
 	int		animjump = 0;
 	int		animmode = 0;
 	bool	invincible = false;
+	int		effect_hnd;
 	void	Physical();	// ジャンプとかの計算
 
 						// 着地した時の判定 ------------------
@@ -48,6 +49,8 @@ public:
 	void	MoveByAutomation();
 	void	MoveByPlayer();
 	void	Damaged();
+	void	SetEffect(float zoom, int effect_num);
+	void	UpdateEffect();
 	void	Update();
 	void	Render();
 	int		GetHp() { return hp; }
@@ -58,8 +61,10 @@ protected:
 	int img[4][30];
 public:
 	cAnchor *anchor;
-	float	rad2anchor, dis2anchor, wrad, swing;
+	float	rad2anchor, dis2anchor, wrad, wrad_old, swing;
 	bool	IsAnchored = false;
+	bool	IsFall = false;
+	int 	anchor_dir = 0;
 	VECTOR	savepos;
 	cPlayer(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };

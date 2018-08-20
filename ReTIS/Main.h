@@ -16,6 +16,7 @@
 
 //--- ライブラリ----------------------
 #include "DxLib.h"
+#include "EffekseerForDXLib.h"
 
 //--- ヘッダインクルード --------
 #include "Include.h"

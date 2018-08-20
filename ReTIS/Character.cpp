@@ -1,6 +1,6 @@
 
 #include "Main.h"
-VECTOR FocusPos, FocusOld, WirePos ,FocusCam,MouseAdd;
+VECTOR FocusPos, FocusOld, WirePos ,FocusCam, MouseAdd;
 bool	AnchorStretch = true;
 bool	IsClearFlag, IsOverFlag;
 int		coin, ecoin, rcoin;
@@ -50,7 +50,6 @@ void	cCharacterBase::Physical() {
 	pos.y -= jump;
 	jump -= gravity;
 }
-
 void	cCharacterBase::Update() {
 	// 乗り移る
 	FocusOld = FocusPos;
@@ -66,13 +65,11 @@ void	cCharacterBase::Update() {
 	// 重力
 	Physical();
 }
-
 void	cCharacterBase::Render() {
 	DrawBoxAA(pos.x - GetSize().x / 2.f, pos.y - GetSize().y / 2.f,
 		pos.x + GetSize().x / 2.f, pos.y + GetSize().y / 2.f,
 		0xFFFFFF, false);
 }
-
 void	cCharacterBase::HitAction(cObject *hit) {
 
 	switch (hit->GetType()) {
@@ -121,6 +118,7 @@ void	cCharacterBase::Damaged() {
 		invincible = true;
 		invincible_time = 0;
 		hp--;
+		//effect.Shot(pos, 10.f, 1);
 	}
 }
 void	cCharacterBase::Collision(cObject *hit) {
@@ -188,6 +186,7 @@ void	cPlayer::Render() {
 		DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
 	}
 	if (anchor != nullptr) anchor->Render(pos);
+	DrawFormatString(pos.x, pos.y, 0xFFFFFF, "%f, %f, %d", wrad, rad2anchor, anchor_dir);
 }
 
 void	cPlayer::UpdateAnchor() {
@@ -205,18 +204,33 @@ void	cPlayer::UpdateAnchor() {
 			// くっついたとき
 			if (!IsAnchored) {
 				savepos = pos;
-				rad2anchor = (DX_PI_F / 2) + atan2f(anchor->GetPos().y - pos.y, anchor->GetPos().x - pos.x);
+				rad2anchor = atan2f(pos.y - anchor->GetPos().y, pos.x - anchor->GetPos().x) - (DX_PI_F / 2.f);
 				dis2anchor = sqrtf((anchor->GetPos().x - pos.x) * (anchor->GetPos().x - pos.x) + (anchor->GetPos().y - pos.y) * (anchor->GetPos().y - pos.y));
 				IsAnchored = true;
 				swing = 0.f;
 				jump_count = 0;
+				wrad_old = 0;
+				wrad = cosf(rad2anchor);// * (rad2anchor / (DX_PI_F / 2.f));
+				if (wrad > wrad_old) anchor_dir = 1;
+				if (wrad < wrad_old) anchor_dir = -1;
 			}
-			else {
-				wrad = cos(swing) * (rad2anchor / (PI / 2.f));
-				pos.x = anchor->GetPos().x + cos(wrad + DX_PI_F / 2.f) * dis2anchor;
-				pos.y = anchor->GetPos().y + sin(wrad + DX_PI_F / 2.f) * dis2anchor;
-				swing += DX_PI_F / (dis2anchor / 10.f);
+			else{
+				// ぶら下がっているとき
+				if (trigger_r > 55) dis2anchor -= trigger_r / 32.f;
+				if (trigger_l > 55) dis2anchor += trigger_l / 32.f;
+
+				wrad_old = wrad;
+				wrad = cosf(swing) * rad2anchor;
+
+				if (wrad > wrad_old) anchor_dir = 1;
+				if (wrad < wrad_old) anchor_dir = -1;
+
+				pos.x = anchor->GetPos().x + cosf(wrad + DX_PI_F / 2.f) * dis2anchor;
+				pos.y = anchor->GetPos().y + sinf(wrad + DX_PI_F / 2.f) * dis2anchor;
+
+				swing += DX_PI_F / 45.f;
 				jump = 0.f;
+
 			}
 		}
 	}
@@ -233,32 +247,48 @@ void	cPlayer::Update() {
 		if (key[KEY_INPUT_LEFT] == 2 || stick_lx <= -100) {
 			rect = true;
 			inertia -= 4;				// 移動量θを減少
+			if (IsAnchored) {
+				if (anchor_dir ==  1) rad2anchor += DX_PI_F / 360.f;
+				//if (anchor_dir == -1) rad2anchor -= DX_PI_F / 360.f;
+			}
 		}
 		if (key[KEY_INPUT_RIGHT] == 2 || stick_lx >= 100) {
 			rect = false;
 			inertia += 4;				// 移動量θを増加
+			if (IsAnchored) {
+				//if (anchor_dir ==  1) rad2anchor -= DX_PI_F / 360.f;
+				if (anchor_dir == -1) rad2anchor += DX_PI_F / 360.f;
+			}
 		}
 	}
 	else {
 		// キー押し下げ時以外は収束する
 		if (inertia > 0) inertia -= 2;
 		if (inertia < 0) inertia += 2;
+		if (IsAnchored) {
+			if (rad2anchor > 0.f) rad2anchor -= DX_PI_F / 1440.f;
+		}
 	}
 
 	if ((key[KEY_INPUT_SPACE] == 1 || pad_b[XINPUT_BUTTON_A] == 1) && jump_count < 2) {
 		jump = 20.f;
 		++jump_count;
+		if (anchor != nullptr) {
+			delete anchor;
+			IsAnchored = false;
+			anchor = nullptr;
+		}
 	}
 	if ((key[KEY_INPUT_C] == 1 || pad_b[XINPUT_BUTTON_X] == 1) && mp >= 10) {
 		mp -= 10;
-		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, PI * rect, PlayerBullet);
+		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, -stick_rad, PlayerBullet);
 	}
-
 	if (pad_b[XINPUT_BUTTON_Y] == 1) {
 		delete anchor;
 		IsAnchored = false;
+		IsFall = false;
 		anchor = nullptr;
-		anchor = new cAnchor(pos, { 10.f, 10.f, 10.f }, 20.f, -stick_rad, WireAnchor);
+		anchor = new cAnchor(pos, { 10.f, 10.f, 10.f }, 30.f, -stick_rad, WireAnchor);
 	}
 	// 穴に落っこちた
 	if (pos.y >= 3520) {
@@ -404,8 +434,6 @@ void	cCharacterManager::DeleteCharacters() {
 		
 	}
 }
-
-
 void	cCharacterManager::DeleteDeathCharacters() {
 	if (player->GetHp() <= 0) {
 		IsOverFlag = true;

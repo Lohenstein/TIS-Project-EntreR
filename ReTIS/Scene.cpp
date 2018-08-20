@@ -128,6 +128,7 @@ void	cGame::Update() {
 		gui->SetHp(character->GetPlayerHp());
 		dialog->Update();
 		UpdateGui();
+		effect.Update();
 	}
 }
 

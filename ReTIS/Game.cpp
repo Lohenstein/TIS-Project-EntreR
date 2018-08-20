@@ -27,6 +27,8 @@ void	game_init(void)
 		// フォント読込エラー処理
 		MessageBox(NULL, "フォントの読込に失敗しました。", "Debug - Error", MB_OK);
 	}
+	LoadBulletImg();
+	LoadEffects();
 
 	font_handle[FONT_POSSESSTIME] = CreateFontToHandle("みかちゃん-PB", 48, 2, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
 	font_handle[FONT_TIME]		  = CreateFontToHandle("みかちゃん-PB", 72, 2, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
