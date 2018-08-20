@@ -24,3 +24,4 @@
 #include "Stage.h"
 #include "Game.h"
 #include "Scene.h"
+#include "Effect.h"

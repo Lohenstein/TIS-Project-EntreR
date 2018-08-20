@@ -1,6 +1,6 @@
 
 #include "Main.h"
-VECTOR FocusPos, FocusOld, WirePos ,FocusCam,MouseAdd;
+VECTOR FocusPos, FocusOld, WirePos ,FocusCam, MouseAdd;
 bool	AnchorStretch = true;
 bool	IsClearFlag, IsOverFlag;
 int		coin, ecoin, rcoin;
@@ -118,6 +118,7 @@ void	cCharacterBase::Damaged() {
 		invincible = true;
 		invincible_time = 0;
 		hp--;
+		//effect.Shot(pos, 10.f, 1);
 	}
 }
 void	cCharacterBase::Collision(cObject *hit) {
@@ -185,7 +186,7 @@ void	cPlayer::Render() {
 		DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
 	}
 	if (anchor != nullptr) anchor->Render(pos);
-	DrawFormatString(pos.x, pos.y, 0xFFFFFF, "%f, %d", wrad, anchor_dir);
+	DrawFormatString(pos.x, pos.y, 0xFFFFFF, "%f, %f, %d", wrad, rad2anchor, anchor_dir);
 }
 
 void	cPlayer::UpdateAnchor() {
@@ -206,26 +207,26 @@ void	cPlayer::UpdateAnchor() {
 				rad2anchor = atan2f(pos.y - anchor->GetPos().y, pos.x - anchor->GetPos().x) - (DX_PI_F / 2.f);
 				dis2anchor = sqrtf((anchor->GetPos().x - pos.x) * (anchor->GetPos().x - pos.x) + (anchor->GetPos().y - pos.y) * (anchor->GetPos().y - pos.y));
 				IsAnchored = true;
-				swing = rad2anchor;
+				swing = 0.f;
 				jump_count = 0;
 				wrad_old = 0;
-				wrad = cos(rad2anchor);// * (rad2anchor / (DX_PI_F / 2.f));
+				wrad = cosf(rad2anchor);// * (rad2anchor / (DX_PI_F / 2.f));
 				if (wrad > wrad_old) anchor_dir = 1;
 				if (wrad < wrad_old) anchor_dir = -1;
 			}
-			else {
+			else{
 				// ‚Ô‚ç‰º‚ª‚Á‚Ä‚¢‚é‚Æ‚«
 				if (trigger_r > 55) dis2anchor -= trigger_r / 32.f;
 				if (trigger_l > 55) dis2anchor += trigger_l / 32.f;
 
 				wrad_old = wrad;
-				wrad = cos(swing) * (rad2anchor / (DX_PI_F / 2.f));
+				wrad = cosf(swing) * rad2anchor;
 
 				if (wrad > wrad_old) anchor_dir = 1;
 				if (wrad < wrad_old) anchor_dir = -1;
 
-				pos.x = anchor->GetPos().x + cos(wrad + DX_PI_F / 2.f) * dis2anchor;
-				pos.y = anchor->GetPos().y + sin(wrad + DX_PI_F / 2.f) * dis2anchor;
+				pos.x = anchor->GetPos().x + cosf(wrad + DX_PI_F / 2.f) * dis2anchor;
+				pos.y = anchor->GetPos().y + sinf(wrad + DX_PI_F / 2.f) * dis2anchor;
 
 				swing += DX_PI_F / 45.f;
 				jump = 0.f;
@@ -280,7 +281,7 @@ void	cPlayer::Update() {
 	}
 	if ((key[KEY_INPUT_C] == 1 || pad_b[XINPUT_BUTTON_X] == 1) && mp >= 10) {
 		mp -= 10;
-		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, PI * rect, PlayerBullet);
+		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, -stick_rad, PlayerBullet);
 	}
 	if (pad_b[XINPUT_BUTTON_Y] == 1) {
 		delete anchor;
@@ -1030,7 +1031,6 @@ void cEnemyBoss::Update()
 		hp = 0;
 	}
 	Physical();
-
 }
 
 void cEnemyBoss::MoveByAutomation()

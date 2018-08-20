@@ -22,6 +22,7 @@ protected:
 	int		animjump = 0;
 	int		animmode = 0;
 	bool	invincible = false;
+	int		effect_hnd;
 	void	Physical();	// ジャンプとかの計算
 
 						// 着地した時の判定 ------------------
@@ -49,6 +50,8 @@ public:
 	void	MoveByAutomation();
 	void	MoveByPlayer();
 	void	Damaged();
+	void	SetEffect(float zoom, int effect_num);
+	void	UpdateEffect();
 	void	Update();
 	void	Render();
 	int		GetHp() { return hp; }

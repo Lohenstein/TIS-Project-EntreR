@@ -1,9 +1,12 @@
 #pragma once
 
+void	LoadBulletImg();
+
 class cBullet : public cObject {
 protected:
 	float speed;
 	float rad;
+	int   anim;
 	bool  flag;
 public:
 	cBullet(VECTOR p, VECTOR s, float sp, float r, eObjectType t){
@@ -12,7 +15,8 @@ public:
 		speed = sp;
 		rad   = r;
 		flag  = true;
-		type = t;
+		type  = t;
+		anim  = 0;
 	}
 	~cBullet() {}; 
 	void	Update();
@@ -64,3 +68,4 @@ public:
 };
 
 extern cBulletManager bullet;
+extern int		bullet_img[48];

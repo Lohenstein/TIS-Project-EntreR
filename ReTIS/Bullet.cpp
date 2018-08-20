@@ -3,6 +3,12 @@
 
 cBulletManager bullet;
 
+int		bullet_img[48];
+
+void	LoadBulletImg() {
+	LoadDivGraph("data/img/bullet/16x16.png", 48, 6, 8, 16, 16, bullet_img);
+}
+
 void	cAnchor::HitAction(cObject *hit) {
 	if (hit->GetType() == MapTile) {
 		flag = false;
@@ -32,10 +38,19 @@ void	cBullet::Update() {
 		//‰æ–ÊŠO‚È‚çÁ‚·
 		flag = false;
 	}
+	anim++;
+	if (anim >= 3) anim = 0;
 }
 
 void	cBullet::Render() {
-	DrawCircleAA(GetPos().x, GetPos().y, 10.f, 10, 0xFFFFFF, true);
+	switch (type) {
+	case PlayerBullet: 
+		DrawGraph(pos.x, pos.y, bullet_img[32 + (anim * 6)], true);
+		break;
+	default:
+		DrawGraph(pos.x, pos.y, bullet_img[34 + (anim * 6)], true);
+		break;
+	}
 }
 
 void	cBullet::HitAction(cObject *hit) {

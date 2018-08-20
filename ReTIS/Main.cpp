@@ -17,13 +17,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetGraphMode(WINDOW_SIZE_X, WINDOW_SIZE_Y, 32);
 	SetMainWindowText("EntreR - Demo Edition");
 
+	SetDrawScreen(DX_SCREEN_BACK);
+
 	// 初期化
 	if (DxLib_Init() == -1) {
 		return -1;
 	}
+	if (Effkseer_Init(2000) == -1) { // 引数には画面に表示する最大パーティクル数を設定する。
+		DxLib_End();
+		return -1;
+	}
 
-	SetWaitVSyncFlag(FALSE);
-	SetDrawScreen(DX_SCREEN_BACK);
+	SetChangeScreenModeGraphicsSystemResetFlag(FALSE);
+
+	// DXライブラリのデバイスロストした時のコールバックを設定
+	Effekseer_SetGraphicsDeviceLostCallbackFunctions();
+	Effekseer_Set2DSetting(WINDOW_SIZE_X, WINDOW_SIZE_Y); // Effekseerに2D描画の設定をする。
+	
+	// Zバッファ(エフェクト用)
+	SetUseZBuffer3D(TRUE);
+	SetWriteZBuffer3D(TRUE);
 
 	// ゲーム初期化
 	game_init();
@@ -38,11 +51,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		// ゲームメイン
 		game_main();
+
+		// エフェクトの更新
+		UpdateEffekseer2D();
+		DrawEffekseer2D();
+
 		RenderFPS();
 	}
 
 	// ゲーム終了
 	game_end();
+	Effkseer_End();
 	DxLib_End();
 
 	return 0;
