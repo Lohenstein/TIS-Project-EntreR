@@ -20,7 +20,7 @@ void	cAnchor::Render(VECTOR cpos) {
 }
 
 void	cBullet::Update() {
-
+	if (type == PlayerBullet || type == EnemyBullet)
 	pos.x += cos(rad) * speed;
 	pos.y += sin(rad) * speed;
 
@@ -31,6 +31,19 @@ void	cBullet::Update() {
 		GetPos().y > FocusPos.y + WINDOW_SIZE_Y || GetPos().y < FocusPos.y - WINDOW_SIZE_Y) {
 		//‰æ–ÊŠO‚È‚çÁ‚·
 		flag = false;
+	}
+	else if (type == JugemBullet) {
+		pos.x += cos(rad) * speed;
+		pos.y += sin((direction ? rad -= 0.05 : rad += 0.05)) * speed;
+
+		if (speed == 0)
+			pos.y -= 10000;
+
+		if (GetPos().x > FocusPos.x + WINDOW_SIZE_X || GetPos().x < FocusPos.x - WINDOW_SIZE_X ||
+			GetPos().y > FocusPos.y + WINDOW_SIZE_Y || GetPos().y < FocusPos.y - WINDOW_SIZE_Y) {
+			//‰æ–ÊŠO‚È‚çÁ‚·
+			flag = false;
+		}
 	}
 }
 
@@ -47,6 +60,8 @@ void	cBullet::HitAction(cObject *hit) {
 			break;
 		case EnemyBullet:
 			break;
+		case JugemBullet:
+			break;
 		}
 		break;
 	case MapTile:
@@ -57,6 +72,9 @@ void	cBullet::HitAction(cObject *hit) {
 		case PlayerBullet:
 			break;
 		case EnemyBullet:
+			flag = false;
+			break;
+		case JugemBullet:
 			flag = false;
 			break;
 		}
@@ -89,6 +107,16 @@ void cBulletManager::Shot(VECTOR p, VECTOR s, float sp, float r, eObjectType t) 
 	for (int i = 0; i < BULLET_MAX; i++) {
 		if (bullet[i] == nullptr) {
 			bullet[i] = new cBullet(p, s, sp, r, t);
+			break;
+		}
+	}
+}
+
+void cBulletManager::CurvedShot(VECTOR p, VECTOR s, float sp, float r, eObjectType t, bool direction) {
+	for (int i = 0; i < BULLET_MAX; i++) {
+		if (bullet[i] == nullptr) {
+			bullet[i] = new cBullet(p, s, sp, r, t);
+			bullet[i]->direction = direction;
 			break;
 		}
 	}

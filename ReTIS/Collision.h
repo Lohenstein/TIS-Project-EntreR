@@ -6,13 +6,30 @@ protected:
 	VECTOR	old;						// 差分用過去座標
 	VECTOR	size;						// オブジェクトのサイズ
 	int		type;						// オブジェクトのタイプ
+	float rad;
+	short angle;
+	float	speed;
 public:
 	VECTOR	GetPos()  { return pos; }	// 位置のアドレスを返す
 	VECTOR	GetSize() { return size; }	// オブジェクトのサイズを返す
 	VECTOR  GetOld()  { return old; }
+	float 	GetSpeed() { return speed; }
 	int		GetType() { return type; }
 	void	SetPos(float x, float y) {pos = { x, y, 0.f };}
 	virtual void HitAction(cObject *hit) = 0;			// 衝突後の処理
+	float GetRadrightbottom() { return cos(rad); }
+	float GetRadleftbottom() {
+		rad = d2r(angle * 2);
+		return sin(rad);
+	}
+	float GetRadlefttop() {
+		rad = d2r(angle * 3);
+		return sin(rad);
+	}
+	float GetRadrighttop() {
+		rad = d2r(angle * 4);
+		return cos(rad);
+	}
 };
 
 enum eObjectType {
@@ -31,11 +48,14 @@ enum eObjectType {
 	EneCoin,
 	RareCoin,
 	WireAnchor,
-	Spring
+	Spring,
+	JugemBullet		// 敵ジュゲム
 };
 
 extern void		CheckHitRectAndRect(cObject *obj1, cObject *obj2);
 extern void		CheckHitRectAndCircle(cObject *obj1, cObject *obj2);
+extern void		CheckHitRectAndRollingRect(cObject *obj1, cObject *obj2);
+//extern void		CheckHitRollingRectAndCircle(cObject *obj1, cObject *obj2);
 extern float	col_CheckRadian(VECTOR p1, VECTOR p2);
 extern int		col_HitRadian(VECTOR p1, VECTOR p2, float rad);
 extern int		col_HitRadianR(VECTOR p1, VECTOR p2);

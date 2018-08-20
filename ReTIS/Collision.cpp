@@ -28,6 +28,25 @@ void	CheckHitRectAndCircle(cObject *obj1, cObject *obj2) {
 	}
 }
 
+void	CheckHitRectAndRollingRect(cObject *obj1, cObject *obj2){
+	if (obj1->GetPos().x - (obj1->GetSize().x / 2.f) <= (obj2->GetPos().x + (obj2->GetRadrighttop() * (obj2->GetSize().x / 2.f))) &&
+		(obj2->GetPos().x - (obj2->GetRadlefttop() * (obj2->GetSize().x / 2.f)) <= obj1->GetPos().x + (obj1->GetSize().x / 2.f)) &&
+		(obj1->GetPos().y - (obj1->GetSize().y / 2.f) <= (obj2->GetPos().y + (obj2->GetRadrightbottom() * (obj2->GetSize().y / 2.f))) &&
+		(obj2->GetPos().y - (obj2->GetRadleftbottom() * (obj2->GetSize().y / 2.f)) <= obj1->GetPos().y + (obj1->GetSize().y / 2.f)))) {
+		// 衝突相手の情報を渡して衝突後の処理を行う
+		obj1->HitAction(obj2);	// 四角
+		obj2->HitAction(obj1);	// 四角（rollingrect）
+	}
+	else if (obj1->GetPos().x - (obj1->GetSize().x / 2.f) <= (obj2->GetPos().x + (obj2->GetRadlefttop() * (obj2->GetSize().x / 2.f))) &&
+		(obj2->GetPos().x - (obj2->GetRadrightbottom() * (obj2->GetSize().x / 2.f)) <= obj1->GetPos().x + (obj1->GetSize().x / 2.f)) &&
+		(obj1->GetPos().y - (obj1->GetSize().y / 2.f) <= (obj2->GetPos().y + (obj2->GetRadleftbottom() * (obj2->GetSize().y / 2.f))) &&
+		(obj2->GetPos().y - (obj2->GetRadrighttop() * (obj2->GetSize().y / 2.f)) <= obj1->GetPos().y + (obj1->GetSize().y / 2.f)))) {
+		// 衝突相手の情報を渡して衝突後の処理を行う
+		obj1->HitAction(obj2);	// 四角
+		obj2->HitAction(obj1);	// 四角（rollingrect）
+	}
+}
+
 // 上に載っていられる面積を判別する
 float	col_CheckRadian(VECTOR p1, VECTOR p2) {
 	float x = (p1.x / 2.f) + (p2.x / 2.f);

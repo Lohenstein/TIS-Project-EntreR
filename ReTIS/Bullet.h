@@ -6,6 +6,7 @@ protected:
 	float rad;
 	bool  flag;
 public:
+	bool direction;
 	cBullet(VECTOR p, VECTOR s, float sp, float r, eObjectType t){
 		pos   = p;
 		size  = s;
@@ -60,6 +61,7 @@ public:
 	void	Update();
 	void	Render();
 	void	Shot(VECTOR p, VECTOR s, float sp, float r, eObjectType t);
+	void	CurvedShot(VECTOR p, VECTOR s, float sp, float r, eObjectType t,bool direction);
 	cObject *GetBullet(int num) { return (cObject*)bullet[num]; }
 };
 
