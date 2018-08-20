@@ -345,7 +345,10 @@ void	cPlayer::HitAction(cObject *hit) {
 		if (this->GetType() == Player) coin++;
 		break;
 	case EneCoin:
-		if (this->GetType() == Player) ecoin++;
+		if (this->GetType() == Player) {
+			ecoin++;
+			mp += 300;
+		}
 		break;
 	case RareCoin:
 		if (this->GetType() == Player) rcoin++;

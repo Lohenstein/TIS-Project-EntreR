@@ -45,10 +45,11 @@ void	cBullet::Update() {
 		if (speed == 0)
 			pos.y -= 10000;
 
-	if (GetPos().x > FocusPos.x + WINDOW_SIZE_X || GetPos().x < FocusPos.x - WINDOW_SIZE_X ||
-		GetPos().y > FocusPos.y + WINDOW_SIZE_Y || GetPos().y < FocusPos.y - WINDOW_SIZE_Y) {
-		//‰æ–ÊŠO‚È‚çÁ‚·
-		flag = false;
+		if (GetPos().x > FocusPos.x + WINDOW_SIZE_X || GetPos().x < FocusPos.x - WINDOW_SIZE_X ||
+			GetPos().y > FocusPos.y + WINDOW_SIZE_Y || GetPos().y < FocusPos.y - WINDOW_SIZE_Y) {
+			//‰æ–ÊŠO‚È‚çÁ‚·
+			flag = false;
+		}
 	}
 	anim++;
 	if (anim >= 3) anim = 0;

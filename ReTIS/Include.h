@@ -25,3 +25,4 @@
 #include "Game.h"
 #include "Scene.h"
 #include "Effect.h"
+#include "Menu.h"
