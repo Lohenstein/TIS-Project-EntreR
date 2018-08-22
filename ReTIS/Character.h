@@ -308,7 +308,7 @@ public:
 		speed = s;
 		landing = false;
 		type = Enemy;
-		hp = 10;
+		hp = 5;
 
 		move_time = 0;
 		move_pattern = 0;

@@ -186,7 +186,7 @@ void	cPlayer::Render() {
 		DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
 	}
 	if (anchor != nullptr) anchor->Render(pos);
-	DrawFormatString(pos.x, pos.y, 0xFFFFFF, "%f, %f, %d", wrad, rad2anchor, anchor_dir);
+	//DrawFormatString(pos.x, pos.y, 0xFFFFFF, "%f, %f, %d", wrad, rad2anchor, anchor_dir);
 }
 
 void	cPlayer::UpdateAnchor() {
@@ -940,102 +940,106 @@ void cEnemyBossmiddle::Update()
 
 void cEnemyBossmiddle::MoveByAutomation() 
 {
-	if (hp > 1) {
-		switch (move_pattern) {
-			// 距離を測る
-		case 0:
-			// 歩いて近づく
-			if (pos.x < FocusPos.x + 300 && pos.x > FocusPos.x - 300) {
-				move_pattern = 1;
-				image_change = 160;
-				pos.x < FocusPos.x ? direction = false : direction = true;
-			}
-			// ジャンプして近づく
-			else if (pos.x < FocusPos.x + 400 && pos.x > FocusPos.x - 400) {
-				move_pattern = 2;
-				Player_old = FocusPos;
-				image_change = 0;
-			}
-			break;
-			// プレイヤーに近づく
-		case 1:
-			// 敵の向きと移動の処理
-			if (pos.x < FocusPos.x && image_change == 187) {
-				direction = false;
-			}
-			else if (pos.x >= FocusPos.x && image_change == 187) {
-				direction = true;
-			}
-			//pos.x < FocusPos.x & image_change == 189 ? direction = false : direction = true;
-			direction ? pos.x -= move_speed : pos.x += move_speed;
-			
-			image_change++;
-
-			if (image_change == 185) {
-				image_change = 160;
-				move_time++;
-			}
-			
-			if (move_time == 3) {
-				move_time = 0;
-				move_pattern = 3;
-				image_change = 50;
-			}
-			break;
-			// ジャンプしながら近づく
-		case 2:
-			if (move_time == 0) {
-				jump = 20.f;
-				move_time++;
-				pos.x < FocusPos.x ? direction = false : direction = true;
-			}
-			else if (image_change != 24) {
-				image_change++;
-				direction ? pos.x -= 10 : pos.x += 10;
-			}
-			else if (landing) {
-				move_pattern = 3;
-				move_time = 0;
-				image_change = 50;
-			}
-			if (move_time != 0) {
-				if (pos.x < FocusPos.x)
-					pos.x++;
-				else pos.x--;
-			}
-			break;
-			// 攻撃
-		case 3:
-			if (move_time == 0) {
-				if (image_change != 100) {
-					Attack_pos = pos;
-					if (direction == false && (image_change == 66 || image_change == 86)) {
-						Attack_pos.x += 150;
-						bullet.Shot(Attack_pos, { 10,10,0 }, 0, 0, EnemyBullet);
-					}
-					else if (direction == true && (image_change == 66 || image_change == 86)){
-						Attack_pos.x -= 150;
-						bullet.Shot(Attack_pos, { 10,10,0 }, 0, 0, EnemyBullet);
-					}
-					image_change++;
-				}
-				else move_time = 1;
-			}
-			else {
-				move_time++;
-				if (move_time == 100) {
-					move_time = 0;
-					move_pattern = 0;
-				}
-			}
-			break;
+	switch (move_pattern) {
+		// 距離を測る
+	case 0:
+		// 歩いて近づく
+		if (pos.x < FocusPos.x + 300 && pos.x > FocusPos.x - 300) {
+			move_pattern = 1;
+			image_change = 160;
+			pos.x < FocusPos.x ? direction = false : direction = true;
 		}
+		// ジャンプして近づく
+		else if (pos.x < FocusPos.x + 400 && pos.x > FocusPos.x - 400) {
+			move_pattern = 2;
+			Player_old = FocusPos;
+			image_change = 0;
+		}
+		break;
+		// プレイヤーに近づく
+	case 1:
+		// 敵の向きと移動の処理
+		if (pos.x < FocusPos.x && image_change == 187) {
+			direction = false;
+		}
+		else if (pos.x >= FocusPos.x && image_change == 187) {
+			direction = true;
+		}
+		//pos.x < FocusPos.x & image_change == 189 ? direction = false : direction = true;
+		direction ? pos.x -= move_speed : pos.x += move_speed;
+
+		image_change++;
+
+		if (image_change == 185) {
+			image_change = 160;
+			move_time++;
+		}
+
+		if (move_time == 3) {
+			move_time = 0;
+			move_pattern = 3;
+			image_change = 50;
+		}
+		break;
+		// ジャンプしながら近づく
+	case 2:
+		if (move_time == 0) {
+			jump = 20.f;
+			move_time++;
+			pos.x < FocusPos.x ? direction = false : direction = true;
+		}
+		else if (image_change != 24) {
+			image_change++;
+			direction ? pos.x -= 10 : pos.x += 10;
+		}
+		else if (landing) {
+			move_pattern = 3;
+			move_time = 0;
+			image_change = 50;
+		}
+		if (move_time != 0) {
+			if (pos.x < FocusPos.x)
+				pos.x++;
+			else pos.x--;
+		}
+		break;
+		// 攻撃
+	case 3:
+		if (move_time == 0) {
+			if (image_change != 100) {
+				Attack_pos = pos;
+				if (direction == false && (image_change == 66 || image_change == 86)) {
+					Attack_pos.x += 150;
+					bullet.Shot(Attack_pos, { 10,10,0 }, 0, 0, EnemyBullet);
+				}
+				else if (direction == true && (image_change == 66 || image_change == 86)) {
+					Attack_pos.x -= 150;
+					bullet.Shot(Attack_pos, { 10,10,0 }, 0, 0, EnemyBullet);
+				}
+				image_change++;
+			}
+			else move_time = 1;
+		}
+		else {
+			move_time++;
+			if (move_time == 100) {
+				move_time = 0;
+				move_pattern = 0;
+			}
+		}
+		break;
 	}
-	if (hp == 1);
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
+	}
 } 
 
 void cEnemyBossmiddle::Render(int image[])
 {
+
 	if (hp == 1) {
 		if (image_change < 100 || image_change > 149)
 			image_change = 100;
@@ -1100,6 +1104,12 @@ void cEnemyJugem::MoveByAutomation()
 			}
 			break;
 		}
+	}
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
 	}
 }
 
@@ -1211,6 +1221,12 @@ void cEnemyBoss::MoveByAutomation()
 			enemy_move = 0;
 		}
 		break;
+	}
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
 	}
 }
 
@@ -1348,7 +1364,7 @@ void cCoin::MoveByAutomation()
 	switch (type)
 	{
 	case NormalCoin:
-		if (image_change >= 38) {
+		if (image_change >= 116) {
 			image_change = 0;
 		}
 		break;
@@ -1358,7 +1374,7 @@ void cCoin::MoveByAutomation()
 		}
 		break;
 	case RareCoin:
-		if (image_change >= 116) {
+		if (image_change >= 38) {
 			image_change = 78;
 		}
 		break;
@@ -1368,6 +1384,8 @@ void cCoin::MoveByAutomation()
 void cCoin::Render(int image[]) 
 {
 	DrawRotaGraph(pos.x, pos.y, 0.5, 0 ,image[image_change], TRUE , FALSE);
+	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d,%d", hp, cointype,type);
+
 }
 
 /*------------------------------------------------------------------------------*
