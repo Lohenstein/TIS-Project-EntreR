@@ -2,6 +2,8 @@
 
 using namespace std;
 
+extern void DebugMsgBox(TCHAR * tszParam, ...);
+
 // ダイアログ表示クラス
 class cDialog {
 public:

@@ -52,7 +52,7 @@ void	cBullet::Update() {
 		}
 	}
 	anim++;
-	if (anim >= 3) anim = 0;
+		if (anim >= 3) anim = 0;
 }
 
 void	cBullet::Render() {

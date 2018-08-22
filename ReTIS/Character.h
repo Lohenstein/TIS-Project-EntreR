@@ -308,7 +308,7 @@ public:
 		speed = s;
 		landing = false;
 		type = Enemy;
-		hp = 10;
+		hp = 5;
 
 		move_time = 0;
 		move_pattern = 0;
@@ -372,7 +372,7 @@ public:
 		speed = s;
 		landing = false;
 		type = Enemy;
-		hp = 5;
+		hp = 1;
 
 		image_change = 0;
 		direction = false;
@@ -521,7 +521,8 @@ public:
 	cCoin(int x, int y, int ctype) {
 		pos = { (float)x, (float)y, 0.f };
 		cointype = ctype;
-		switch (ctype) {
+		DebugMsgBox("%04d", (TCHAR)cointype);
+		switch (cointype) {
 		case 0: // ïÅí ÇÃÉRÉCÉì
 			type = NormalCoin;
 			size = { 32.f, 32.f, 0.f };
@@ -537,7 +538,13 @@ public:
 			size = { 64.f, 64.f, 0.f };
 			image_change = 78;
 			break;
+		default:
+			type = NormalCoin;
+			size = { 32.f, 32.f, 0.f };
+			image_change = 0;
+			break;
 		}
+		DebugMsgBox("%04d", (TCHAR)type);
 		hp = 1;
 	}
 	void	Update();
@@ -545,6 +552,7 @@ public:
 	void	MoveByAutomation();
 	void	HitAction(cObject *hit) {
 		hp = 0;
+		mp = 300;
 	}
 };
 

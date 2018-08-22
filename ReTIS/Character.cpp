@@ -101,12 +101,17 @@ void	cCharacterBase::HitAction(cObject *hit) {
 		break; 
 	case NormalCoin:
 		if (this->GetType() == Player) coin++;
+		MessageBox(NULL, "no-maru", "Debug - Error", MB_OK);
+
 		break;
 	case EneCoin:
 		if (this->GetType() == Player) ecoin++;
+		MessageBox(NULL, "ene", "Debug - Error", MB_OK);
+		mp = 300;
 		break;
 	case RareCoin:
 		if (this->GetType() == Player) rcoin++;
+		MessageBox(NULL, "rare", "Debug - Error", MB_OK);
 		break;
 	case Spring:
 		jump = 40.f;
@@ -186,7 +191,7 @@ void	cPlayer::Render() {
 		DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
 	}
 	if (anchor != nullptr) anchor->Render(pos);
-	DrawFormatString(pos.x, pos.y, 0xFFFFFF, "%f, %f, %d", wrad, rad2anchor, anchor_dir);
+	//DrawFormatString(pos.x, pos.y, 0xFFFFFF, "%f, %f, %d", wrad, rad2anchor, anchor_dir);
 }
 
 void	cPlayer::UpdateAnchor() {
@@ -940,102 +945,106 @@ void cEnemyBossmiddle::Update()
 
 void cEnemyBossmiddle::MoveByAutomation() 
 {
-	if (hp > 1) {
-		switch (move_pattern) {
-			// 距離を測る
-		case 0:
-			// 歩いて近づく
-			if (pos.x < FocusPos.x + 300 && pos.x > FocusPos.x - 300) {
-				move_pattern = 1;
-				image_change = 160;
-				pos.x < FocusPos.x ? direction = false : direction = true;
-			}
-			// ジャンプして近づく
-			else if (pos.x < FocusPos.x + 400 && pos.x > FocusPos.x - 400) {
-				move_pattern = 2;
-				Player_old = FocusPos;
-				image_change = 0;
-			}
-			break;
-			// プレイヤーに近づく
-		case 1:
-			// 敵の向きと移動の処理
-			if (pos.x < FocusPos.x && image_change == 187) {
-				direction = false;
-			}
-			else if (pos.x >= FocusPos.x && image_change == 187) {
-				direction = true;
-			}
-			//pos.x < FocusPos.x & image_change == 189 ? direction = false : direction = true;
-			direction ? pos.x -= move_speed : pos.x += move_speed;
-			
-			image_change++;
-
-			if (image_change == 185) {
-				image_change = 160;
-				move_time++;
-			}
-			
-			if (move_time == 3) {
-				move_time = 0;
-				move_pattern = 3;
-				image_change = 50;
-			}
-			break;
-			// ジャンプしながら近づく
-		case 2:
-			if (move_time == 0) {
-				jump = 20.f;
-				move_time++;
-				pos.x < FocusPos.x ? direction = false : direction = true;
-			}
-			else if (image_change != 24) {
-				image_change++;
-				direction ? pos.x -= 10 : pos.x += 10;
-			}
-			else if (landing) {
-				move_pattern = 3;
-				move_time = 0;
-				image_change = 50;
-			}
-			if (move_time != 0) {
-				if (pos.x < FocusPos.x)
-					pos.x++;
-				else pos.x--;
-			}
-			break;
-			// 攻撃
-		case 3:
-			if (move_time == 0) {
-				if (image_change != 100) {
-					Attack_pos = pos;
-					if (direction == false && (image_change == 66 || image_change == 86)) {
-						Attack_pos.x += 150;
-						bullet.Shot(Attack_pos, { 10,10,0 }, 0, 0, EnemyBullet);
-					}
-					else if (direction == true && (image_change == 66 || image_change == 86)){
-						Attack_pos.x -= 150;
-						bullet.Shot(Attack_pos, { 10,10,0 }, 0, 0, EnemyBullet);
-					}
-					image_change++;
-				}
-				else move_time = 1;
-			}
-			else {
-				move_time++;
-				if (move_time == 100) {
-					move_time = 0;
-					move_pattern = 0;
-				}
-			}
-			break;
+	switch (move_pattern) {
+		// 距離を測る
+	case 0:
+		// 歩いて近づく
+		if (pos.x < FocusPos.x + 300 && pos.x > FocusPos.x - 300) {
+			move_pattern = 1;
+			image_change = 160;
+			pos.x < FocusPos.x ? direction = false : direction = true;
 		}
+		// ジャンプして近づく
+		else if (pos.x < FocusPos.x + 400 && pos.x > FocusPos.x - 400) {
+			move_pattern = 2;
+			Player_old = FocusPos;
+			image_change = 0;
+		}
+		break;
+		// プレイヤーに近づく
+	case 1:
+		// 敵の向きと移動の処理
+		if (pos.x < FocusPos.x && image_change == 187) {
+			direction = false;
+		}
+		else if (pos.x >= FocusPos.x && image_change == 187) {
+			direction = true;
+		}
+		//pos.x < FocusPos.x & image_change == 189 ? direction = false : direction = true;
+		direction ? pos.x -= move_speed : pos.x += move_speed;
+
+		image_change++;
+
+		if (image_change == 185) {
+			image_change = 160;
+			move_time++;
+		}
+
+		if (move_time == 3) {
+			move_time = 0;
+			move_pattern = 3;
+			image_change = 50;
+		}
+		break;
+		// ジャンプしながら近づく
+	case 2:
+		if (move_time == 0) {
+			jump = 20.f;
+			move_time++;
+			pos.x < FocusPos.x ? direction = false : direction = true;
+		}
+		else if (image_change != 24) {
+			image_change++;
+			direction ? pos.x -= 10 : pos.x += 10;
+		}
+		else if (landing) {
+			move_pattern = 3;
+			move_time = 0;
+			image_change = 50;
+		}
+		if (move_time != 0) {
+			if (pos.x < FocusPos.x)
+				pos.x++;
+			else pos.x--;
+		}
+		break;
+		// 攻撃
+	case 3:
+		if (move_time == 0) {
+			if (image_change != 100) {
+				Attack_pos = pos;
+				if (direction == false && (image_change == 66 || image_change == 86)) {
+					Attack_pos.x += 150;
+					bullet.Shot(Attack_pos, { 10,10,0 }, 0, 0, EnemyBullet);
+				}
+				else if (direction == true && (image_change == 66 || image_change == 86)) {
+					Attack_pos.x -= 150;
+					bullet.Shot(Attack_pos, { 10,10,0 }, 0, 0, EnemyBullet);
+				}
+				image_change++;
+			}
+			else move_time = 1;
+		}
+		else {
+			move_time++;
+			if (move_time == 100) {
+				move_time = 0;
+				move_pattern = 0;
+			}
+		}
+		break;
 	}
-	if (hp == 1);
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
+	}
 } 
 
 void cEnemyBossmiddle::Render(int image[])
 {
+
 	if (hp == 1) {
 		if (image_change < 100 || image_change > 149)
 			image_change = 100;
@@ -1101,6 +1110,12 @@ void cEnemyJugem::MoveByAutomation()
 			break;
 		}
 	}
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
+	}
 }
 
 void cEnemyJugem::Render(int img[])
@@ -1121,14 +1136,9 @@ void cEnemyJugem::Render(int img[])
 
 void cEnemyBoss::Update()
 {
-	if (hp > 1) {
-		MoveByAutomation();
-	}
-	if (image_change == 149) {
-		hp = 0;
-	}
-	//Physical();
-
+	MoveByAutomation();
+	hp = 0;
+	Physical();
 }
 
 void cEnemyBoss::MoveByAutomation()
@@ -1137,40 +1147,65 @@ void cEnemyBoss::MoveByAutomation()
 	{
 	// レーザー
 	case 0:
+		image_change++;
+		if (image_change > 200) {
+			image_change = 0;
+		}
+		/*if (image_change > 239 || 200 > image_change) {
+			image_change = 200;
+		}
+		image_change++;
+		if (image_change > 239) image_change = 239;
+
 		if (attack_count == 0) {
 			attackpos[0] = pos;
 			bullet.Shot(attackpos[0], bulletsize, 10, PI, EnemyBullet);
 		}
-		if (image_change > 39) image_change = 0;
-
-		if (image_change < 40) image_change = 39;
 		attack_count++;
-		if (attack_count == 20) {
-
+		if (attack_count == 100) {
 			rad = -90;
 			enemy_move = 1;
-		}
+		}*/
 		break;
 	// 銃
 	case 1:
+		if (image_change > 239 || 200 > image_change) {
+			image_change = 200;
+		}
+		image_change++;
+		if (image_change > 239) image_change = 239;
+
 		if (attack_count > 10 || rad > 90) {
 			rad += 3;
 			bullet.Shot(pos,bulletsize,10,d2r(rad),EnemyBullet);
 		}
-		enemy_move = 2;
+		//enemy_move = 2;
 		break;
 	// 掴みかかる
 	case 2:
-		if (attack_count == 50) {
+		if (image_change > 279 || 240 > image_change) {
+			image_change = 200;
+		}
+		image_change++;
+		if (image_change > 279) image_change = 279;
+
+		if (attack_count == 200) {
 			lockon = atan2(FocusPos.y - pos.y, FocusPos.x - pos.x);
 			for (int i = 0; i < 4; i++) {
 				attackpos[i] = {pos.x + (cos(lockon) * speed * i),pos.y + (sin(lockon) * speed * i),0};
 			}
 			enemy_move = 3;
 		}
+		attack_count++;
 		break;
 	// 色々
 	case 3:
+		if (image_change > 239 || 200 > image_change) {
+			image_change = 200;
+		}
+		image_change++;
+		if (image_change > 239) image_change = 239;
+
 		if (attack_count == 10) {
 
 			enemy_move = 4;
@@ -1179,6 +1214,12 @@ void cEnemyBoss::MoveByAutomation()
 	// ダウン
 	case 4:
 		// 休憩タイム
+		if (image_change > 0 || 39 > image_change) {
+			image_change = 200;
+		}
+		image_change++;
+		if (image_change > 39) image_change = 39;
+
 		if (attack_count == 20) {
 
 			attack_count = 0;
@@ -1186,23 +1227,28 @@ void cEnemyBoss::MoveByAutomation()
 		}
 		break;
 	}
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
+	}
 }
 
 void cEnemyBoss::Render(int image[])
 {
-	DrawRotaGraph(pos.x - 300 / 2, pos.y - 300 / 2,2, image[image_change], TRUE,FALSE);
-	/*if (enemy_move == 1) {
+	DrawRotaGraph(pos.x - 300 / 2, pos.y - 300 / 2,2,0, image[image_change], TRUE);
+	if (enemy_move == 1) {
 		if (direction == true)
-			DrawGraph(pos.x - 250 / 2, pos.y - 250 / 2, image[image_change], TRUE);
+			DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
 		else if (direction == false)
-			DrawTurnGraph(pos.x - 250 / 2, pos.y - 250 / 2, image[image_change], TRUE);
+			DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
 
 	}
 	if (direction == true)
-		DrawGraph(pos.x - 250 / 2, pos.y - 250 / 2, image[image_change], TRUE);
+		DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
 	else if (direction == false)
-		DrawTurnGraph(pos.x - 250 / 2, pos.y - 250 / 2, image[image_change], TRUE);
-		*/
+		DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
 }
 
 /*------------------------------------------------------------------------------*
@@ -1323,7 +1369,7 @@ void cCoin::MoveByAutomation()
 	switch (type)
 	{
 	case NormalCoin:
-		if (image_change >= 38) {
+		if (image_change >= 116) {
 			image_change = 0;
 		}
 		break;
@@ -1333,7 +1379,7 @@ void cCoin::MoveByAutomation()
 		}
 		break;
 	case RareCoin:
-		if (image_change >= 116) {
+		if (image_change >= 38) {
 			image_change = 78;
 		}
 		break;
@@ -1343,6 +1389,8 @@ void cCoin::MoveByAutomation()
 void cCoin::Render(int image[]) 
 {
 	DrawRotaGraph(pos.x, pos.y, 0.5, 0 ,image[image_change], TRUE , FALSE);
+	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d,%d", hp, cointype,type);
+
 }
 
 /*------------------------------------------------------------------------------*
