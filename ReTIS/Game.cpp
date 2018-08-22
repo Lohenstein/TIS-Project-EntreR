@@ -23,7 +23,7 @@ void	game_init(void)
 
 	// フォントの読み込み
 	//--------------------------------------------------------------------------
-	LPCSTR font_path = "data/font/みかちゃん-PB.ttf";
+	LPCSTR font_path = "data/font/GN-Kin-iro_SansSerif.ttf";
 	if (AddFontResourceEx(font_path, FR_PRIVATE, NULL) > 0) {
 	}
 	else {
@@ -33,9 +33,9 @@ void	game_init(void)
 	LoadBulletImg();
 	LoadEffects();
 
-	font_handle[FONT_POSSESSTIME] = CreateFontToHandle("みかちゃん-PB", 48, 2, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
-	font_handle[FONT_TIME]		  = CreateFontToHandle("みかちゃん-PB", 72, 2, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
-	font_handle[FONT_MESSAGE]	  = CreateFontToHandle("みかちゃん-PB", 24, 2, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
+	font_handle[FONT_POSSESSTIME] = CreateFontToHandle("GN-きんいろサンセリフ", 48, 2, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
+	font_handle[FONT_TIME]		  = CreateFontToHandle("GN-きんいろサンセリフ", 72, 2, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
+	font_handle[FONT_MESSAGE]	  = CreateFontToHandle("GN-きんいろサンセリフ", 24, 2, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
 }
 /*------------------------------------------------------------------------------*
 | <<< ゲームメイン >>>
