@@ -1,6 +1,18 @@
 
 #include "Main.h"
 
+void DebugMsgBox(TCHAR * tszParam, ...)
+{
+	TCHAR tszStr[1024];
+	va_list list;
+
+	va_start(list, tszParam);
+	_vstprintf_s(tszStr, 1024, tszParam, list);
+	va_end(list);
+
+	MessageBox(GetForegroundWindow(), tszStr, _TEXT("DEBUG"), MB_OK);
+}
+
 void	cDialog::Update() {
 
 	if (str_count >= (int)message.size()) {
