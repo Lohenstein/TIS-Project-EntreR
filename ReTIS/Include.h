@@ -10,6 +10,9 @@
 #include <memory>
 #include <random>
 #include <ctime>
+#include <stdarg.h>
+#include <tchar.h>
+#include <Windows.h>
 
 // ƒwƒbƒ_
 #include "Easing.h"
