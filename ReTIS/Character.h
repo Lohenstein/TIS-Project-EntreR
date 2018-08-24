@@ -521,27 +521,31 @@ public:
 	cCoin(int x, int y, int ctype) {
 		pos = { (float)x, (float)y, 0.f };
 		cointype = ctype;
-		DebugMsgBox("%04d", (TCHAR)cointype);
+		DebugMsgBox("%04d", (TCHAR)type);
 		switch (cointype) {
 		case 0: // 普通のコイン
+			cointype = NormalCoin;
 			type = NormalCoin;
-			size = { 32.f, 32.f, 0.f };
-			image_change = 0;
-			break;
-		case 1: // エネルギーコイン
-			type = EneCoin;
 			size = { 32.f, 32.f, 0.f };
 			image_change = 39;
 			break;
+		case 1: // エネルギーコイン
+			cointype = EneCoin;
+			type = EneCoin;
+			size = { 32.f, 32.f, 0.f };
+			image_change = 0;
+			break;
 		case 2: // レアコイン
+			cointype = RareCoin;
 			type = RareCoin;
 			size = { 64.f, 64.f, 0.f };
 			image_change = 78;
 			break;
-		default:
-			type = NormalCoin;
-			size = { 32.f, 32.f, 0.f };
-			image_change = 0;
+		case 3:
+			cointype = TimeCoin;
+			type = TimeCoin;
+			size = { 16.f,16.f,0.f };
+			// image_change;
 			break;
 		}
 		DebugMsgBox("%04d", (TCHAR)type);
@@ -552,7 +556,7 @@ public:
 	void	MoveByAutomation();
 	void	HitAction(cObject *hit) {
 		hp = 0;
-		mp = 300;
+		// mp = 300;
 	}
 };
 

@@ -45,8 +45,9 @@ enum eObjectType {
 	Bullet,			// 弾 ※使わない
 	Clear,			// クリア判定
 	NormalCoin,		// コイン
-	EneCoin,
-	RareCoin,
+	EneCoin,		// エネルギーコイン
+	RareCoin,		// レアコイン
+	TimeCoin,		// 時間コイン
 	WireAnchor,
 	Spring,
 	JugemBullet		// 敵ジュゲム

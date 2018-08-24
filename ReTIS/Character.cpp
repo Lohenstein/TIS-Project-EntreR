@@ -102,7 +102,6 @@ void	cCharacterBase::HitAction(cObject *hit) {
 	case NormalCoin:
 		if (this->GetType() == Player) coin++;
 		MessageBox(NULL, "no-maru", "Debug - Error", MB_OK);
-
 		break;
 	case EneCoin:
 		if (this->GetType() == Player) ecoin++;
@@ -112,6 +111,9 @@ void	cCharacterBase::HitAction(cObject *hit) {
 	case RareCoin:
 		if (this->GetType() == Player) rcoin++;
 		MessageBox(NULL, "rare", "Debug - Error", MB_OK);
+		break;
+	case TimeCoin:
+
 		break;
 	case Spring:
 		jump = 40.f;
@@ -357,6 +359,9 @@ void	cPlayer::HitAction(cObject *hit) {
 		break;
 	case RareCoin:
 		if (this->GetType() == Player) rcoin++;
+		break;
+	case TimeCoin:
+		break;
 	case JugemBullet:
 		if (this->GetType() == Player) Damaged();
 		break;
@@ -665,6 +670,12 @@ void cEnemyJumpman::MoveByAutomation()
 			else direction = true;
 		}
 	}
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
+	}
 }
 
 void cEnemyJumpman::Render(int image[120])
@@ -754,6 +765,12 @@ void cEnemyGunman::MoveByAutomation()
 			}
 		}
 	}
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
+	}
 }
 
 void cEnemyGunman::Update()
@@ -768,6 +785,7 @@ void cEnemyGunman::Update()
 
 void cEnemyGunman::Render(int image[],int imagedead[])
 {
+	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", hp);
 	if (hp > 1) {
 		switch (move_pattern) {
 		case 0:
@@ -869,6 +887,12 @@ void cEnemyHardBody::MoveByAutomation()
 		}
 		break;
 	}
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
+	}
 }
 
 void cEnemyHardBody::Render(int img[])
@@ -884,8 +908,13 @@ void cEnemyFryingman::Update()
 	MoveByAutomation();
 }
 
+
+
 void cEnemyFryingman::MoveByAutomation()
 {
+	/*if (landing == true || bottomhit == true || lefthit == true || righthit == true) {
+		hp = 0;
+	}*/
 	if (FocusPos.x + 1000 > pos.x) {
 		switch (move_flow) {
 			// ˆÚ“®@UŒ‚
@@ -909,13 +938,16 @@ void cEnemyFryingman::MoveByAutomation()
 		case 1:
 			image_change != 61 ? image_change++ : image_change = 61;
 			pos.y -= cos(lockon) * speed;
-			if (landing == true || bottomhit == true || lefthit == true || righthit == true) {
-				hp = 0;
-			}
 			break;
 		case 2:
 			break;
 		}
+	}
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
 	}
 }
 
@@ -1366,22 +1398,24 @@ void cCoin::Update()
 void cCoin::MoveByAutomation()
 {
 	image_change++;
-	switch (type)
+	switch (cointype)
 	{
 	case NormalCoin:
-		if (image_change >= 116) {
-			image_change = 0;
-		}
-		break;
-	case EneCoin:
 		if (image_change >= 77) {
 			image_change = 39;
 		}
 		break;
-	case RareCoin:
+	case EneCoin:
 		if (image_change >= 38) {
+			image_change = 0;
+		}
+		break;
+	case RareCoin:
+		if (image_change >= 116) {
 			image_change = 78;
 		}
+		break;
+	case TimeCoin:
 		break;
 	}
 }
@@ -1389,8 +1423,6 @@ void cCoin::MoveByAutomation()
 void cCoin::Render(int image[]) 
 {
 	DrawRotaGraph(pos.x, pos.y, 0.5, 0 ,image[image_change], TRUE , FALSE);
-	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d,%d", hp, cointype,type);
-
 }
 
 /*------------------------------------------------------------------------------*
