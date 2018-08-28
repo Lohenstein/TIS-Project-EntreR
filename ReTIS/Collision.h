@@ -6,9 +6,10 @@ protected:
 	VECTOR	old;						// 差分用過去座標
 	VECTOR	size;						// オブジェクトのサイズ
 	int		type;						// オブジェクトのタイプ
-	float rad;
-	short angle;
+	float	rad;
+	short	angle;
 	float	speed;
+	short	count;
 public:
 	VECTOR	GetPos()  { return pos; }	// 位置のアドレスを返す
 	VECTOR	GetSize() { return size; }	// オブジェクトのサイズを返す

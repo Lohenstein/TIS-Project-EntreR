@@ -118,6 +118,8 @@ public:
 	void	DrawOver();
 	void	UpdateOver();
 
+	int		GetTime() { return time; }
+
 	int		StageSizeX() { return stage->GetStageSizeX(); }
 	int		StageSizeY() { return stage->GetStageSizeY(); }
 };

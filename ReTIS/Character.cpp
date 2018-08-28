@@ -3,7 +3,7 @@
 VECTOR	FocusPos, FocusOld, WirePos ,FocusCam, MouseAdd;
 bool	AnchorStretch = true;
 bool	IsClearFlag, IsOverFlag;
-int		coin, ecoin, rcoin;
+int		coin, ecoin, rcoin, tcoin;
 int		mp;
 
 using namespace std;
@@ -113,7 +113,8 @@ void	cCharacterBase::HitAction(cObject *hit) {
 		MessageBox(NULL, "rare", "Debug - Error", MB_OK);
 		break;
 	case TimeCoin:
-
+		if (this->GetType() == Player) tcoin++;
+		
 		break;
 	case Spring:
 		jump = 40.f;
@@ -277,7 +278,7 @@ void	cPlayer::Update() {
 		}
 	}
 
-	if ((key[KEY_INPUT_SPACE] == 1 || pad_b[XINPUT_BUTTON_A] == 1) && jump_count < 2) {
+	if ((key[KEY_INPUT_SPACE] == 1 || pad_b[XINPUT_BUTTON_A] == 1) && jump_count < 2 && count == 0) {
 		jump = 20.f;
 		++jump_count;
 		if (anchor != nullptr) {
@@ -361,9 +362,30 @@ void	cPlayer::HitAction(cObject *hit) {
 		if (this->GetType() == Player) rcoin++;
 		break;
 	case TimeCoin:
+		if (this->GetType() == Player) tcoin++;
 		break;
 	case JugemBullet:
 		if (this->GetType() == Player) Damaged();
+		break;
+	case Spring:
+		Collision(hit);
+		// 後ろに持っていくと最初2回読み込みされるため前にいます
+		if (count != 0) {
+			count++;
+			pos.x = hit->GetPos().x;
+		}
+		if (landing && count == 0) {
+			count++;
+			pos.x = hit->GetPos().x;
+			//jump = 40.f;
+		}
+		if (count == 4) {
+			count = 0;
+			jump = 40.f;
+
+		}
+		
+		//if (landing == true) jump = 40.f;
 		break;
 	}
 }
@@ -412,6 +434,7 @@ void	cCharacterManager::Update() {
 		if (dropfloor[i]	!= nullptr) dropfloor[i]	->Update();
 		if (coin[i]			!= nullptr) coin[i]			->Update();
 		if (jugem[i]		!= nullptr) jugem[i]		->Update();
+		if (spring[i]		!= nullptr) spring[i]		->Update();
 	}
 	DeleteDeathCharacters();
 	if (mp > 300) mp = 300;
@@ -434,6 +457,7 @@ void	cCharacterManager::DeleteCharacters() {
 		delete dropfloor[i];
 		delete movefloor[i];
 		delete jugem[i];
+		delete spring[i];
 		
 
 		jumpman[i]		= nullptr;
@@ -444,7 +468,7 @@ void	cCharacterManager::DeleteCharacters() {
 		dropfloor[i]	= nullptr;
 		movefloor[i]	= nullptr;
 		jugem[i]		= nullptr;
-		
+		spring[i]		= nullptr;
 	}
 }
 void	cCharacterManager::DeleteDeathCharacters() {
@@ -785,7 +809,6 @@ void cEnemyGunman::Update()
 
 void cEnemyGunman::Render(int image[],int imagedead[])
 {
-	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", hp);
 	if (hp > 1) {
 		switch (move_pattern) {
 		case 0:
@@ -908,8 +931,6 @@ void cEnemyFryingman::Update()
 	MoveByAutomation();
 }
 
-
-
 void cEnemyFryingman::MoveByAutomation()
 {
 	/*if (landing == true || bottomhit == true || lefthit == true || righthit == true) {
@@ -936,7 +957,7 @@ void cEnemyFryingman::MoveByAutomation()
 			}
 			break;
 		case 1:
-			image_change != 61 ? image_change++ : image_change = 61;
+			image_change != 60 ? image_change++ : image_change = 60;
 			pos.y -= cos(lockon) * speed;
 			break;
 		case 2:
@@ -953,12 +974,16 @@ void cEnemyFryingman::MoveByAutomation()
 
 void cEnemyFryingman::Render(int image[])
 {
-	switch (move_flow) {
-	case 0:
-		image_change = 0;
-		break;
-	}
 	DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
+}
+
+void	cEnemyFryingman::HitAction(cObject *hit) {
+	if (hit->GetType() == NormalCoin || hit->GetType() == EneCoin || hit->GetType() == RareCoin || hit->GetType() == TimeCoin) {
+		// hp = 0;
+	}
+	else {
+		hp = 0;
+	}
 }
 
 /*------------------------------------------------------------------------------*
@@ -1416,6 +1441,12 @@ void cCoin::MoveByAutomation()
 		}
 		break;
 	case TimeCoin:
+		// エネルギーの状態
+		if (image_change >= 38) {
+			image_change = 0;
+		}
+		break;
+	default:
 		break;
 	}
 }
@@ -1446,8 +1477,14 @@ void cEventsSwitch::Render(int image[])
 
 }
 
+/*------------------------------------------------------------------------------*
+| <<< cSpring >>>
+*------------------------------------------------------------------------------*/
+
 void	cSpring::HitAction(cObject *hit) {
-	if (hit->GetType() == Player) {
+	if (hit->GetType() == Player && hit->GetPos().y + hit->GetSize().y / 2.f < pos.y - size.y / 2)landing = true;
+	else landing = false;
+	if (hit->GetType() == Player && landing == true) {
 		flag = true;
 	}
 }
@@ -1455,6 +1492,11 @@ void	cSpring::HitAction(cObject *hit) {
 void	cSpring::Update() {
 	if (flag) {
 		num++;
+		if (num <= 16) {
+			size.y -= 10;
+		}
+		if (num == 16) size.y += 10 * 16;
+
 		if (num >= 30) {
 			num = 0;
 			flag = false;
@@ -1463,6 +1505,8 @@ void	cSpring::Update() {
 }
 
 void	cSpring::Render(int image[30]) {
-	DrawGraph(pos.x - size.x / 2.f, pos.y - size.y / 2.f, image[num], true);
+	DrawGraph(pos.x - sx, pos.y - sy, image[num], true);
+	DrawBox(pos.x - size.x / 2.f, pos.y - size.y / 2.f, pos.x + size.x / 2.f, pos.y + size.y / 2.f,0xfffff,false);
+	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", hp);
 }
 

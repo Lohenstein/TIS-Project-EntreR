@@ -23,7 +23,7 @@ protected:
 	bool	invincible = false;
 	int		effect_hnd;
 	void	Physical();	// ジャンプとかの計算
-
+	short	count = 0;
 						// 着地した時の判定 ------------------
 	bool	landing;
 
@@ -286,6 +286,7 @@ public:
 	void Update();
 	void MoveByAutomation();
 	void Render(int image[]);
+	void HitAction(cObject *hit);
 };
 
 class cEnemyBossmiddle :public cEnemy {
@@ -521,7 +522,7 @@ public:
 	cCoin(int x, int y, int ctype) {
 		pos = { (float)x, (float)y, 0.f };
 		cointype = ctype;
-		DebugMsgBox("%04d", (TCHAR)type);
+		//DebugMsgBox("%04d", (TCHAR)type);
 		switch (cointype) {
 		case 0: // 普通のコイン
 			cointype = NormalCoin;
@@ -548,7 +549,7 @@ public:
 			// image_change;
 			break;
 		}
-		DebugMsgBox("%04d", (TCHAR)type);
+		//DebugMsgBox("%04d", (TCHAR)type);
 		hp = 1;
 	}
 	void	Update();
@@ -601,7 +602,8 @@ public:
 	cSpring(int x, int y) {
 		pos = {(float)x, (float)y, 0.f};
 		flag = false;
-		size = { 250.f, 250.f, 0.f };
+		size = { 250.f / 2.f, 250.f / 2.f, 0.f };
+		sx = 250 / 2.f, sy = 250 / 2.f;
 		type = Spring;
 	}
 	void	Render(int image[30]);
@@ -673,7 +675,7 @@ public:
 		LoadDivGraph("data/img/enemy/AllCoin.PNG", 117, 39, 3, 300, 300, allcoin_img);
 		LoadDivGraph("data/img/enemy/BigGun.PNG", 10, 10, 1, 300, 300, cannon_img);
 		LoadDivGraph("data/img/enemy/Boss.PNG", 280, 40, 7, 300, 300, boss_img);
-		LoadDivGraph("data/img/enemy/spring.png", 30, 30, 1, 300, 300, spring_img);
+		LoadDivGraph("data/img/enemy/spring.PNG", 30, 30, 1, 250, 250, spring_img);
 	}
 	~cCharacterManager() {
 		DeleteCharacters();
@@ -689,6 +691,7 @@ public:
 		for (int i = 0; i < 117; i++) { DeleteGraph(allcoin_img[i]); }
 		for (int i = 0; i < 280; i++) { DeleteGraph(boss_img[i]); }
 		for (int i = 0; i < 123; i++) { DeleteGraph(jugem_img[i]); }
+		for (int i = 0; i < 30;  i++) { DeleteGraph(spring_img[i]); }
 		DeleteGraph(floorimg);
 	}
 
@@ -710,7 +713,7 @@ public:
 	cObject *GetSpring(int num) { return (cObject*)spring[num]; }
 
 	int		GetPlayerHp() { return player->GetHp(); }
-
+	int		AddTime(int time) { return time + 100; }
 };
 
 enum character {
