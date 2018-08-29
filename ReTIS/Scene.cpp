@@ -348,6 +348,14 @@ void	cTitle::DrawTitle() {
 void	cTitle::DrawOption() {
 	switch (optionselect.draw(550, 280, 2, option_str)) {
 	case FULLSCREEN:
+		if (GetWindowModeFlag() == 0) {
+			ChangeWindowMode(TRUE);			// ウインドウにする
+			SetDrawScreen(DX_SCREEN_BACK);	// モードチェンジ後再定義
+		}
+		else {
+			ChangeWindowMode(FALSE);
+			SetDrawScreen(DX_SCREEN_BACK);
+		}
 		break;
 	case OPTIONBACK:
 		menumode = MAINMENU;
