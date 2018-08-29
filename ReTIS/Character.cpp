@@ -101,16 +101,13 @@ void	cCharacterBase::HitAction(cObject *hit) {
 		break; 
 	case NormalCoin:
 		if (this->GetType() == Player) coin++;
-		MessageBox(NULL, "no-maru", "Debug - Error", MB_OK);
 		break;
 	case EneCoin:
 		if (this->GetType() == Player) ecoin++;
-		MessageBox(NULL, "ene", "Debug - Error", MB_OK);
 		mp = 300;
 		break;
 	case RareCoin:
 		if (this->GetType() == Player) rcoin++;
-		MessageBox(NULL, "rare", "Debug - Error", MB_OK);
 		break;
 	case TimeCoin:
 		if (this->GetType() == Player) tcoin++;
