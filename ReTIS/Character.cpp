@@ -250,8 +250,11 @@ void	cPlayer::Update() {
 	// èÊÇËà⁄ÇÈ
 	FocusOld = FocusPos;
 	FocusPos = pos;
+	if (landing == false && springon == true) {
+		springon = false;
+	}
 
-	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2 || stick_lx >= 100 || stick_lx <= -100) {
+	if ((key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2 || stick_lx >= 100 || stick_lx <= -100) && springon == false) {
 		if (key[KEY_INPUT_LEFT] == 2 || stick_lx <= -100) {
 			rect = true;
 			inertia -= 4;				// à⁄ìÆó É∆Çå∏è≠
@@ -302,7 +305,6 @@ void	cPlayer::Update() {
 	if (pos.y >= 3520) {
 		IsOverFlag = true;
 	}
-
 	// ñ≥ìGéûä‘
 	if (invincible) {
 		const int invicible_time_max = 200;
@@ -369,6 +371,7 @@ void	cPlayer::HitAction(cObject *hit) {
 		break;
 	case Spring:
 		Collision(hit);
+		if (righthit == true || lefthit == true) IsAnchored = false;
 		// å„ÇÎÇ…éùÇ¡ÇƒÇ¢Ç≠Ç∆ç≈èâ2âÒì«Ç›çûÇ›Ç≥ÇÍÇÈÇΩÇﬂëOÇ…Ç¢Ç‹Ç∑
 		if (count != 0) {
 			count++;
@@ -382,9 +385,15 @@ void	cPlayer::HitAction(cObject *hit) {
 		if (count == 4) {
 			count = 0;
 			jump = 40.f;
-
 		}
-		
+		if (anchor != nullptr) {
+			IsAnchored = false;
+			delete anchor;
+			anchor = nullptr;
+			pos = old;
+		}
+		inertia = 0;
+		springon = true;
 		//if (landing == true) jump = 40.f;
 		break;
 	}
@@ -1506,7 +1515,5 @@ void	cSpring::Update() {
 
 void	cSpring::Render(int image[30]) {
 	DrawGraph(pos.x - sx, pos.y - sy, image[num], true);
-	DrawBox(pos.x - size.x / 2.f, pos.y - size.y / 2.f, pos.x + size.x / 2.f, pos.y + size.y / 2.f,0xfffff,false);
-	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", hp);
+	// DrawBox(pos.x - size.x / 2.f, pos.y - size.y / 2.f, pos.x + size.x / 2.f, pos.y + size.y / 2.f,0xfffff,false);
 }
-

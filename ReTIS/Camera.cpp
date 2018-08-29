@@ -99,18 +99,19 @@ void cCamera::Render(int handle) {
 	// 背景：空
 	imageid = 2;
 	for (int i = 0; i < 2; i++) {
-		float scrollx = bg->bghandle_pos_09[imageid][i].x - camera_px / 4.f + cloud[i];
-		float scrolly = bg->bghandle_pos_09[imageid][i].y - camera_py / 8.f;
+		float scrollx = bg->bghandle_pos_09[imageid][i].x - camera_px / 4.f + cloud[i];		// スクロールと合わせて動くのでスクロール分を足している
+		float scrolly = bg->bghandle_pos_09[imageid][i].y - camera_py / 8.f;				// 
 		if (cloud[i] <= -4096.f) cloud[i] = 4090.f;
 		DrawGraph(scrollx, scrolly, bg->bghandle_09[imageid], true);
 	}
 	// 背景：平原
 	imageid = 3;
 	for (int i = 0; i < 2; i++) {
-		bg->bghandle_pos_09[imageid][i].x = -camera_px / 2.f + (i * 2880.f);
+		bg->bghandle_pos_09[imageid][i].x = -camera_px / 2.f + (i * 2880.f);		// 横ループしている
 		bg->bghandle_pos_09[imageid][i].y = -camera_py / 4.f + 400.f;
 		//DrawGraph(bg->bghandle_pos_09[imageid][i].x, bg->bghandle_pos_09[imageid][i].y, bg->bghandle_09[imageid], true);
-		//DrawExtendGraph(bg->bghandle_pos_09[imageid][i].x, bg->bghandle_pos_09[imageid][i].y, bg->bghandle_pos_09[imageid][i].x + 2880, bg->bghandle_pos_09[imageid][i].y + 720, bg->bghandle_09[imageid], true);
+		DrawExtendGraph(bg->bghandle_pos_09[imageid][i].x, bg->bghandle_pos_09[imageid][i].y, bg->bghandle_pos_09[imageid][i].x + 2880, bg->bghandle_pos_09[imageid][i].y + 720, bg->bghandle_09[imageid], true);
 	}
 	DrawRectGraph(0, 0, (int)camera_px, (int)camera_py, WINDOW_SIZE_X, WINDOW_SIZE_Y, handle, true, false);
+	// DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%f", bg->bghandle_pos_09[3][3].y);
 }

@@ -59,6 +59,7 @@ public:
 class cPlayer : public cCharacterBase {
 protected:
 	int img[4][30];
+	bool springon = false;
 public:
 	cAnchor *anchor;
 	float	rad2anchor, dis2anchor, wrad, wrad_old, swing;
