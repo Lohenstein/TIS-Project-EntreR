@@ -65,7 +65,9 @@ public:
 	float	rad2anchor, dis2anchor, wrad, wrad_old, swing;
 	bool	IsAnchored = false;
 	bool	IsFall = false;
+	bool	IsFrying = false;
 	int 	anchor_dir = 0;
+	int		save_speed;
 	VECTOR	savepos;
 	cPlayer(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
@@ -89,6 +91,7 @@ public:
 		}
 	}
 	void	UpdateAnchor();
+	void	DetachAnchor();
 	void	Render();
 	void	Update();
 	void	HitAction(cObject *hit);

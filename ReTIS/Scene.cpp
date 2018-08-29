@@ -3,7 +3,7 @@
 std::unique_ptr<cGame> scene;
 std::unique_ptr<cTitle> title;
 
-int		menumode;
+MenuMode	menumode;
 
 /*------------------------------------------------------------------------------*
 | <<< ゲーム >>>
@@ -304,34 +304,60 @@ void	cTitle::Update() {
 void	cTitle::Render() {
 	DrawGraph(0, 0, titlebg, false);
 	switch (menumode) {
-	case 0:
+	case MAINMENU:
 		DrawTitle();
 		break;
-	case 1:
+	case STAGESELECTMENU:
 		DrawStageSelect();
+		break;
+	case OPTIONMENU:
+		DrawOption();
 		break;
 	}
 }
+/*------------------------------------------------------------------------------*
+| <<< タイトルメニュー >>>
+*------------------------------------------------------------------------------*/
 void	cTitle::DrawTitle() {
-	int w;
+
 	// 各メニューへ移動
 	switch (menu.draw(550, 280, 4, title_str)) {
 		// GAME START
-	case 0:
+	case GAMESTART:
 		break;
 		// STAGE EDITOR
-	case 1:
-		menumode = 1;
+	case STAGESELECT:
+		menumode = STAGESELECTMENU;
+		break;
+		// OPTION
+	case OPTION:
+		menumode = OPTIONMENU;
 		break;
 		// QUIT GAME
-	case 4:
-		
+	case QUITGAME:
+		IsQuit = true;
 		break;
 	default:
 		break;
 	}
 }
 
+/*------------------------------------------------------------------------------*
+| <<< おぷちょんメニュー >>>
+*------------------------------------------------------------------------------*/
+void	cTitle::DrawOption() {
+	switch (optionselect.draw(550, 280, 2, option_str)) {
+	case FULLSCREEN:
+		break;
+	case OPTIONBACK:
+		menumode = MAINMENU;
+		break;
+	}
+}
+
+/*------------------------------------------------------------------------------*
+| <<< ステージセレクトメニュー >>>
+*------------------------------------------------------------------------------*/
 void	cTitle::DrawStageSelect() {
 	int w;
 	// 各メニューへ移動
@@ -371,7 +397,7 @@ void	cTitle::DrawStageSelect() {
 		title.reset();
 		break;
 	case 3:
-		menumode = 0;
+		menumode = MAINMENU;
 		break;
 	}
 }
