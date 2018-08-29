@@ -112,6 +112,7 @@ void	cGame::Collision() {
 		if (character->GetCircularSaw(i)	!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetCircularSaw(i));
 		if (character->GetEnemyFryingman(i) != nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyFryingman(i));
 		if (character->GetEnemyJugem(i)	    != nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyJugem(i));
+
 	}
 }	
 
@@ -269,7 +270,6 @@ void	cGame::RenderGui() {
 			rectime++;
 			sec = 59;
 			min--;
-			if (min <= 0 && sec <= 0) IsOverFlag = true;
 		}
 	}
 	if (sec < 10) {
@@ -288,6 +288,7 @@ void	cGame::RenderGui() {
 	else {
 		DrawRectGraph(10, 70, 0, 0, mp, 16, imghandle[1], false, true);
 	}
+	if (min <= 0 && sec <= 0) IsOverFlag = true;
 }
 
 /*------------------------------------------------------------------------------*

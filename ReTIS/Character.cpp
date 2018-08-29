@@ -3,7 +3,7 @@
 VECTOR	FocusPos, FocusOld, WirePos ,FocusCam, MouseAdd;
 bool	AnchorStretch = true;
 bool	IsClearFlag, IsOverFlag;
-int		coin, ecoin, rcoin;
+int		coin, ecoin, rcoin, tcoin;
 int		mp;
 
 using namespace std;
@@ -109,6 +109,10 @@ void	cCharacterBase::HitAction(cObject *hit) {
 	case RareCoin:
 		if (this->GetType() == Player) rcoin++;
 		break;
+	case TimeCoin:
+		if (this->GetType() == Player) tcoin++;
+		
+		break;
 	case Spring:
 		jump = 40.f;
 		break;
@@ -187,7 +191,7 @@ void	cPlayer::Render() {
 		DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
 	}
 	if (anchor != nullptr) anchor->Render(pos);
-	DrawFormatString(pos.x, pos.y, 0xFFFFFF, "%f, %f, %d", wrad, rad2anchor, anchor_dir);
+	//DrawFormatString(pos.x, pos.y, 0xFFFFFF, "%f, %f, %d", wrad, rad2anchor, anchor_dir);
 }
 
 void	cPlayer::UpdateAnchor() {
@@ -271,7 +275,7 @@ void	cPlayer::Update() {
 		}
 	}
 
-	if ((key[KEY_INPUT_SPACE] == 1 || pad_b[XINPUT_BUTTON_A] == 1) && jump_count < 2) {
+	if ((key[KEY_INPUT_SPACE] == 1 || pad_b[XINPUT_BUTTON_A] == 1) && jump_count < 2 && count == 0) {
 		jump = 20.f;
 		++jump_count;
 		if (anchor != nullptr) {
@@ -353,8 +357,32 @@ void	cPlayer::HitAction(cObject *hit) {
 		break;
 	case RareCoin:
 		if (this->GetType() == Player) rcoin++;
+		break;
+	case TimeCoin:
+		if (this->GetType() == Player) tcoin++;
+		break;
 	case JugemBullet:
 		if (this->GetType() == Player) Damaged();
+		break;
+	case Spring:
+		Collision(hit);
+		// 後ろに持っていくと最初2回読み込みされるため前にいます
+		if (count != 0) {
+			count++;
+			pos.x = hit->GetPos().x;
+		}
+		if (landing && count == 0) {
+			count++;
+			pos.x = hit->GetPos().x;
+			//jump = 40.f;
+		}
+		if (count == 4) {
+			count = 0;
+			jump = 40.f;
+
+		}
+		
+		//if (landing == true) jump = 40.f;
 		break;
 	}
 }
@@ -403,6 +431,7 @@ void	cCharacterManager::Update() {
 		if (dropfloor[i]	!= nullptr) dropfloor[i]	->Update();
 		if (coin[i]			!= nullptr) coin[i]			->Update();
 		if (jugem[i]		!= nullptr) jugem[i]		->Update();
+		if (spring[i]		!= nullptr) spring[i]		->Update();
 	}
 	DeleteDeathCharacters();
 	if (mp > 300) mp = 300;
@@ -425,6 +454,7 @@ void	cCharacterManager::DeleteCharacters() {
 		delete dropfloor[i];
 		delete movefloor[i];
 		delete jugem[i];
+		delete spring[i];
 		
 
 		jumpman[i]		= nullptr;
@@ -435,7 +465,7 @@ void	cCharacterManager::DeleteCharacters() {
 		dropfloor[i]	= nullptr;
 		movefloor[i]	= nullptr;
 		jugem[i]		= nullptr;
-		
+		spring[i]		= nullptr;
 	}
 }
 void	cCharacterManager::DeleteDeathCharacters() {
@@ -661,6 +691,12 @@ void cEnemyJumpman::MoveByAutomation()
 			else direction = true;
 		}
 	}
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
+	}
 }
 
 void cEnemyJumpman::Render(int image[120])
@@ -749,6 +785,12 @@ void cEnemyGunman::MoveByAutomation()
 				break;
 			}
 		}
+	}
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
 	}
 }
 
@@ -865,6 +907,12 @@ void cEnemyHardBody::MoveByAutomation()
 		}
 		break;
 	}
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
+	}
 }
 
 void cEnemyHardBody::Render(int img[])
@@ -882,6 +930,9 @@ void cEnemyFryingman::Update()
 
 void cEnemyFryingman::MoveByAutomation()
 {
+	/*if (landing == true || bottomhit == true || lefthit == true || righthit == true) {
+		hp = 0;
+	}*/
 	if (FocusPos.x + 1000 > pos.x) {
 		switch (move_flow) {
 			// 移動　攻撃
@@ -903,26 +954,33 @@ void cEnemyFryingman::MoveByAutomation()
 			}
 			break;
 		case 1:
-			image_change != 61 ? image_change++ : image_change = 61;
+			image_change != 60 ? image_change++ : image_change = 60;
 			pos.y -= cos(lockon) * speed;
-			if (landing == true || bottomhit == true || lefthit == true || righthit == true) {
-				hp = 0;
-			}
 			break;
 		case 2:
 			break;
 		}
 	}
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
+	}
 }
 
 void cEnemyFryingman::Render(int image[])
 {
-	switch (move_flow) {
-	case 0:
-		image_change = 0;
-		break;
-	}
 	DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
+}
+
+void	cEnemyFryingman::HitAction(cObject *hit) {
+	if (hit->GetType() == NormalCoin || hit->GetType() == EneCoin || hit->GetType() == RareCoin || hit->GetType() == TimeCoin) {
+		// hp = 0;
+	}
+	else {
+		hp = 0;
+	}
 }
 
 /*------------------------------------------------------------------------------*
@@ -941,102 +999,106 @@ void cEnemyBossmiddle::Update()
 
 void cEnemyBossmiddle::MoveByAutomation() 
 {
-	if (hp > 1) {
-		switch (move_pattern) {
-			// 距離を測る
-		case 0:
-			// 歩いて近づく
-			if (pos.x < FocusPos.x + 300 && pos.x > FocusPos.x - 300) {
-				move_pattern = 1;
-				image_change = 160;
-				pos.x < FocusPos.x ? direction = false : direction = true;
-			}
-			// ジャンプして近づく
-			else if (pos.x < FocusPos.x + 400 && pos.x > FocusPos.x - 400) {
-				move_pattern = 2;
-				Player_old = FocusPos;
-				image_change = 0;
-			}
-			break;
-			// プレイヤーに近づく
-		case 1:
-			// 敵の向きと移動の処理
-			if (pos.x < FocusPos.x && image_change == 187) {
-				direction = false;
-			}
-			else if (pos.x >= FocusPos.x && image_change == 187) {
-				direction = true;
-			}
-			//pos.x < FocusPos.x & image_change == 189 ? direction = false : direction = true;
-			direction ? pos.x -= move_speed : pos.x += move_speed;
-			
-			image_change++;
-
-			if (image_change == 185) {
-				image_change = 160;
-				move_time++;
-			}
-			
-			if (move_time == 3) {
-				move_time = 0;
-				move_pattern = 3;
-				image_change = 50;
-			}
-			break;
-			// ジャンプしながら近づく
-		case 2:
-			if (move_time == 0) {
-				jump = 20.f;
-				move_time++;
-				pos.x < FocusPos.x ? direction = false : direction = true;
-			}
-			else if (image_change != 24) {
-				image_change++;
-				direction ? pos.x -= 10 : pos.x += 10;
-			}
-			else if (landing) {
-				move_pattern = 3;
-				move_time = 0;
-				image_change = 50;
-			}
-			if (move_time != 0) {
-				if (pos.x < FocusPos.x)
-					pos.x++;
-				else pos.x--;
-			}
-			break;
-			// 攻撃
-		case 3:
-			if (move_time == 0) {
-				if (image_change != 100) {
-					Attack_pos = pos;
-					if (direction == false && (image_change == 66 || image_change == 86)) {
-						Attack_pos.x += 150;
-						bullet.Shot(Attack_pos, { 10,10,0 }, 0, 0, EnemyBullet);
-					}
-					else if (direction == true && (image_change == 66 || image_change == 86)){
-						Attack_pos.x -= 150;
-						bullet.Shot(Attack_pos, { 10,10,0 }, 0, 0, EnemyBullet);
-					}
-					image_change++;
-				}
-				else move_time = 1;
-			}
-			else {
-				move_time++;
-				if (move_time == 100) {
-					move_time = 0;
-					move_pattern = 0;
-				}
-			}
-			break;
+	switch (move_pattern) {
+		// 距離を測る
+	case 0:
+		// 歩いて近づく
+		if (pos.x < FocusPos.x + 300 && pos.x > FocusPos.x - 300) {
+			move_pattern = 1;
+			image_change = 160;
+			pos.x < FocusPos.x ? direction = false : direction = true;
 		}
+		// ジャンプして近づく
+		else if (pos.x < FocusPos.x + 400 && pos.x > FocusPos.x - 400) {
+			move_pattern = 2;
+			Player_old = FocusPos;
+			image_change = 0;
+		}
+		break;
+		// プレイヤーに近づく
+	case 1:
+		// 敵の向きと移動の処理
+		if (pos.x < FocusPos.x && image_change == 187) {
+			direction = false;
+		}
+		else if (pos.x >= FocusPos.x && image_change == 187) {
+			direction = true;
+		}
+		//pos.x < FocusPos.x & image_change == 189 ? direction = false : direction = true;
+		direction ? pos.x -= move_speed : pos.x += move_speed;
+
+		image_change++;
+
+		if (image_change == 185) {
+			image_change = 160;
+			move_time++;
+		}
+
+		if (move_time == 3) {
+			move_time = 0;
+			move_pattern = 3;
+			image_change = 50;
+		}
+		break;
+		// ジャンプしながら近づく
+	case 2:
+		if (move_time == 0) {
+			jump = 20.f;
+			move_time++;
+			pos.x < FocusPos.x ? direction = false : direction = true;
+		}
+		else if (image_change != 24) {
+			image_change++;
+			direction ? pos.x -= 10 : pos.x += 10;
+		}
+		else if (landing) {
+			move_pattern = 3;
+			move_time = 0;
+			image_change = 50;
+		}
+		if (move_time != 0) {
+			if (pos.x < FocusPos.x)
+				pos.x++;
+			else pos.x--;
+		}
+		break;
+		// 攻撃
+	case 3:
+		if (move_time == 0) {
+			if (image_change != 100) {
+				Attack_pos = pos;
+				if (direction == false && (image_change == 66 || image_change == 86)) {
+					Attack_pos.x += 150;
+					bullet.Shot(Attack_pos, { 10,10,0 }, 0, 0, EnemyBullet);
+				}
+				else if (direction == true && (image_change == 66 || image_change == 86)) {
+					Attack_pos.x -= 150;
+					bullet.Shot(Attack_pos, { 10,10,0 }, 0, 0, EnemyBullet);
+				}
+				image_change++;
+			}
+			else move_time = 1;
+		}
+		else {
+			move_time++;
+			if (move_time == 100) {
+				move_time = 0;
+				move_pattern = 0;
+			}
+		}
+		break;
 	}
-	if (hp == 1);
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
+	}
 } 
 
 void cEnemyBossmiddle::Render(int image[])
 {
+
 	if (hp == 1) {
 		if (image_change < 100 || image_change > 149)
 			image_change = 100;
@@ -1101,6 +1163,12 @@ void cEnemyJugem::MoveByAutomation()
 			}
 			break;
 		}
+	}
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
 	}
 }
 
@@ -1212,6 +1280,12 @@ void cEnemyBoss::MoveByAutomation()
 			enemy_move = 0;
 		}
 		break;
+	}
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
 	}
 }
 
@@ -1346,22 +1420,30 @@ void cCoin::Update()
 void cCoin::MoveByAutomation()
 {
 	image_change++;
-	switch (type)
+	switch (cointype)
 	{
 	case NormalCoin:
-		if (image_change >= 38) {
-			image_change = 0;
+		if (image_change >= 77) {
+			image_change = 39;
 		}
 		break;
 	case EneCoin:
-		if (image_change >= 77) {
-			image_change = 39;
+		if (image_change >= 38) {
+			image_change = 0;
 		}
 		break;
 	case RareCoin:
 		if (image_change >= 116) {
 			image_change = 78;
 		}
+		break;
+	case TimeCoin:
+		// エネルギーの状態
+		if (image_change >= 38) {
+			image_change = 0;
+		}
+		break;
+	default:
 		break;
 	}
 }
@@ -1392,8 +1474,14 @@ void cEventsSwitch::Render(int image[])
 
 }
 
+/*------------------------------------------------------------------------------*
+| <<< cSpring >>>
+*------------------------------------------------------------------------------*/
+
 void	cSpring::HitAction(cObject *hit) {
-	if (hit->GetType() == Player) {
+	if (hit->GetType() == Player && hit->GetPos().y + hit->GetSize().y / 2.f < pos.y - size.y / 2)landing = true;
+	else landing = false;
+	if (hit->GetType() == Player && landing == true) {
 		flag = true;
 	}
 }
@@ -1401,6 +1489,11 @@ void	cSpring::HitAction(cObject *hit) {
 void	cSpring::Update() {
 	if (flag) {
 		num++;
+		if (num <= 16) {
+			size.y -= 10;
+		}
+		if (num == 16) size.y += 10 * 16;
+
 		if (num >= 30) {
 			num = 0;
 			flag = false;
@@ -1409,6 +1502,8 @@ void	cSpring::Update() {
 }
 
 void	cSpring::Render(int image[30]) {
-	DrawGraph(pos.x - size.x / 2.f, pos.y - size.y / 2.f, image[num], true);
+	DrawGraph(pos.x - sx, pos.y - sy, image[num], true);
+	DrawBox(pos.x - size.x / 2.f, pos.y - size.y / 2.f, pos.x + size.x / 2.f, pos.y + size.y / 2.f,0xfffff,false);
+	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", hp);
 }
 
