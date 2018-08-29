@@ -247,9 +247,6 @@ void	cPlayer::Update() {
 	// èÊÇËà⁄ÇÈ
 	FocusOld = FocusPos;
 	FocusPos = pos;
-	if (landing == false && springon == true) {
-		springon = false;
-	}
 
 	if ((key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2 || stick_lx >= 100 || stick_lx <= -100) && springon == false) {
 		if (key[KEY_INPUT_LEFT] == 2 || stick_lx <= -100) {
@@ -308,6 +305,9 @@ void	cPlayer::Update() {
 		++invincible_time;
 		if (invincible_time >= invicible_time_max)
 			invincible = false;
+	}
+	if (springon == true) {
+		springon = false;
 	}
 	// èdóÕ
 	Physical();
@@ -368,7 +368,7 @@ void	cPlayer::HitAction(cObject *hit) {
 		break;
 	case Spring:
 		Collision(hit);
-		if (righthit == true || lefthit == true) IsAnchored = false;
+		if (righthit == true || lefthit == true || bottomhit == true) IsAnchored = false;
 		// å„ÇÎÇ…éùÇ¡ÇƒÇ¢Ç≠Ç∆ç≈èâ2âÒì«Ç›çûÇ›Ç≥ÇÍÇÈÇΩÇﬂëOÇ…Ç¢Ç‹Ç∑
 		if (count != 0) {
 			count++;
@@ -808,7 +808,7 @@ void cEnemyGunman::Update()
 
 	MoveByAutomation();	// ÇªÇÃëºÇÕé©ìÆ
 	
-	if (hp == 1 && image_change == 0)
+	if (hp == 1 && image_change == 23) hp = 0;
 		
 	Physical();
 }
