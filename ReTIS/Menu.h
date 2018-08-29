@@ -18,3 +18,4 @@ public:
 
 extern cMenu	menu;
 extern cMenu	stageselect;
+extern cMenu	optionselect;

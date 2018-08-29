@@ -176,33 +176,23 @@ void	cCharacterBase::Collision(cObject *hit) {
 
 /*------------------------------------------------------------------------------*
 | <<< cPlayer >>>
+|*------------------------------------------------------------------------------*
+| ・UpdateAnchor		< アンカーの監視と更新 >
+| ・DetachAnchor		< 切り離し時の慣性計算をしつつ初期化 >
+| ・Render			< 描画 >
+| ・Update			< 更新 >
+| ・HitAction		< 衝突応答 >
 *------------------------------------------------------------------------------*/
-void	cPlayer::Render() {
 
-	int halfw = 70;
-	int halfh = 65;
-
-	if (invincible) {
-		if (invincible_time % 3 == 0) {
-			DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
-		}
-	}
-	else {
-		DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
-	}
-	if (anchor != nullptr) anchor->Render(pos);
-	//DrawFormatString(pos.x, pos.y, 0xFFFFFF, "%f, %f, %d", wrad, rad2anchor, anchor_dir);
-}
-
+//  << アンカーの監視と更新 >>
+//------------------------------------------------------------------------
 void	cPlayer::UpdateAnchor() {
 	if (anchor != nullptr) {
 		// 飛んでるとき
 		if (anchor->GetFlag()) {
 			anchor->Update();
 			if (sqrtf((anchor->GetPos().x - pos.x) * (anchor->GetPos().x - pos.x) + (anchor->GetPos().y - pos.y) * (anchor->GetPos().y - pos.y)) >= 600.f) {
-				delete anchor;
-				anchor = nullptr;
-				IsAnchored = false;
+				DetachAnchor();
 			}
 		}
 		else {
@@ -240,9 +230,54 @@ void	cPlayer::UpdateAnchor() {
 		}
 	}
 }
+//  << 切り離し時の慣性計算をしつつ初期化 >>
+//------------------------------------------------------------------------
+void	cPlayer::DetachAnchor() {
+	if (anchor != nullptr) {
+		if (IsAnchored) {
+			// 移動量の計算
+			float distance_x = pos.x - old.x;
+			float distance_y = pos.y - old.y;
 
+			save_speed	= speed;			// 速度を保存
+			speed		= distance_x;		// 移動速度をアンカー使用時の速度に設定
+			inertia		= 90 * distance_x;	// 慣性を最大に設定（範囲りみったがあるから-+だけ欲しくて掛けてる）
+			IsFrying	= true;				// 飛行判定をtrueに
+
+			DebugMsgBox("%f", distance_x);
+
+			delete anchor;
+			IsAnchored = false;
+			anchor = nullptr;
+		}
+		else {
+			delete anchor;
+			anchor = nullptr;
+		}
+	}
+}
+//  << 描画 >>
+//------------------------------------------------------------------------
+void	cPlayer::Render() {
+
+	int halfw = 70;
+	int halfh = 65;
+
+	if (invincible) {
+		if (invincible_time % 3 == 0) {
+			DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
+		}
+	}
+	else {
+		DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
+	}
+	if (anchor != nullptr) anchor->Render(pos);
+	//DrawFormatString(pos.x, pos.y, 0xFFFFFF, "%f, %f, %d", wrad, rad2anchor, anchor_dir);
+}
+
+//  << 更新 >>
+//------------------------------------------------------------------------
 void	cPlayer::Update() {
-	old = pos;	// 過去座標
 
 	// 乗り移る
 	FocusOld = FocusPos;
@@ -278,21 +313,14 @@ void	cPlayer::Update() {
 	if ((key[KEY_INPUT_SPACE] == 1 || pad_b[XINPUT_BUTTON_A] == 1) && jump_count < 2 && count == 0) {
 		jump = 20.f;
 		++jump_count;
-		if (anchor != nullptr) {
-			delete anchor;
-			IsAnchored = false;
-			anchor = nullptr;
-		}
+		DetachAnchor();
 	}
 	if ((key[KEY_INPUT_C] == 1 || pad_b[XINPUT_BUTTON_X] == 1) && mp >= 10) {
 		mp -= 10;
 		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, -stick_rad, PlayerBullet);
 	}
 	if (pad_b[XINPUT_BUTTON_Y] == 1) {
-		delete anchor;
-		IsAnchored = false;
-		IsFall = false;
-		anchor = nullptr;
+		DetachAnchor();
 		anchor = new cAnchor(pos, { 10.f, 10.f, 10.f }, 30.f, -stick_rad, WireAnchor);
 	}
 	// 穴に落っこちた
@@ -310,7 +338,11 @@ void	cPlayer::Update() {
 	// 重力
 	Physical();
 	UpdateAnchor();
+
+	old = pos;	// 過去座標
 }
+//  << 衝突応答 >>
+//------------------------------------------------------------------------
 void	cPlayer::HitAction(cObject *hit) {
 
 	switch (hit->GetType()) {
@@ -336,11 +368,10 @@ void	cPlayer::HitAction(cObject *hit) {
 		break;
 	case MapTile:
 		Collision(hit);
-		if (anchor != nullptr) {
-			IsAnchored = false;
-			delete anchor;
-			anchor = nullptr;
-			pos = old;
+		DetachAnchor();
+		if (IsFrying) {
+			IsFrying = false;
+			speed = save_speed;
 		}
 		break;
 	case Clear:

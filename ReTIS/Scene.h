@@ -2,7 +2,25 @@
 
 using namespace std;
 
-extern	int menumode;
+enum TitleMenu {
+	GAMESTART,
+	STAGESELECT,
+	OPTION,
+	QUITGAME
+};
+
+enum MenuMode {
+	MAINMENU,
+	STAGESELECTMENU,
+	OPTIONMENU
+};
+
+enum OptionMenu {
+	FULLSCREEN,
+	OPTIONBACK
+};
+
+extern	MenuMode menumode;
 
 class cBase
 {
@@ -38,11 +56,12 @@ public:
 	int		menu_mode;
 
 	char *title_str[4] = { "GAME START", "STAGE SELECT", "OPTION", "QUIT GAME" };
-	char *stage_str[4] = { "²“¡Šî’n", "¬—ÑŠî’n", "“¡ˆäŠî’n", "–ß‚é" };
+	char *stage_str[4] = { "SATO FACTORY", "SMALL FOREST FACTORY", "FUJI FACTORY", "BACK" };
+	char *option_str[2] = { "FULL/WINDOW", "BACK" };
 
 	cTitle() {
 		titlebg = LoadGraph("data/img/wall/titlebg.png");
-		menumode = 0;
+		menumode = MAINMENU;
 	}
 
 	void	Init();
@@ -50,6 +69,7 @@ public:
 	void	Render();
 	void	DrawTitle();
 	void	DrawStageSelect();
+	void	DrawOption();
 };
 
 class cGame : public cBase
@@ -79,7 +99,7 @@ public:
 		character = new cCharacterManager(stagepath);
 		camera	  = new cCamera();
 		gui       = new cGuiGame();
-		dialog		= new cDialog("Test Message Dayo!! HogeHoge FugaFuga...!");
+		dialog		= new cDialog("“Œ‹ž‚Í’EˆßŠ‚Ì‚æ‚¤‚È•Ï‚ÈL‚¢‚ª‚µ‚Ü‚·B\n’EˆßŠ‚Ì‚æ‚¤‚È‹‚³‚Å\n“Æ“Á‚ÈL‚¢");
 		bghandle  = MakeScreen(stage->GetStageSizeX()*(int)bsize, stage->GetStageSizeY()*(int)bsize, true);
 		camera->SetStageSize(stage->GetStageSizeX(), stage->GetStageSizeY());
 
