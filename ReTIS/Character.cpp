@@ -244,7 +244,7 @@ void	cPlayer::DetachAnchor() {
 			inertia		= 90 * distance_x;	// 慣性を最大に設定（範囲りみったがあるから-+だけ欲しくて掛けてる）
 			IsFrying	= true;				// 飛行判定をtrueに
 
-			DebugMsgBox("%f", distance_x);
+			//DebugMsgBox("%f", distance_x);
 
 			delete anchor;
 			IsAnchored = false;
@@ -272,7 +272,6 @@ void	cPlayer::Render() {
 		DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
 	}
 	if (anchor != nullptr) anchor->Render(pos);
-	//DrawFormatString(pos.x, pos.y, 0xFFFFFF, "%f, %f, %d", wrad, rad2anchor, anchor_dir);
 }
 
 //  << 更新 >>
@@ -334,7 +333,7 @@ void	cPlayer::Update() {
 		if (invincible_time >= invicible_time_max)
 			invincible = false;
 	}
-	if (springon == true) {
+	if (count == 0) {
 		springon = false;
 	}
 	// 重力
@@ -392,7 +391,10 @@ void	cPlayer::HitAction(cObject *hit) {
 		if (this->GetType() == Player) rcoin++;
 		break;
 	case TimeCoin:
-		if (this->GetType() == Player) tcoin++;
+		if (this->GetType() == Player) {
+			tcoin++;
+			addtimeswitch = true;
+		}
 		break;
 	case JugemBullet:
 		if (this->GetType() == Player) Damaged();
@@ -423,6 +425,9 @@ void	cPlayer::HitAction(cObject *hit) {
 		inertia = 0;
 		springon = true;
 		//if (landing == true) jump = 40.f;
+		break;
+	case Crumblewall:
+
 		break;
 	}
 }
@@ -455,8 +460,9 @@ void	cCharacterManager::Render() {
 		if (spring[i]		!= nullptr) spring[i]		->Render(spring_img);
 		if (jugem[i]		!= nullptr) jugem[i]		->Render(jugem_img);
 	}
+//	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", nowtime);
 }
-void	cCharacterManager::Update() {
+void	cCharacterManager::Update(int gettime) {
 	player->Update();
 	if (boss!= nullptr) boss->Update();
 	for (int i = 0; i < ENEMY_MAX; i++) {
@@ -475,6 +481,8 @@ void	cCharacterManager::Update() {
 	}
 	DeleteDeathCharacters();
 	if (mp > 300) mp = 300;
+//	nowtime = gettime;
+	if (pad_b[XINPUT_BUTTON_X] == 2) gettime = 10;
 }
 
 
@@ -1015,12 +1023,12 @@ void cEnemyFryingman::Render(int image[])
 }
 
 void	cEnemyFryingman::HitAction(cObject *hit) {
-	if (hit->GetType() == NormalCoin || hit->GetType() == EneCoin || hit->GetType() == RareCoin || hit->GetType() == TimeCoin) {
-		// hp = 0;
-	}
+	if (hit->GetType() == NormalCoin || hit->GetType() == EneCoin || hit->GetType() == RareCoin || hit->GetType() == TimeCoin) {}
+	else if (hit->GetType() == EnemyBullet || hit->GetType() == Spring) {}
 	else {
 		hp = 0;
 	}
+	
 }
 
 /*------------------------------------------------------------------------------*
@@ -1497,21 +1505,19 @@ void cCoin::Render(int image[])
 | <<< cEventsSwitch >>>
 *------------------------------------------------------------------------------*/
 
-void cEventsSwitch::Update()
+void cCrumbleWalll::Update()
 {
 	Physical();
-
-	if (hp == 0) hp= 1;
 }
 
-void cEventsSwitch::MoveByAutomation()
+void cCrumbleWalll::MoveByAutomation()
 {
 
 }
 
-void cEventsSwitch::Render(int image[])
+void cCrumbleWalll::Render(int image[])
 {
-
+	 DrawBox(pos.x - size.x / 2.f, pos.y - size.y / 2.f, pos.x + size.x / 2.f, pos.y + size.y / 2.f,0xfffff,true);
 }
 
 /*------------------------------------------------------------------------------*

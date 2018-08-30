@@ -51,7 +51,8 @@ enum eObjectType {
 	TimeCoin,		// 時間コイン
 	WireAnchor,
 	Spring,
-	JugemBullet		// 敵ジュゲム
+	JugemBullet,	// 敵ジュゲム
+	Crumblewall		//壊れる壁
 };
 
 extern void		CheckHitRectAndRect(cObject *obj1, cObject *obj2);
