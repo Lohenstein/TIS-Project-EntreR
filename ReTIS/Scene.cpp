@@ -5,6 +5,8 @@ std::unique_ptr<cTitle> title;
 
 MenuMode	menumode;
 
+void	LoadStage(string str, bool reload);
+
 /*------------------------------------------------------------------------------*
 | <<< ゲーム >>>
 *------------------------------------------------------------------------------*/
@@ -117,7 +119,6 @@ void	cGame::Collision() {
 }	
 
 void	cGame::Update() {
-	input();
 	if (IsClearFlag) {
 		UpdateResult();
 	}
@@ -181,21 +182,9 @@ void	cGame::DrawOver() {
 
 void	cGame::UpdateOver() {
 	if ((key[KEY_INPUT_R] == 1 || pad_b[XINPUT_BUTTON_START] == 1) && trans > 235) {
-		// なうろ
-		DrawGraph(0, 0, imghandle[0], false);
-		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
-		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
-		ScreenFlip();
-		// 初期化
-		scene.reset();
-		scene.reset(new cGame);
+		LoadStage("this is reload", true);
 	}
 	if (pad_b[XINPUT_BUTTON_A] == 1 && trans > 235) {
-		DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
-		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
-		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
-		ScreenFlip();
-
 		title.reset(new cTitle);
 		gamemode = Game::mode_title;
 		scene.reset();
@@ -204,21 +193,9 @@ void	cGame::UpdateOver() {
 
 void	cGame::UpdateResult() {
 	if ((key[KEY_INPUT_R] == 1 || pad_b[XINPUT_BUTTON_START] == 1) && trans > 335) {
-		// なうろ
-		DrawGraph(0, 0, imghandle[0], false);
-		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
-		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
-		ScreenFlip();
-		// 初期化
-		scene.reset();
-		scene.reset(new cGame);
+		LoadStage("this is reload", true);
 	}
 	if (pad_b[XINPUT_BUTTON_A] == 1 && trans > 235) {
-		DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
-		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
-		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
-		ScreenFlip();
-
 		title.reset(new cTitle);
 		gamemode = Game::mode_title;
 		scene.reset();
@@ -291,6 +268,35 @@ void	cGame::RenderGui() {
 	if (min <= 0 && sec <= 0) IsOverFlag = true;
 }
 
+void	cGame::DrawPauseMenu() {
+
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 155);
+	DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	int w;
+	// 各メニューへ移動
+	switch (pause.draw(550, 280, 3, pause_str)) {
+	case PAUSE_CONTINUE:
+		IsPaused = false;
+		break;
+	case PAUSE_RESTART:
+		LoadStage("this is reload", true);
+		break;
+	case PAUSE_BACK2TITLE:
+
+		// タイトルに戻る
+		title.reset(new cTitle);
+		gamemode = Game::mode_title;
+		scene.reset();
+
+		menumode = MENUMODE_MAINMENU;
+		IsPaused = false;
+		break;
+	default:
+		break;
+	}
+}
 /*------------------------------------------------------------------------------*
 | <<< メニュー >>>
 *------------------------------------------------------------------------------*/
@@ -298,19 +304,18 @@ void	cTitle::Init() {
 
 }
 void	cTitle::Update() {
-	input();
-	SetDrawScreen(DX_SCREEN_BACK);
+	//SetDrawScreen(DX_SCREEN_BACK);
 }
 void	cTitle::Render() {
 	DrawGraph(0, 0, titlebg, false);
 	switch (menumode) {
-	case MAINMENU:
+	case MENUMODE_MAINMENU:
 		DrawTitle();
 		break;
-	case STAGESELECTMENU:
+	case MENUMODE_STAGESELECTMENU:
 		DrawStageSelect();
 		break;
-	case OPTIONMENU:
+	case MENUMODE_OPTIONMENU:
 		DrawOption();
 		break;
 	}
@@ -323,18 +328,18 @@ void	cTitle::DrawTitle() {
 	// 各メニューへ移動
 	switch (menu.draw(550, 280, 4, title_str)) {
 		// GAME START
-	case GAMESTART:
+	case TITLE_GAMESTART:
 		break;
 		// STAGE EDITOR
-	case STAGESELECT:
-		menumode = STAGESELECTMENU;
+	case TITLE_STAGESELECT:
+		menumode = MENUMODE_STAGESELECTMENU;
 		break;
 		// OPTION
-	case OPTION:
-		menumode = OPTIONMENU;
+	case TITLE_OPTION:
+		menumode = MENUMODE_OPTIONMENU;
 		break;
 		// QUIT GAME
-	case QUITGAME:
+	case TITLE_QUITGAME:
 		IsQuit = true;
 		break;
 	default:
@@ -347,18 +352,27 @@ void	cTitle::DrawTitle() {
 *------------------------------------------------------------------------------*/
 void	cTitle::DrawOption() {
 	switch (optionselect.draw(550, 280, 2, option_str)) {
-	case FULLSCREEN:
-		if (GetWindowModeFlag() == 0) {
-			ChangeWindowMode(TRUE);			// ウインドウにする
-			SetDrawScreen(DX_SCREEN_BACK);	// モードチェンジ後再定義
+	case OPTION_FULLSCREEN:
+		if (IsWindowed) {
+
+			int DesktopSizeX;	// デスクトップの大きさ
+			int DesktopSizeY;
+
+			GetDefaultState(&DesktopSizeX, &DesktopSizeY, NULL);
+			SetWindowStyleMode(4);						// ウインドウスタイルを枠なしに変更
+			SetWindowSize(DesktopSizeX, DesktopSizeY);	// ウインドウのサイズをデスクトップと同じにする
+			SetWindowPosition(0, 0);					// ウインドウの位置を画面左上に変更
+			SetWindowZOrder(DX_WIN_ZTYPE_TOPMOST, TRUE);
 		}
 		else {
-			ChangeWindowMode(FALSE);
-			SetDrawScreen(DX_SCREEN_BACK);
+			SetWindowStyleMode(0);						// ウインドウスタイルを標準に変更
+			SetWindowSize(WINDOW_SIZE_X, WINDOW_SIZE_Y);// ウインドウサイズを 1280x720 に変更
+			SetWindowZOrder(DX_WIN_ZTYPE_NORMAL, FALSE);
 		}
+		IsWindowed = !IsWindowed;
 		break;
-	case OPTIONBACK:
-		menumode = MAINMENU;
+	case OPTION_OPTIONBACK:
+		menumode = MENUMODE_MAINMENU;
 		break;
 	}
 }
@@ -372,40 +386,43 @@ void	cTitle::DrawStageSelect() {
 	switch (stageselect.draw(550, 280, 4, stage_str)) {
 		// GAME START
 	case 0:
-		DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
-		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
-		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
-		ScreenFlip();
-		stagepath = "data/map/stage1/";
-		scene.reset(new cGame);
-		gamemode = Game::mode_game;
-		title.reset();
+		LoadStage("data/map/stage1/", false);
 		break;
 		// STAGE EDITOR
 	case 1:
-
-		DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
-		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
-		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
-		ScreenFlip();
-		stagepath = "data/map/stage2/";
-		scene.reset(new cGame);
-		gamemode = Game::mode_game;
-		title.reset();
+		LoadStage("data/map/stage2/", false);
 		break;
 		// QUIT GAME
 	case 2:
-		DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
-		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
-		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
-		ScreenFlip();
-		stagepath = "data/map/stage3/";
-		scene.reset(new cGame);
-		gamemode = Game::mode_game;
-		title.reset();
+		LoadStage("data/map/stage3/", false);
 		break;
 	case 3:
-		menumode = MAINMENU;
+		menumode = MENUMODE_MAINMENU;
 		break;
 	}
+}
+
+void	LoadStage(string str, bool reload) {
+
+	// リロードならファイルパスは同じなので変えない
+	if (!reload) stagepath = str; // ステージのファイルパス
+
+	DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
+
+	// Now Loading描画
+	int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
+	DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
+	
+	// 裏画面
+	ScreenFlip();
+
+	// ステージ初期化
+	scene.reset();
+	scene.reset(new cGame);
+	
+	// リロードの場合はタイトルの初期化をしない
+	if (!reload) title.reset();
+
+	// ゲームモードをゲームにする
+	gamemode = Game::mode_game;
 }

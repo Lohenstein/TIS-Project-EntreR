@@ -244,7 +244,7 @@ void	cPlayer::DetachAnchor() {
 			inertia		= 90 * distance_x;	// Šµ«‚ðÅ‘å‚ÉÝ’èi”ÍˆÍ‚è‚Ý‚Á‚½‚ª‚ ‚é‚©‚ç-+‚¾‚¯—~‚µ‚­‚ÄŠ|‚¯‚Ä‚éj
 			IsFrying	= true;				// ”òs”»’è‚ðtrue‚É
 
-			DebugMsgBox("%f", distance_x);
+			//DebugMsgBox("%f", distance_x);
 
 			delete anchor;
 			IsAnchored = false;
@@ -322,6 +322,9 @@ void	cPlayer::Update() {
 	if (pad_b[XINPUT_BUTTON_Y] == 1) {
 		DetachAnchor();
 		anchor = new cAnchor(pos, { 10.f, 10.f, 10.f }, 30.f, -stick_rad, WireAnchor);
+	}
+	if (pad_b[XINPUT_BUTTON_START] == 1) {
+		scene->IsPaused = !scene->IsPaused;
 	}
 	// ŒŠ‚É—Ž‚Á‚±‚¿‚½
 	if (pos.y >= 3520) {

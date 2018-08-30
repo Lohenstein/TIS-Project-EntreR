@@ -1,7 +1,7 @@
  #include "Main.h"
 
 int		key[256];
-int		pad_b[16];
+int		pad_b[18];
 
 short	stick_lx, stick_ly;
 float	stick_rad;
@@ -43,6 +43,20 @@ void	 input_pad() {
 	trigger_r = input_pad.RightTrigger;
 
 	stick_rad = atan2f(stick_ly, stick_lx);
+
+
+	if (stick_ly > 200) {
+		if (pad_b[STICK_UP] == 0) pad_b[STICK_UP] = 1;
+		else if (pad_b[STICK_UP] == 1) pad_b[STICK_UP] = 2;
+	}
+	else pad_b[STICK_UP] = 0;
+
+	if (stick_ly < -200) {
+		if (pad_b[STICK_DOWN] == 0) pad_b[STICK_DOWN] = 1;
+		else if (pad_b[STICK_DOWN] == 1) pad_b[STICK_DOWN] = 2;
+	}
+	else pad_b[STICK_DOWN] = 0;
+
 }
 
 // —¼•û‚Æ‚àŽæ“¾(ƒOƒ[ƒoƒ‹)
