@@ -4,6 +4,7 @@
 #define FONT_TIME			(0)
 #define FONT_POSSESSTIME	(1)
 #define	FONT_MESSAGE		(2)
+#define	FONT_MENU			(3)
 
 #define	ICON_A				(0)
 #define	ICON_B				(1)
@@ -46,7 +47,7 @@ extern	void	game_end(void);
 extern int		gamemode;
 extern int		icon_handle[14];
 
-extern bool		IsFullscreen;
+extern bool		IsWindowed;
 
 extern std::string stagepath;
 

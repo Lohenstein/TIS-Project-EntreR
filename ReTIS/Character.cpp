@@ -325,6 +325,9 @@ void	cPlayer::Update() {
 		DetachAnchor();
 		anchor = new cAnchor(pos, { 10.f, 10.f, 10.f }, 30.f, -stick_rad, WireAnchor);
 	}
+	if (pad_b[XINPUT_BUTTON_START] == 1) {
+		scene->IsPaused = !scene->IsPaused;
+	}
 	// ŒŠ‚É—Ž‚Á‚±‚¿‚½
 	if (pos.y >= 3520) {
 		IsOverFlag = true;

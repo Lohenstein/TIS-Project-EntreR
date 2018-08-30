@@ -9,7 +9,7 @@ namespace Game
 int		gamemode = Game::mode_game;
 int		font_handle[FONT_MAX];
 int		icon_handle[14];
-bool	IsFullscreen;
+bool	IsWindowed;
 
 std::string stagepath;
 
@@ -23,7 +23,7 @@ void	game_init(void)
 	title.reset(new cTitle);
 	gamemode = mode_title;
 
-	IsFullscreen = true;
+	IsWindowed = true;
 
 	// フォントの読み込み
 	//--------------------------------------------------------------------------
@@ -41,6 +41,7 @@ void	game_init(void)
 	font_handle[FONT_POSSESSTIME] = CreateFontToHandle("GN-きんいろサンセリフ", 48, 2, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
 	font_handle[FONT_TIME]		  = CreateFontToHandle("GN-きんいろサンセリフ", 72, 2, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
 	font_handle[FONT_MESSAGE]	  = CreateFontToHandle("GN-きんいろサンセリフ", 24, 2, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
+	font_handle[FONT_MENU]		  = CreateFontToHandle("GN-きんいろサンセリフ", 32, 2, DX_FONTTYPE_ANTIALIASING);
 
 	// ボタン画像のロード
 	icon_handle[ICON_A]		= LoadGraph("data/img/buttons/XB1_A.png");
@@ -63,6 +64,7 @@ void	game_init(void)
 *------------------------------------------------------------------------------*/
 void	game_main(void)
 {
+	input(); // 入力
 	// 処理
 	switch (gamemode)
 	{
@@ -72,7 +74,9 @@ void	game_main(void)
 	case mode_lobby:
 		break;
 	case mode_game:
-		scene->Update();
+		if (!scene->IsPaused) {
+			scene->Update();
+		}
 		break;
 	case mode_over:
 		break;
@@ -86,6 +90,7 @@ void	game_main(void)
 		break;
 	case mode_game:
 		scene->Render();
+		if (scene->IsPaused) scene->DrawPauseMenu();
 		break;
 	case mode_over:
 		break;
@@ -97,5 +102,5 @@ void	game_main(void)
 *------------------------------------------------------------------------------*/
 void	game_end(void)
 {
-	if (!IsFullscreen) ChangeWindowMode(true);
+
 }
