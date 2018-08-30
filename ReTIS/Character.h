@@ -66,6 +66,7 @@ public:
 	bool	IsAnchored = false;
 	bool	IsFall = false;
 	bool	IsFrying = false;
+	bool	addtimeswitch = false;
 	int 	anchor_dir = 0;
 	int		save_speed;
 	VECTOR	savepos;
@@ -518,6 +519,7 @@ public:
 
 class cCoin : public cEnemy {
 public:
+	bool addtimeon;
 	bool getcoin;
 	int  cointype;
 	int	 image_change;
@@ -531,30 +533,32 @@ public:
 		case 0: // 普通のコイン
 			cointype = NormalCoin;
 			type = NormalCoin;
-			size = { 32.f, 32.f, 0.f };
+			size = { 16.f, 16.f, 0.f };
 			image_change = 39;
 			break;
 		case 1: // エネルギーコイン
 			cointype = EneCoin;
 			type = EneCoin;
-			size = { 32.f, 32.f, 0.f };
+			size = {16.f, 16.f, 0.f };
 			image_change = 0;
 			break;
 		case 2: // レアコイン
 			cointype = RareCoin;
 			type = RareCoin;
-			size = { 64.f, 64.f, 0.f };
+			size = { 32.f, 32.f, 0.f };
 			image_change = 78;
 			break;
 		case 3:
 			cointype = TimeCoin;
 			type = TimeCoin;
 			size = { 16.f,16.f,0.f };
-			// image_change;
+			image_change = 0;
 			break;
+			addtimeon = false;
 		}
 		//DebugMsgBox("%04d", (TCHAR)type);
 		hp = 1;
+		addtimeon = false;
 	}
 	void	Update();
 	void	Render(int image[]);
@@ -565,7 +569,7 @@ public:
 	}
 };
 
-class cEventsSwitch : public cEnemy{
+class cCrumbleWalll : public cEnemy{
 public:
 	int attack_count;
 	int move_pattern;
@@ -576,7 +580,7 @@ public:
 	VECTOR bulletpos;
 	VECTOR bulletsize;
 
-	cEventsSwitch(float x, float y, float w, float h, float s, bool p) {
+	cCrumbleWalll(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
 		speed = s;
@@ -638,9 +642,8 @@ public:
 	cDropFloor						*dropfloor[ENEMY_MAX];
 	cMoveFloor						*movefloor[ENEMY_MAX];
 	cCoin							*coin[ENEMY_MAX];
-	cEventsSwitch					*eventswitch;
+	cCrumbleWalll					*crumblewall[ENEMY_MAX];
 	cSpring							*spring[ENEMY_MAX];
-
 
 	int		wireman_img[273];
 	int		jumpman_img[120];
@@ -657,7 +660,7 @@ public:
 	int		jugem_img[123];
 	int		allcoin_img[117];
 
-	void	Update();
+	void	Update(int gettime);
 	void	Render();
 	void	PossessListener();
 	void	LoadCharacters(string name);
@@ -715,9 +718,11 @@ public:
 	cObject *GetEnemyJugem(int num) { return (cObject*)jugem[num]; }
 	cObject *GetEnemyBoss() { return (cObject*)boss; }
 	cObject *GetSpring(int num) { return (cObject*)spring[num]; }
+	cObject *GetCrumbleWalll(int num) { return (cObject*)crumblewall[num]; }
 
+	bool	GetAddSwitch() { return player->addtimeswitch; }
+	bool	GetAddSwitchChange() { return player->addtimeswitch = false; }
 	int		GetPlayerHp() { return player->GetHp(); }
-	int		AddTime(int time) { return time + 100; }
 };
 
 enum character {

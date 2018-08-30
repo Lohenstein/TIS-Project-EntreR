@@ -90,11 +90,13 @@ void cCamera::Update(VECTOR focus) {
 
 	if (camera_px < 0.f) camera_px = 0.f;
 	if (camera_px > sx * bsize - WINDOW_SIZE_X) camera_px = sx * bsize - WINDOW_SIZE_X;
+	if (camera_py < 0.f) camera_py = 0.f;
+	if (camera_py > sy * bsize - WINDOW_SIZE_Y) camera_py = sy * bsize - WINDOW_SIZE_Y;
 	for (int i = 0; i < 2; i++) cloud[i] -= 0.2f;
 	if (camera_py > 3000.f) camera_py = 3000.f;
 }
 
-void cCamera::Render(int handle) {
+void cCamera::Render(int handle,int getx,int gety) {
 	int imageid;
 	// îwåiÅFãÛ
 	imageid = 2;
@@ -107,10 +109,14 @@ void cCamera::Render(int handle) {
 	// îwåiÅFïΩå¥
 	imageid = 3;
 	for (int i = 0; i < 2; i++) {
+		/*bg->bghandle_pos_09[imageid][i].x = -camera_px / 2.f + (i * 2880.f);		// â°ÉãÅ[ÉvÇµÇƒÇ¢ÇÈ
+		bg->bghandle_pos_09[imageid][i].y = -camera_py / 4.f;
+		DrawExtendGraph(bg->bghandle_pos_09[imageid][i].x, bg->bghandle_pos_09[imageid][i].y, bg->bghandle_pos_09[imageid][i].x + 2880, bg->bghandle_pos_09[imageid][i].y + 720, bg->bghandle_09[imageid], true);*/
 		bg->bghandle_pos_09[imageid][i].x = -camera_px / 2.f + (i * 2880.f);		// â°ÉãÅ[ÉvÇµÇƒÇ¢ÇÈ
-		bg->bghandle_pos_09[imageid][i].y = -camera_py / 4.f + 400.f;
+		bg->bghandle_pos_09[imageid][i].y = -camera_py / 4.f + 600.f;
 		//DrawGraph(bg->bghandle_pos_09[imageid][i].x, bg->bghandle_pos_09[imageid][i].y, bg->bghandle_09[imageid], true);
-		DrawExtendGraph(bg->bghandle_pos_09[imageid][i].x, bg->bghandle_pos_09[imageid][i].y, bg->bghandle_pos_09[imageid][i].x + 2880, bg->bghandle_pos_09[imageid][i].y + 720, bg->bghandle_09[imageid], true);
+		DrawExtendGraph(bg->bghandle_pos_09[imageid][i].x, bg->bghandle_pos_09[imageid][i].y, bg->bghandle_pos_09[imageid][i].x + 2880, bg->bghandle_pos_09[imageid][i].y + 1000, bg->bghandle_09[imageid], true);
+		
 	}
 	DrawRectGraph(0, 0, (int)camera_px, (int)camera_py, WINDOW_SIZE_X, WINDOW_SIZE_Y, handle, true, false);
 	// DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%f", bg->bghandle_pos_09[3][3].y);

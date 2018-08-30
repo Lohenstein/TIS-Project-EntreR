@@ -90,12 +90,12 @@ private:
 
 	int imghandle[10];
 	int bghandle;
+	int time = 0;
 
 protected:
 	// §ŒÀŠÔ‚Æ‚©
 	int min  = 5;
 	int sec  = 0;
-	int time = 0;
 	int rectime = 0;
 	int trans = 0;
 public:
