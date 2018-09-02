@@ -1,29 +1,31 @@
 ﻿  Bullet.cpp
-h:\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
+c:\users\music\desktop\バックアップ\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
   Stage.cpp
-h:\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
+c:\users\music\desktop\バックアップ\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
   Scene.cpp
-h:\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
+c:\users\music\desktop\バックアップ\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
+  Menu.cpp
+c:\users\music\desktop\バックアップ\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
   Main.cpp
-h:\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
+c:\users\music\desktop\バックアップ\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
   Input.cpp
-h:\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
+c:\users\music\desktop\バックアップ\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
   Game.cpp
-h:\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
+c:\users\music\desktop\バックアップ\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
   Entity.cpp
-h:\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
+c:\users\music\desktop\バックアップ\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
   Easing.cpp
-h:\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
+c:\users\music\desktop\バックアップ\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
   Collision.cpp
-h:\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
+c:\users\music\desktop\バックアップ\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
   Character.cpp
-h:\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
+c:\users\music\desktop\バックアップ\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
   Gui.cpp
-h:\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
+c:\users\music\desktop\バックアップ\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
   Effect.cpp
-h:\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
+c:\users\music\desktop\バックアップ\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
   Dialog.cpp
-h:\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
+c:\users\music\desktop\バックアップ\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
   Camera.cpp
-h:\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
+c:\users\music\desktop\バックアップ\dxlib_vc_n\プロジェクトに追加すべきファイル_vc用\effekseerfordxlib.h(14): fatal error C1189: #error:  32bitのみ対応しています。
   コードを生成中...
