@@ -290,21 +290,27 @@ void	cGame::RenderGui() {
 
 void	cGame::DrawPauseMenu() {
 
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 155);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, trans > 155 ? 155 : trans);
 	DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-	int w;
+	// もっかいスタートボタン押したらポーズ解除
+	if (pad_b[XINPUT_BUTTON_START] == 1 && trans != 0) IsPaused = false;
+	trans += 2;
+
 	// 各メニューへ移動
 	switch (pause.draw(550, 280, 3, pause_str)) {
 	case PAUSE_CONTINUE:
 		IsPaused = false;
+		trans    = 0;
 		break;
 	case PAUSE_RESTART:
 		LoadStage("this is reload", true);
+		trans = 0;
 		break;
 	case PAUSE_BACK2TITLE:
 
+		trans = 0;
 		// タイトルに戻る
 		title.reset(new cTitle);
 		gamemode = Game::mode_title;

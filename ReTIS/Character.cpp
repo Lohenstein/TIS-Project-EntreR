@@ -235,7 +235,7 @@ void	cPlayer::UpdateAnchor() {
 void	cPlayer::DetachAnchor() {
 	if (anchor != nullptr) {
 		if (IsAnchored) {
-			// 移動量の計算
+			/*// 移動量の計算
 			float distance_x = pos.x - old.x;
 			float distance_y = pos.y - old.y;
 
@@ -244,7 +244,7 @@ void	cPlayer::DetachAnchor() {
 			inertia		= 90 * distance_x;	// 慣性を最大に設定（範囲りみったがあるから-+だけ欲しくて掛けてる）
 			IsFrying	= true;				// 飛行判定をtrueに
 
-			//DebugMsgBox("%f", distance_x);
+			//DebugMsgBox("%f", distance_x);*/
 
 			delete anchor;
 			IsAnchored = false;
