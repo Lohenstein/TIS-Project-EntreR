@@ -4,6 +4,7 @@
 #define FONT_TIME			(0)
 #define FONT_POSSESSTIME	(1)
 #define	FONT_MESSAGE		(2)
+#define	FONT_TITLE			(3)
 
 namespace	Game
 {

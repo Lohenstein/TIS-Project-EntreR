@@ -36,6 +36,7 @@ void	game_init(void)
 	font_handle[FONT_POSSESSTIME] = CreateFontToHandle("GN-きんいろサンセリフ", 48, 2, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
 	font_handle[FONT_TIME]		  = CreateFontToHandle("GN-きんいろサンセリフ", 72, 2, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
 	font_handle[FONT_MESSAGE]	  = CreateFontToHandle("GN-きんいろサンセリフ", 24, 2, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
+	font_handle[FONT_TITLE]		  = CreateFontToHandle("GN-きんいろサンセリフ", 36, 2, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
 }
 /*------------------------------------------------------------------------------*
 | <<< ゲームメイン >>>

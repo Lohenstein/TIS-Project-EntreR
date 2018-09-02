@@ -14,8 +14,8 @@ int cMenu::draw(int mx, int my, int n, char **str) {
 		int color = Easing::OutQuint(ease_time, 1.0, 222, 122);
 
 		DrawGraph(tx, ty, title_selected, TRUE);
-		int str_x = (x + 560) - ((selected * 36) + GetDrawFormatStringWidthToHandle(font_handle[FONT_MESSAGE], "%s", str[selected]));
-		DrawFormatStringToHandle(str_x, y + (selected * 61) + 8, GetColor(color, color, color), font_handle[FONT_MESSAGE], "%s", str[selected]);
+		int str_x = (x + 560) - ((selected * 36) + GetDrawFormatStringWidthToHandle(font_handle[FONT_TITLE], "%s", str[selected]));
+		DrawFormatStringToHandle(str_x, y + (selected * 61) + 8, GetColor(color, color, color), font_handle[FONT_TITLE], "%s", str[selected]);
 
 		ease_time += 30;
 		if (ease_time > 1.0) ease_flag = 0;
@@ -23,15 +23,15 @@ int cMenu::draw(int mx, int my, int n, char **str) {
 
 	// ‡‚É•\¦
 	for (int i = 0; i < n; i++) {
-		int str_x = (x + 560) - ((i * 36) + GetDrawFormatStringWidthToHandle(font_handle[FONT_MESSAGE], "%s", str[i]));
+		int str_x = (x + 560) - ((i * 36) + GetDrawFormatStringWidthToHandle(font_handle[FONT_TITLE], "%s", str[i]));
 		if (selected == i) {
 			if (ease_flag == 0) {
 				DrawGraph(x - (i * 36), y + (i * 61), title_selected, TRUE);
-				DrawFormatStringToHandle(str_x, y + (i * 61) + 8, GetColor(222, 222, 222), font_handle[FONT_MESSAGE], "%s", str[i]);
+				DrawFormatStringToHandle(str_x, y + (i * 61) + 8, GetColor(222, 222, 222), font_handle[FONT_TITLE], "%s", str[i]);
 			}
 		}
 		else {
-			DrawFormatStringToHandle(str_x, y + (i * 61) + 8, GetColor(122, 122, 122), font_handle[FONT_MESSAGE], "%s", str[i]);
+			DrawFormatStringToHandle(str_x, y + (i * 61) + 8, GetColor(122, 122, 122), font_handle[FONT_TITLE], "%s", str[i]);
 		}
 	}
 	// ‚©‚Á‚±‚¢‚¢‰¡ü
