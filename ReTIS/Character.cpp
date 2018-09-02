@@ -1653,8 +1653,7 @@ void cMoveWall::Update()
 {
 	//if (hp == 0)hp = 1;
 	MoveByAutomation();
-	Physical();
-	
+	if (hp != 1)Physical();
 }
 void cMoveWall::MoveByAutomation() 
 {
@@ -1670,7 +1669,7 @@ void cMoveWall::RenderSwitch(int img[])
 {
 	// ïÅí ÇÃï`âÊä÷êîÇ≈OK
 	DrawRotaGraph(pos.x, pos.y + size.y / 2, 1, 0, img[image_change], TRUE, FALSE);
-	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", hp);
+	//DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", hp);
 }
 
 void cMoveWall::RenderWall(int img[])
