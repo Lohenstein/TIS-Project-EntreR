@@ -9,12 +9,15 @@ public:
 	//int ease_pos = 0;
 	double ease_time = 0.0;
 
-	cMenu() {
-		title_selected = LoadGraph("data/img/wall/selected.png");
-	}
+	void	LoadImg();
+	int		draw(int mx, int my, int n, char **str);
 
-	int draw(int mx, int my, int n, char **str);
+	cMenu() {
+		LoadImg();
+	}
 };
 
 extern cMenu	menu;
+extern cMenu	pause;
 extern cMenu	stageselect;
+extern cMenu	optionselect;

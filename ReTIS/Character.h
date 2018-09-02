@@ -23,7 +23,7 @@ protected:
 	bool	invincible = false;
 	int		effect_hnd;
 	void	Physical();	// ジャンプとかの計算
-
+	short	count = 0;
 						// 着地した時の判定 ------------------
 	bool	landing;
 
@@ -59,12 +59,16 @@ public:
 class cPlayer : public cCharacterBase {
 protected:
 	int img[4][30];
+	bool springon = false;
 public:
 	cAnchor *anchor;
 	float	rad2anchor, dis2anchor, wrad, wrad_old, swing;
 	bool	IsAnchored = false;
 	bool	IsFall = false;
+	bool	IsFrying = false;
+	bool	addtimeswitch = false;
 	int 	anchor_dir = 0;
+	int		save_speed;
 	VECTOR	savepos;
 	cPlayer(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
@@ -88,6 +92,7 @@ public:
 		}
 	}
 	void	UpdateAnchor();
+	void	DetachAnchor();
 	void	Render();
 	void	Update();
 	void	HitAction(cObject *hit);
@@ -286,6 +291,7 @@ public:
 	void Update();
 	void MoveByAutomation();
 	void Render(int image[]);
+	void HitAction(cObject *hit);
 };
 
 class cEnemyBossmiddle :public cEnemy {
@@ -513,6 +519,7 @@ public:
 
 class cCoin : public cEnemy {
 public:
+	bool addtimeon;
 	bool getcoin;
 	int  cointype;
 	int	 image_change;
@@ -521,42 +528,48 @@ public:
 	cCoin(int x, int y, int ctype) {
 		pos = { (float)x, (float)y, 0.f };
 		cointype = ctype;
-		DebugMsgBox("%04d", (TCHAR)cointype);
+		//DebugMsgBox("%04d", (TCHAR)type);
 		switch (cointype) {
 		case 0: // 普通のコイン
+			cointype = NormalCoin;
 			type = NormalCoin;
-			size = { 32.f, 32.f, 0.f };
-			image_change = 0;
-			break;
-		case 1: // エネルギーコイン
-			type = EneCoin;
-			size = { 32.f, 32.f, 0.f };
+			size = { 16.f, 16.f, 0.f };
 			image_change = 39;
 			break;
-		case 2: // レアコイン
-			type = RareCoin;
-			size = { 64.f, 64.f, 0.f };
-			image_change = 78;
-			break;
-		default:
-			type = NormalCoin;
-			size = { 32.f, 32.f, 0.f };
+		case 1: // エネルギーコイン
+			cointype = EneCoin;
+			type = EneCoin;
+			size = {16.f, 16.f, 0.f };
 			image_change = 0;
 			break;
+		case 2: // レアコイン
+			cointype = RareCoin;
+			type = RareCoin;
+			size = { 32.f, 32.f, 0.f };
+			image_change = 78;
+			break;
+		case 3:
+			cointype = TimeCoin;
+			type = TimeCoin;
+			size = { 16.f,16.f,0.f };
+			image_change = 0;
+			break;
+			addtimeon = false;
 		}
-		DebugMsgBox("%04d", (TCHAR)type);
+		//DebugMsgBox("%04d", (TCHAR)type);
 		hp = 1;
+		addtimeon = false;
 	}
 	void	Update();
 	void	Render(int image[]);
 	void	MoveByAutomation();
 	void	HitAction(cObject *hit) {
 		hp = 0;
-		mp = 300;
+		// mp = 300;
 	}
 };
 
-class cEventsSwitch : public cEnemy{
+class cCrumbleWall : public cEnemy{
 public:
 	int attack_count;
 	int move_pattern;
@@ -566,24 +579,17 @@ public:
 	bool direction;
 	VECTOR bulletpos;
 	VECTOR bulletsize;
-
-	cEventsSwitch(float x, float y, float w, float h, float s, bool p) {
+	cCrumbleWall(float x, float y, float w, float h) {
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
-		speed = s;
-		type = Enemy;
+		type = Crumblewall;
 		landing = false;
 		hp = 2;
 
-		bulletsize = { 50,50,0 };
-		angle = 0.f;
 		image_change = 0;
-		attack_count = 0;
-		direction = false;
-		move_pattern = 0;
 	}
 	void Update();
-	void Render(int image[]);
+	void Render();
 	void MoveByAutomation();
 
 };
@@ -597,7 +603,8 @@ public:
 	cSpring(int x, int y) {
 		pos = {(float)x, (float)y, 0.f};
 		flag = false;
-		size = { 250.f, 250.f, 0.f };
+		size = { 250.f / 2.f, 250.f / 2.f, 0.f };
+		sx = 250 / 2.f, sy = 250 / 2.f;
 		type = Spring;
 	}
 	void	Render(int image[30]);
@@ -628,9 +635,8 @@ public:
 	cDropFloor						*dropfloor[ENEMY_MAX];
 	cMoveFloor						*movefloor[ENEMY_MAX];
 	cCoin							*coin[ENEMY_MAX];
-	cEventsSwitch					*eventswitch;
+	cCrumbleWall					*crumblewall[ENEMY_MAX];
 	cSpring							*spring[ENEMY_MAX];
-
 
 	int		wireman_img[273];
 	int		jumpman_img[120];
@@ -647,7 +653,7 @@ public:
 	int		jugem_img[123];
 	int		allcoin_img[117];
 
-	void	Update();
+	void	Update(int gettime);
 	void	Render();
 	void	PossessListener();
 	void	LoadCharacters(string name);
@@ -669,7 +675,7 @@ public:
 		LoadDivGraph("data/img/enemy/AllCoin.PNG", 117, 39, 3, 300, 300, allcoin_img);
 		LoadDivGraph("data/img/enemy/BigGun.PNG", 10, 10, 1, 300, 300, cannon_img);
 		LoadDivGraph("data/img/enemy/Boss.PNG", 280, 40, 7, 300, 300, boss_img);
-		LoadDivGraph("data/img/enemy/spring.png", 30, 30, 1, 300, 300, spring_img);
+		LoadDivGraph("data/img/enemy/spring.PNG", 30, 30, 1, 250, 250, spring_img);
 	}
 	~cCharacterManager() {
 		DeleteCharacters();
@@ -685,6 +691,7 @@ public:
 		for (int i = 0; i < 117; i++) { DeleteGraph(allcoin_img[i]); }
 		for (int i = 0; i < 280; i++) { DeleteGraph(boss_img[i]); }
 		for (int i = 0; i < 123; i++) { DeleteGraph(jugem_img[i]); }
+		for (int i = 0; i < 30;  i++) { DeleteGraph(spring_img[i]); }
 		DeleteGraph(floorimg);
 	}
 
@@ -704,9 +711,11 @@ public:
 	cObject *GetEnemyJugem(int num) { return (cObject*)jugem[num]; }
 	cObject *GetEnemyBoss() { return (cObject*)boss; }
 	cObject *GetSpring(int num) { return (cObject*)spring[num]; }
+	cObject *GetCrumbleWall(int num) { return (cObject*)crumblewall[num]; }
 
+	bool	GetAddSwitch() { return player->addtimeswitch; }
+	bool	GetAddSwitchChange() { return player->addtimeswitch = false; }
 	int		GetPlayerHp() { return player->GetHp(); }
-
 };
 
 enum character {
@@ -727,4 +736,5 @@ enum character {
 	eEvents,		// 14
 	eJugem,			// 15
 	eSpring,		// 16
+	eCrumblewall	// 17
 };

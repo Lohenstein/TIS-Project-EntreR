@@ -20,3 +20,5 @@
 
 //--- ヘッダインクルード --------
 #include "Include.h"
+
+extern	bool	IsQuit;

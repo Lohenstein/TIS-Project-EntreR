@@ -2,7 +2,31 @@
 
 using namespace std;
 
-extern	int menumode;
+enum TitleMenu {
+	TITLE_GAMESTART,
+	TITLE_STAGESELECT,
+	TITLE_OPTION,
+	TITLE_QUITGAME
+};
+
+enum MenuMode {
+	MENUMODE_MAINMENU,
+	MENUMODE_STAGESELECTMENU,
+	MENUMODE_OPTIONMENU
+};
+
+enum OptionMenu {
+	OPTION_FULLSCREEN,
+	OPTION_OPTIONBACK
+};
+
+enum PauseMenu {
+	PAUSE_CONTINUE,
+	PAUSE_RESTART,
+	PAUSE_BACK2TITLE
+};
+
+extern	MenuMode menumode;
 
 class cBase
 {
@@ -38,11 +62,12 @@ public:
 	int		menu_mode;
 
 	char *title_str[4] = { "GAME START", "STAGE SELECT", "OPTION", "QUIT GAME" };
-	char *stage_str[4] = { "²“¡Šî’n", "¬—ÑŠî’n", "“¡ˆäŠî’n", "–ß‚é" };
+	char *stage_str[4] = { "SATO FACTORY", "SMALL FOREST FACTORY", "FUJI FACTORY", "BACK" };
+	char *option_str[2] = { "FULL/WINDOW", "BACK" };
 
 	cTitle() {
 		titlebg = LoadGraph("data/img/wall/titlebg.png");
-		menumode = 0;
+		menumode = MENUMODE_MAINMENU;
 	}
 
 	void	Init();
@@ -50,6 +75,7 @@ public:
 	void	Render();
 	void	DrawTitle();
 	void	DrawStageSelect();
+	void	DrawOption();
 };
 
 class cGame : public cBase
@@ -64,22 +90,26 @@ private:
 
 	int imghandle[10];
 	int bghandle;
+	int time = 0;
 
 protected:
 	// §ŒÀŽžŠÔ‚Æ‚©
 	int min  = 5;
 	int sec  = 0;
-	int time = 0;
 	int rectime = 0;
 	int trans = 0;
 public:
+
+	bool IsPaused = false;
+	char *pause_str[3] = { "CONTINUE", "RESTART", "BACK TO TITLE" };
+
 	cGame() { 
 		//stagepath = "data/map/stage3/";
 		stage	  = new cStageManager(stagepath);
 		character = new cCharacterManager(stagepath);
 		camera	  = new cCamera();
 		gui       = new cGuiGame();
-		dialog		= new cDialog("Test Message Dayo!! HogeHoge FugaFuga...!");
+		dialog	  = new cDialog("“Œ‹ž‚Í’EˆßŠ‚Ì‚æ‚¤‚È•Ï‚ÈL‚¢‚ª‚µ‚Ü‚·B\n’EˆßŠ‚Ì‚æ‚¤‚È‹‚³‚Å\n“Æ“Á‚ÈL‚¢");
 		bghandle  = MakeScreen(stage->GetStageSizeX()*(int)bsize, stage->GetStageSizeY()*(int)bsize, true);
 		camera->SetStageSize(stage->GetStageSizeX(), stage->GetStageSizeY());
 
@@ -117,6 +147,10 @@ public:
 	void	UpdateResult();
 	void	DrawOver();
 	void	UpdateOver();
+
+	void	DrawPauseMenu();
+
+	int		GetTime() { return time; }
 
 	int		StageSizeX() { return stage->GetStageSizeX(); }
 	int		StageSizeY() { return stage->GetStageSizeY(); }

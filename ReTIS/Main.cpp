@@ -3,9 +3,11 @@
 #include "Main.h"
 
 // FPSŒv‘ª—p•Ï”
-int FrameStartTime;
-int counter = 0, FpsTime[2] = { 0, }, FpsTime_i = 0;
-double fps = 0.0;
+int		FrameStartTime;
+int		counter = 0, FpsTime[2] = { 0, }, FpsTime_i = 0;
+double	fps = 0.0;
+bool	IsQuit;
+
 
 void	RenderFPS();
 
@@ -16,7 +18,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ChangeWindowMode(true);
 	SetGraphMode(WINDOW_SIZE_X, WINDOW_SIZE_Y, 32);
 	SetMainWindowText("EntreR - Demo Edition");
-
+	SetGraphDisplayArea(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y);
 	SetDrawScreen(DX_SCREEN_BACK);
 
 	// ‰Šú‰»
@@ -42,8 +44,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	game_init();
 	FrameStartTime = GetNowCount();
 
+	IsQuit = false;
+
 	// ƒƒCƒ“ƒ‹[ƒv
-	while (!ScreenFlip() && !ProcessMessage() && !ClearDrawScreen())
+	while (!ScreenFlip() && !ProcessMessage() && !ClearDrawScreen() && !IsQuit)
 	{
 		// ‚P/‚U‚O•b—§‚Â‚Ü‚Å‘Ò‚Â
 		while (GetNowCount() - FrameStartTime < 1000 / 60) {}

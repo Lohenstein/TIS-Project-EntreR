@@ -10,16 +10,16 @@ typedef struct {
 class cBackground {
 protected:
 public:
-	int bghandle_09[4];
+	int bghandle_09[4];					// ‰æ‘œ‚ğ“ü‚ê‚é”z—ñ
 	VECTOR bghandle_pos_09[4][2];
-	cBackground() {
+	cBackground() {						// ”z—ñ‚ÌÀ•W‰Šú‰»
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 2; j++) {
 				bghandle_pos_09[i][j].x = j;
 				bghandle_pos_09[i][j].y = -WINDOW_SIZE_Y / 4;
 			}
 		}
-		LoadDivGraph("data/img/bg/Mobile_Backgrounds_09.png", 4, 1, 4, 4096, 1024, bghandle_09);
+		LoadDivGraph("data/img/bg/Mobile_Backgrounds_09.png", 4, 1, 4, 4096, 1024, bghandle_09);	// –Ø‚Ì”wŒi‚Æ‰_‚Ì”wŒi‚ª‚±‚ê@‘¼‚Ì09‚Í‚±‚Ì”Ô†‚ğ¦‚µ‚Ä‚¢‚é
 	}
 };
 
@@ -42,6 +42,6 @@ public:
 		bg = nullptr;
 	};
 	void	Update(VECTOR focus);
-	void	Render(int handle);
+	void	Render(int handle,int getx,int gety);
 	void	SetStageSize(int x, int y) {sx = x, sy = y;}
 };

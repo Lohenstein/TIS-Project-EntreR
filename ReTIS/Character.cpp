@@ -3,7 +3,7 @@
 VECTOR	FocusPos, FocusOld, WirePos ,FocusCam, MouseAdd;
 bool	AnchorStretch = true;
 bool	IsClearFlag, IsOverFlag;
-int		coin, ecoin, rcoin;
+int		coin, ecoin, rcoin, tcoin;
 int		mp;
 
 using namespace std;
@@ -101,20 +101,23 @@ void	cCharacterBase::HitAction(cObject *hit) {
 		break; 
 	case NormalCoin:
 		if (this->GetType() == Player) coin++;
-		MessageBox(NULL, "no-maru", "Debug - Error", MB_OK);
-
 		break;
 	case EneCoin:
 		if (this->GetType() == Player) ecoin++;
-		MessageBox(NULL, "ene", "Debug - Error", MB_OK);
 		mp = 300;
 		break;
 	case RareCoin:
 		if (this->GetType() == Player) rcoin++;
-		MessageBox(NULL, "rare", "Debug - Error", MB_OK);
+		break;
+	case TimeCoin:
+		if (this->GetType() == Player) tcoin++;
+		
 		break;
 	case Spring:
 		jump = 40.f;
+		break;
+	case Crumblewall:
+		
 		break;
 	}
 }
@@ -176,33 +179,23 @@ void	cCharacterBase::Collision(cObject *hit) {
 
 /*------------------------------------------------------------------------------*
 | <<< cPlayer >>>
+|*------------------------------------------------------------------------------*
+| ・UpdateAnchor		< アンカーの監視と更新 >
+| ・DetachAnchor		< 切り離し時の慣性計算をしつつ初期化 >
+| ・Render			< 描画 >
+| ・Update			< 更新 >
+| ・HitAction		< 衝突応答 >
 *------------------------------------------------------------------------------*/
-void	cPlayer::Render() {
 
-	int halfw = 70;
-	int halfh = 65;
-
-	if (invincible) {
-		if (invincible_time % 3 == 0) {
-			DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
-		}
-	}
-	else {
-		DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
-	}
-	if (anchor != nullptr) anchor->Render(pos);
-	//DrawFormatString(pos.x, pos.y, 0xFFFFFF, "%f, %f, %d", wrad, rad2anchor, anchor_dir);
-}
-
+//  << アンカーの監視と更新 >>
+//------------------------------------------------------------------------
 void	cPlayer::UpdateAnchor() {
 	if (anchor != nullptr) {
 		// 飛んでるとき
 		if (anchor->GetFlag()) {
 			anchor->Update();
 			if (sqrtf((anchor->GetPos().x - pos.x) * (anchor->GetPos().x - pos.x) + (anchor->GetPos().y - pos.y) * (anchor->GetPos().y - pos.y)) >= 600.f) {
-				delete anchor;
-				anchor = nullptr;
-				IsAnchored = false;
+				DetachAnchor();
 			}
 		}
 		else {
@@ -240,15 +233,59 @@ void	cPlayer::UpdateAnchor() {
 		}
 	}
 }
+//  << 切り離し時の慣性計算をしつつ初期化 >>
+//------------------------------------------------------------------------
+void	cPlayer::DetachAnchor() {
+	if (anchor != nullptr) {
+		if (IsAnchored) {
+			// 移動量の計算
+			float distance_x = pos.x - old.x;
+			float distance_y = pos.y - old.y;
 
+			save_speed	= speed;			// 速度を保存
+			speed		= distance_x;		// 移動速度をアンカー使用時の速度に設定
+			inertia		= 90 * distance_x;	// 慣性を最大に設定（範囲りみったがあるから-+だけ欲しくて掛けてる）
+			IsFrying	= true;				// 飛行判定をtrueに
+
+			//DebugMsgBox("%f", distance_x);
+
+			delete anchor;
+			IsAnchored = false;
+			anchor = nullptr;
+		}
+		else {
+			delete anchor;
+			anchor = nullptr;
+		}
+	}
+}
+//  << 描画 >>
+//------------------------------------------------------------------------
+void	cPlayer::Render() {
+
+	int halfw = 70;
+	int halfh = 65;
+
+	if (invincible) {
+		if (invincible_time % 3 == 0) {
+			DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
+		}
+	}
+	else {
+		DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
+	}
+	if (anchor != nullptr) anchor->Render(pos);
+}
+
+//  << 更新 >>
+//------------------------------------------------------------------------
 void	cPlayer::Update() {
-	old = pos;	// 過去座標
 
 	// 乗り移る
 	FocusOld = FocusPos;
 	FocusPos = pos;
 
-	if (key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2 || stick_lx >= 100 || stick_lx <= -100) {
+	if ((key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2 || stick_lx >= 100 || stick_lx <= -100) && springon == false) {
 		if (key[KEY_INPUT_LEFT] == 2 || stick_lx <= -100) {
 			rect = true;
 			inertia -= 4;				// 移動量θを減少
@@ -275,31 +312,26 @@ void	cPlayer::Update() {
 		}
 	}
 
-	if ((key[KEY_INPUT_SPACE] == 1 || pad_b[XINPUT_BUTTON_A] == 1) && jump_count < 2) {
+	if ((key[KEY_INPUT_SPACE] == 1 || pad_b[XINPUT_BUTTON_A] == 1) && jump_count < 2 && count == 0) {
 		jump = 20.f;
 		++jump_count;
-		if (anchor != nullptr) {
-			delete anchor;
-			IsAnchored = false;
-			anchor = nullptr;
-		}
+		DetachAnchor();
 	}
 	if ((key[KEY_INPUT_C] == 1 || pad_b[XINPUT_BUTTON_X] == 1) && mp >= 10) {
 		mp -= 10;
 		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, -stick_rad, PlayerBullet);
 	}
 	if (pad_b[XINPUT_BUTTON_Y] == 1) {
-		delete anchor;
-		IsAnchored = false;
-		IsFall = false;
-		anchor = nullptr;
+		DetachAnchor();
 		anchor = new cAnchor(pos, { 10.f, 10.f, 10.f }, 30.f, -stick_rad, WireAnchor);
+	}
+	if (pad_b[XINPUT_BUTTON_START] == 1) {
+		scene->IsPaused = !scene->IsPaused;
 	}
 	// 穴に落っこちた
 	if (pos.y >= 3520) {
 		IsOverFlag = true;
 	}
-
 	// 無敵時間
 	if (invincible) {
 		const int invicible_time_max = 200;
@@ -307,10 +339,17 @@ void	cPlayer::Update() {
 		if (invincible_time >= invicible_time_max)
 			invincible = false;
 	}
+	if (count == 0) {
+		springon = false;
+	}
 	// 重力
 	Physical();
 	UpdateAnchor();
+
+	old = pos;	// 過去座標
 }
+//  << 衝突応答 >>
+//------------------------------------------------------------------------
 void	cPlayer::HitAction(cObject *hit) {
 
 	switch (hit->GetType()) {
@@ -336,11 +375,10 @@ void	cPlayer::HitAction(cObject *hit) {
 		break;
 	case MapTile:
 		Collision(hit);
-		if (anchor != nullptr) {
-			IsAnchored = false;
-			delete anchor;
-			anchor = nullptr;
-			pos = old;
+		DetachAnchor();
+		if (IsFrying) {
+			IsFrying = false;
+			speed = save_speed;
 		}
 		break;
 	case Clear:
@@ -357,8 +395,45 @@ void	cPlayer::HitAction(cObject *hit) {
 		break;
 	case RareCoin:
 		if (this->GetType() == Player) rcoin++;
+		break;
+	case TimeCoin:
+		if (this->GetType() == Player) {
+			tcoin++;
+			addtimeswitch = true;
+		}
+		break;
 	case JugemBullet:
 		if (this->GetType() == Player) Damaged();
+		break;
+	case Spring:
+		Collision(hit);
+		if (righthit == true || lefthit == true || bottomhit == true) IsAnchored = false;
+		// 後ろに持っていくと最初2回読み込みされるため前にいます
+		if (count != 0) {
+			count++;
+			pos.x = hit->GetPos().x;
+		}
+		if (landing && count == 0) {
+			count++;
+			pos.x = hit->GetPos().x;
+			//jump = 40.f;
+		}
+		if (count == 4) {
+			count = 0;
+			jump = 40.f;
+		}
+		if (anchor != nullptr) {
+			IsAnchored = false;
+			delete anchor;
+			anchor = nullptr;
+			pos = old;
+		}
+		inertia = 0;
+		springon = true;
+		//if (landing == true) jump = 40.f;
+		break;
+	case Crumblewall:
+
 		break;
 	}
 }
@@ -390,9 +465,10 @@ void	cCharacterManager::Render() {
 		if (coin[i]			!= nullptr) coin[i]			->Render(allcoin_img);
 		if (spring[i]		!= nullptr) spring[i]		->Render(spring_img);
 		if (jugem[i]		!= nullptr) jugem[i]		->Render(jugem_img);
+		if (crumblewall[i]	!= nullptr)	crumblewall[i]	->Render();
 	}
 }
-void	cCharacterManager::Update() {
+void	cCharacterManager::Update(int gettime) {
 	player->Update();
 	if (boss!= nullptr) boss->Update();
 	for (int i = 0; i < ENEMY_MAX; i++) {
@@ -407,6 +483,8 @@ void	cCharacterManager::Update() {
 		if (dropfloor[i]	!= nullptr) dropfloor[i]	->Update();
 		if (coin[i]			!= nullptr) coin[i]			->Update();
 		if (jugem[i]		!= nullptr) jugem[i]		->Update();
+		if (spring[i]		!= nullptr) spring[i]		->Update();
+		if (crumblewall[i]	!= nullptr) crumblewall[i]	->Update();
 	}
 	DeleteDeathCharacters();
 	if (mp > 300) mp = 300;
@@ -429,6 +507,8 @@ void	cCharacterManager::DeleteCharacters() {
 		delete dropfloor[i];
 		delete movefloor[i];
 		delete jugem[i];
+		delete spring[i];
+		delete crumblewall[i];
 		
 
 		jumpman[i]		= nullptr;
@@ -439,7 +519,8 @@ void	cCharacterManager::DeleteCharacters() {
 		dropfloor[i]	= nullptr;
 		movefloor[i]	= nullptr;
 		jugem[i]		= nullptr;
-		
+		spring[i]		= nullptr;
+		crumblewall[i]	= nullptr;
 	}
 }
 void	cCharacterManager::DeleteDeathCharacters() {
@@ -494,6 +575,12 @@ void	cCharacterManager::DeleteDeathCharacters() {
 			if (jugem[i]->GetHp() <= 0) {
 				delete jugem[i];
 				jugem[i] = nullptr;
+			}
+		}
+		if (crumblewall[i] != nullptr) {
+			if (crumblewall[i]->GetHp() <= 0) {
+				delete crumblewall[i];
+				crumblewall[i] = nullptr;
 			}
 		}
 	}
@@ -619,6 +706,14 @@ void	cCharacterManager::LoadCharacters(string name) {
 				}
 			}
 			break;
+		case eCrumblewall:
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				if (crumblewall[i] == nullptr) {
+					crumblewall[i] = new cCrumbleWall(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)));
+					break;
+				}
+			}
+			break;
 		default:
 			MessageBox(NULL, "キャラクターシート読み込み時に\n存在しないパラメータが読み込まれました。", "Debug - Error", MB_OK);
 			break;
@@ -664,6 +759,12 @@ void cEnemyJumpman::MoveByAutomation()
 				direction = false;
 			else direction = true;
 		}
+	}
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
 	}
 }
 
@@ -754,6 +855,12 @@ void cEnemyGunman::MoveByAutomation()
 			}
 		}
 	}
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
+	}
 }
 
 void cEnemyGunman::Update()
@@ -761,7 +868,7 @@ void cEnemyGunman::Update()
 
 	MoveByAutomation();	// その他は自動
 	
-	if (hp == 1 && image_change == 0)
+	if (hp == 1 && image_change == 23) hp = 0;
 		
 	Physical();
 }
@@ -869,6 +976,12 @@ void cEnemyHardBody::MoveByAutomation()
 		}
 		break;
 	}
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
+	}
 }
 
 void cEnemyHardBody::Render(int img[])
@@ -886,6 +999,9 @@ void cEnemyFryingman::Update()
 
 void cEnemyFryingman::MoveByAutomation()
 {
+	/*if (landing == true || bottomhit == true || lefthit == true || righthit == true) {
+		hp = 0;
+	}*/
 	if (FocusPos.x + 1000 > pos.x) {
 		switch (move_flow) {
 			// 移動　攻撃
@@ -907,26 +1023,33 @@ void cEnemyFryingman::MoveByAutomation()
 			}
 			break;
 		case 1:
-			image_change != 61 ? image_change++ : image_change = 61;
+			image_change != 60 ? image_change++ : image_change = 60;
 			pos.y -= cos(lockon) * speed;
-			if (landing == true || bottomhit == true || lefthit == true || righthit == true) {
-				hp = 0;
-			}
 			break;
 		case 2:
 			break;
 		}
 	}
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
+	}
 }
 
 void cEnemyFryingman::Render(int image[])
 {
-	switch (move_flow) {
-	case 0:
-		image_change = 0;
-		break;
-	}
 	DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
+}
+
+void	cEnemyFryingman::HitAction(cObject *hit) {
+	if (hit->GetType() == NormalCoin || hit->GetType() == EneCoin || hit->GetType() == RareCoin || hit->GetType() == TimeCoin) {}
+	else if (hit->GetType() == EnemyBullet || hit->GetType() == Spring) {}
+	else {
+		hp = 0;
+	}
+	
 }
 
 /*------------------------------------------------------------------------------*
@@ -1366,22 +1489,30 @@ void cCoin::Update()
 void cCoin::MoveByAutomation()
 {
 	image_change++;
-	switch (type)
+	switch (cointype)
 	{
 	case NormalCoin:
-		if (image_change >= 116) {
-			image_change = 0;
-		}
-		break;
-	case EneCoin:
 		if (image_change >= 77) {
 			image_change = 39;
 		}
 		break;
-	case RareCoin:
+	case EneCoin:
 		if (image_change >= 38) {
+			image_change = 0;
+		}
+		break;
+	case RareCoin:
+		if (image_change >= 116) {
 			image_change = 78;
 		}
+		break;
+	case TimeCoin:
+		// エネルギーの状態
+		if (image_change >= 38) {
+			image_change = 0;
+		}
+		break;
+	default:
 		break;
 	}
 }
@@ -1389,33 +1520,36 @@ void cCoin::MoveByAutomation()
 void cCoin::Render(int image[]) 
 {
 	DrawRotaGraph(pos.x, pos.y, 0.5, 0 ,image[image_change], TRUE , FALSE);
-	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d,%d", hp, cointype,type);
-
 }
 
 /*------------------------------------------------------------------------------*
 | <<< cEventsSwitch >>>
 *------------------------------------------------------------------------------*/
 
-void cEventsSwitch::Update()
+void cCrumbleWall::Update()
 {
 	Physical();
-
-	if (hp == 0) hp= 1;
 }
 
-void cEventsSwitch::MoveByAutomation()
+void cCrumbleWall::MoveByAutomation()
 {
 
 }
 
-void cEventsSwitch::Render(int image[])
+void cCrumbleWall::Render()
 {
-
+	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", pos.x);
+	DrawBox(pos.x - size.x / 2.f, pos.y - size.y / 2.f, pos.x + size.x / 2.f, pos.y + size.y / 2.f,0xfffff,true);
 }
+
+/*------------------------------------------------------------------------------*
+| <<< cSpring >>>
+*------------------------------------------------------------------------------*/
 
 void	cSpring::HitAction(cObject *hit) {
-	if (hit->GetType() == Player) {
+	if (hit->GetType() == Player && hit->GetPos().y + hit->GetSize().y / 2.f < pos.y - size.y / 2)landing = true;
+	else landing = false;
+	if (hit->GetType() == Player && landing == true) {
 		flag = true;
 	}
 }
@@ -1423,6 +1557,11 @@ void	cSpring::HitAction(cObject *hit) {
 void	cSpring::Update() {
 	if (flag) {
 		num++;
+		if (num <= 16) {
+			size.y -= 10;
+		}
+		if (num == 16) size.y += 10 * 16;
+
 		if (num >= 30) {
 			num = 0;
 			flag = false;
@@ -1431,6 +1570,6 @@ void	cSpring::Update() {
 }
 
 void	cSpring::Render(int image[30]) {
-	DrawGraph(pos.x - size.x / 2.f, pos.y - size.y / 2.f, image[num], true);
+	DrawGraph(pos.x - sx, pos.y - sy, image[num], true);
+	// DrawBox(pos.x - size.x / 2.f, pos.y - size.y / 2.f, pos.x + size.x / 2.f, pos.y + size.y / 2.f,0xfffff,false);
 }
-
