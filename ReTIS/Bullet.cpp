@@ -94,6 +94,19 @@ void	cBullet::HitAction(cObject *hit) {
 			break;
 		}
 		break;
+	case Crumblewall:
+		switch (this->GetType()) {
+		case PlayerBullet:
+			flag = false;
+			break;
+		case EnemyBullet:
+			flag = false;
+			break;
+		case JugemBullet:
+			flag = false;
+			break;
+		}
+		break;
 	}
 }
 

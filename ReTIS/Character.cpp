@@ -111,13 +111,12 @@ void	cCharacterBase::HitAction(cObject *hit) {
 		break;
 	case TimeCoin:
 		if (this->GetType() == Player) tcoin++;
-		
 		break;
 	case Spring:
 		jump = 40.f;
 		break;
 	case Crumblewall:
-		
+		Collision(hit);
 		break;
 	}
 }
@@ -263,6 +262,7 @@ void	cPlayer::DetachAnchor() {
 //------------------------------------------------------------------------
 void	cPlayer::Render() {
 
+
 	int halfw = 70;
 	int halfh = 65;
 
@@ -275,6 +275,9 @@ void	cPlayer::Render() {
 		DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
 	}
 	if (anchor != nullptr) anchor->Render(pos);
+	//if (springon == true)
+		//DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", springon);
+		
 }
 
 //  << 更新 >>
@@ -284,6 +287,7 @@ void	cPlayer::Update() {
 	// 乗り移る
 	FocusOld = FocusPos;
 	FocusPos = pos;
+
 
 	if ((key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2 || stick_lx >= 100 || stick_lx <= -100) && springon == false) {
 		if (key[KEY_INPUT_LEFT] == 2 || stick_lx <= -100) {
@@ -312,7 +316,7 @@ void	cPlayer::Update() {
 		}
 	}
 
-	if ((key[KEY_INPUT_SPACE] == 1 || pad_b[XINPUT_BUTTON_A] == 1) && jump_count < 2 && count == 0) {
+	if ((key[KEY_INPUT_SPACE] == 1 || pad_b[XINPUT_BUTTON_A] == 1) && jump_count < 2) {
 		jump = 20.f;
 		++jump_count;
 		DetachAnchor();
@@ -339,9 +343,7 @@ void	cPlayer::Update() {
 		if (invincible_time >= invicible_time_max)
 			invincible = false;
 	}
-	if (count == 0) {
-		springon = false;
-	}
+	
 	// 重力
 	Physical();
 	UpdateAnchor();
@@ -407,18 +409,17 @@ void	cPlayer::HitAction(cObject *hit) {
 		break;
 	case Spring:
 		Collision(hit);
-		if (righthit == true || lefthit == true || bottomhit == true) IsAnchored = false;
+		// if (righthit == true || lefthit == true || bottomhit == true) IsAnchored = false;
 		// 後ろに持っていくと最初2回読み込みされるため前にいます
 		if (count != 0) {
 			count++;
-			pos.x = hit->GetPos().x;
 		}
 		if (landing && count == 0) {
 			count++;
-			pos.x = hit->GetPos().x;
+			//springon = true;
 			//jump = 40.f;
 		}
-		if (count == 4) {
+		if (count == 2) {
 			count = 0;
 			jump = 40.f;
 		}
@@ -428,12 +429,10 @@ void	cPlayer::HitAction(cObject *hit) {
 			anchor = nullptr;
 			pos = old;
 		}
-		inertia = 0;
-		springon = true;
 		//if (landing == true) jump = 40.f;
 		break;
 	case Crumblewall:
-
+		Collision(hit);
 		break;
 	}
 }
@@ -456,16 +455,17 @@ void	cCharacterManager::Render() {
 		if (jumpman[i]		!= nullptr) jumpman[i]		->Render(jumpman_img);
 		if (hardbody[i]		!= nullptr) hardbody[i]		->Render(hardbody_img);
 		if (fryingman[i]	!= nullptr) fryingman[i]	->Render(fryingman_img);
-		if (gunman[i]		!= nullptr)	gunman[i]		->Render(gunman_img,gunman_imgdead);
+		if (gunman[i]		!= nullptr)	gunman[i]		->Render(gunman_img,gunman_hand,gunman_handg);
 		if (bossmiddle[i]	!= nullptr) bossmiddle[i]	->Render(bossmiddle_img);
 		if (circularsaw[i]	!= nullptr) circularsaw[i]	->Render(circularsaw_img);
 		if (cannon[i]		!= nullptr) cannon[i]		->Render(cannon_img);
 		if (movefloor[i]	!= nullptr) movefloor[i]	->Render();
 		if (dropfloor[i]	!= nullptr) dropfloor[i]	->Render();
-		if (coin[i]			!= nullptr) coin[i]			->Render(allcoin_img);
+		if (coin[i]			!= nullptr) coin[i]			->Render(allcoin_img, watch_img,chocolate_img);
 		if (spring[i]		!= nullptr) spring[i]		->Render(spring_img);
 		if (jugem[i]		!= nullptr) jugem[i]		->Render(jugem_img);
 		if (crumblewall[i]	!= nullptr)	crumblewall[i]	->Render();
+		if (movewall[i] != nullptr) movewall[i]->RenderSwitch(switch_img);
 	}
 }
 void	cCharacterManager::Update(int gettime) {
@@ -485,6 +485,7 @@ void	cCharacterManager::Update(int gettime) {
 		if (jugem[i]		!= nullptr) jugem[i]		->Update();
 		if (spring[i]		!= nullptr) spring[i]		->Update();
 		if (crumblewall[i]	!= nullptr) crumblewall[i]	->Update();
+		if (movewall[i]		!= nullptr) movewall[i]		->Update();
 	}
 	DeleteDeathCharacters();
 	if (mp > 300) mp = 300;
@@ -509,6 +510,8 @@ void	cCharacterManager::DeleteCharacters() {
 		delete jugem[i];
 		delete spring[i];
 		delete crumblewall[i];
+		delete cannon[i];
+		delete coin[i];
 		
 
 		jumpman[i]		= nullptr;
@@ -521,6 +524,8 @@ void	cCharacterManager::DeleteCharacters() {
 		jugem[i]		= nullptr;
 		spring[i]		= nullptr;
 		crumblewall[i]	= nullptr;
+		cannon[i]		= nullptr;
+		coin[i]			= nullptr;
 	}
 }
 void	cCharacterManager::DeleteDeathCharacters() {
@@ -714,6 +719,14 @@ void	cCharacterManager::LoadCharacters(string name) {
 				}
 			}
 			break;
+		case eMovewall:
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				if (movewall[i] == nullptr) {
+					movewall[i] = new cMoveWall(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)));
+					break;
+				}
+			}
+			break;
 		default:
 			MessageBox(NULL, "キャラクターシート読み込み時に\n存在しないパラメータが読み込まれました。", "Debug - Error", MB_OK);
 			break;
@@ -799,61 +812,70 @@ void cEnemyJumpman::Render(int image[120])
 *------------------------------------------------------------------------------*/
 void cEnemyGunman::MoveByAutomation()
 {
-	if (FocusPos.x + 1000 > pos.x) {
-		if (hp > 1) {
-			switch (move_pattern) {
-			case 0:
-				image_change = 0;
-				attack_count++;
-				if (attack_count == 100)
-				{
-					lockon = atan2(FocusPos.y - pos.y, FocusPos.x - pos.x);
-					bulletpos = pos;
-					attack_flag = true;
-					attack_count = 0;
-					move_pattern = 1;
-				}
-				break;
-			case 1:
-				attack_count++;
-				if (attack_count == 1) {
-					pos.x < FocusPos.x ? direction = false : direction = true;
-				}
-				if (attack_count > 1) {
-					if (image_change != 10)
-						image_change++;
-					if (attack_flag) {
-						attack_flag = false;
-						bulletpos = pos;
-						if (direction) {
-							bulletpos.y -= 40;
-							bulletpos.x -= 40;
-						}
-						else {
-
-							bulletpos.y -= 40;
-							bulletpos.x += 40;
-						}
-						//direction ? bullet.Shot(bulletpos, bulletsize, 10, lockon, EnemyBullet) : bullet.Shot(bulletpos, bulletsize, -10, PI, EnemyBullet);
-						direction ? bullet.Shot(bulletpos, bulletsize, 10, lockon, EnemyBullet) : bullet.Shot(bulletpos, bulletsize, -10, PI, EnemyBullet);
-					}
-				}
-				if (attack_count == 100) {
-					attack_count = 0;
-					move_pattern = 2;
-				}
-				break;
-			case 2:
-				if (image_change != 0)
-					image_change--;
-				attack_count++;
-				if (attack_count == 100) {
-					move_pattern = 0;
-					attack_count = 0;
-				}
-				break;
+	if (direction)
+		handradian = atan2(pos.y - FocusPos.y, pos.x - FocusPos.x);
+	else lockon = atan2(FocusPos.y - pos.y,FocusPos.x - pos.x);
+	if (FocusPos.x + WINDOW_SIZE_X / 2 > pos.x) {
+		pos.x < FocusPos.x ? direction = false : direction = true;
+		switch (move_pattern) {
+		case 0:
+			image_change = 0;
+			attack_count++;
+			if (attack_count == 100)
+			{
+				lockon = atan2(FocusPos.y - pos.y, FocusPos.x - pos.x);
+				bulletpos = pos;
+				attack_flag = true;
+				attack_count = 0;
+				move_pattern = 1;
 			}
+			break;
+		case 1:
+			attack_count++;
+			if (attack_count == 1) {
+				// pos.x < FocusPos.x ? direction = false : direction = true;
+			}
+			if (attack_count > 1) {
+				if (image_change != 10)
+					image_change++;
+				if (attack_flag) {
+					attack_flag = false;
+					bulletpos = pos;
+					if (direction) {
+						bulletpos.y -= 40;
+						bulletpos.x -= 40;
+					}
+					else {
+						bulletpos.y -= 40;
+						bulletpos.x += 40;
+					}
+					//direction ? bullet.Shot(bulletpos, bulletsize, 10, lockon, EnemyBullet) : bullet.Shot(bulletpos, bulletsize, -10, PI, EnemyBullet);
+					direction ? bullet.Shot(bulletpos, bulletsize, 10, lockon, EnemyBullet) : bullet.Shot(bulletpos, bulletsize, -10, PI, EnemyBullet);
+					if (direction) lockon = atan2(pos.y - FocusPos.y,pos.x - FocusPos.x);
+				}
+			}
+			if (attack_count == 100) {
+				attack_count = 0;
+				move_pattern = 2;
+			}
+			break;
+		case 2:
+			if (image_change != 0)
+				image_change--;
+			attack_count++;
+			if (attack_count == 100) {
+				move_pattern = 0;
+				attack_count = 0;
+			}
+			break;
+		case 3:
+			image_change < 36 ? image_change = 37 : image_change++;
+			image_change++;
+			break;
 		}
+	}
+	if (hp == 1) {
+		move_pattern = 3;
 	}
 	if (invincible) {
 		const int invicible_time_max = 1;
@@ -868,54 +890,49 @@ void cEnemyGunman::Update()
 
 	MoveByAutomation();	// その他は自動
 	
-	if (hp == 1 && image_change == 23) hp = 0;
+	// 最後まで死亡画像を動かしています
+	if (hp == 0) hp = 1;
+	if (hp == 1 && image_change == 60) hp = 0;
 		
 	Physical();
 }
 
-void cEnemyGunman::Render(int image[],int imagedead[])
+void cEnemyGunman::Render(int image[],int hand[],int gunhand[])
 {
 	if (hp > 1) {
-		switch (move_pattern) {
-		case 0:
-			image_change = 0;
-			break;
-		}
-	}
-	else if (hp == 1){
-		
-		if (image_change < 0 || image_change > 23)
-			image_change = 0;
+		// 左方向
+		if (direction) {
 
-		if (image_change == 23)
-			image_change = 23;
-		else		image_change++;
-	}
-	if (hp > 1) {
-		if (direction == true) {
-			DrawRotaGraph(pos.x, pos.y, 0.7, 0, image[image_change], TRUE, FALSE);
-			DrawRotaGraph(pos.x, pos.y, 0.7, lockon, image[37], TRUE, FALSE);
-			//DrawRotaGraph(pos.x, pos.y - 15, 0.7, lockon, image[], TRUE, FALSE);
+			DrawRotaGraph(pos.x + 8, pos.y - 15, 0.7, handradian, hand[0], TRUE, FALSE);
+			DrawRotaGraph(pos.x, pos.y, 0.7, 0, image[0], TRUE, FALSE);
+			DrawRotaGraph(pos.x + 8, pos.y - 15, 0.7, handradian, gunhand[0], TRUE, FALSE);
 		}
-		else if (direction == false) {
-			DrawRotaGraph(pos.x, pos.y, 0.7, 0, image[image_change], TRUE, TRUE);
-			DrawRotaGraph(pos.x, pos.y, 0.7, lockon, image[37], TRUE, TRUE);
-			//DrawRotaGraph(pos.x, pos.y - 15, 0.7, lockon, image[74], TRUE, TRUE);
+		// 右方向
+		else {
+			DrawRotaGraph(pos.x - 8, pos.y - 15, 0.7, lockon, hand[0], TRUE, TRUE);
+			DrawRotaGraph(pos.x, pos.y, 0.7, 0, image[0], TRUE, TRUE);
+			DrawRotaGraph(pos.x - 8, pos.y - 15, 0.7, lockon, gunhand[0], TRUE, TRUE);
 		}
 	}
 	else if (hp == 1) {
 		if (direction == true) {
-			DrawRotaGraph(pos.x, pos.y - 15, 0.7, 0, imagedead[image_change], TRUE, FALSE);
+			DrawRotaGraph(pos.x, pos.y - 15, 0.7, 0, image[image_change], TRUE, FALSE);
 		}
 		else if (direction == false) {
-			DrawRotaGraph(pos.x, pos.y - 15, 0.7, 0, imagedead[image_change], TRUE, TRUE);
+			DrawRotaGraph(pos.x, pos.y - 15, 0.7, 0, image[image_change], TRUE, TRUE);
 		}
 	}
+	// DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", d2r(lockon));
 }
 
 /*------------------------------------------------------------------------------*
-| <<< cEnemyHardbody >>>
+| <<< cEnemyHardBody >>>
 *------------------------------------------------------------------------------*/
+/*void cEnemyHardBody::HitAction(cObject *hit)
+{
+	if (hit->GetType() == Crumblewall) Collision();
+}*/
+
 void cEnemyHardBody::Update()
 {
 	if(hp >= 1)
@@ -1002,7 +1019,7 @@ void cEnemyFryingman::MoveByAutomation()
 	/*if (landing == true || bottomhit == true || lefthit == true || righthit == true) {
 		hp = 0;
 	}*/
-	if (FocusPos.x + 1000 > pos.x) {
+	if (FocusPos.x + WINDOW_SIZE_X / 2 > pos.x && (FocusPos.y - WINDOW_SIZE_Y / 2 < pos.y && FocusPos.y + WINDOW_SIZE_Y / 2 > pos.y)) {
 		switch (move_flow) {
 			// 移動　攻撃
 		case 0:
@@ -1023,8 +1040,10 @@ void cEnemyFryingman::MoveByAutomation()
 			}
 			break;
 		case 1:
-			image_change != 60 ? image_change++ : image_change = 60;
-			pos.y -= cos(lockon) * speed;
+
+			// image_change != 60 ? image_change++ : image_change = 60;
+			pos.y += sin(lockon) * 5;
+			pos.x += cos(lockon) * 5;
 			break;
 		case 2:
 			break;
@@ -1187,7 +1206,6 @@ void cEnemyBossmiddle::Render(int image[])
 
 void cEnemyJugem::Update()
 {
-	image_change = 0;
 	if (hp >= 1) {
 		MoveByAutomation();
 	}
@@ -1195,9 +1213,18 @@ void cEnemyJugem::Update()
 
 void cEnemyJugem::MoveByAutomation()
 {
+	
+	//if (move_number== 360)move_number = 0;
+	move_radian = r2d(move_number);
+	pos.y += sin(move_radian) * 5;
+	move_number++;
+
+
+	image_change++;
+	if (image_change == 50) image_change = 25;
 	if (count % 50 == 0)speed *= -1;
 
-	if (FocusPos.x + 800 > pos.x) {
+	if (FocusPos.x + WINDOW_SIZE_X / 2 > pos.x) {
 		count++;
 		pos.x += speed * 5;
 		if (count % 50 == 0 && move_pattern != 2) {
@@ -1206,6 +1233,7 @@ void cEnemyJugem::MoveByAutomation()
 		switch (move_pattern) {
 			// 移動
 		case 0:
+
 			if (count = 100) {
 				move_pattern = 1;
 				count = 0;
@@ -1243,7 +1271,7 @@ void cEnemyJugem::MoveByAutomation()
 
 void cEnemyJugem::Render(int img[])
 {
-	
+
 	if (direction)
 	{
 		DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, img[image_change], TRUE);
@@ -1260,8 +1288,7 @@ void cEnemyJugem::Render(int img[])
 void cEnemyBoss::Update()
 {
 	MoveByAutomation();
-	hp = 0;
-	Physical();
+	//Physical();
 }
 
 void cEnemyBoss::MoveByAutomation()
@@ -1270,8 +1297,9 @@ void cEnemyBoss::MoveByAutomation()
 	{
 	// レーザー
 	case 0:
+		// 画像
 		image_change++;
-		if (image_change > 200) {
+		if (image_change > 30) {
 			image_change = 0;
 		}
 		/*if (image_change > 239 || 200 > image_change) {
@@ -1292,12 +1320,14 @@ void cEnemyBoss::MoveByAutomation()
 		break;
 	// 銃
 	case 1:
+		// 画像
 		if (image_change > 239 || 200 > image_change) {
 			image_change = 200;
 		}
 		image_change++;
 		if (image_change > 239) image_change = 239;
 
+		// 変数操作
 		if (attack_count > 10 || rad > 90) {
 			rad += 3;
 			bullet.Shot(pos,bulletsize,10,d2r(rad),EnemyBullet);
@@ -1306,12 +1336,14 @@ void cEnemyBoss::MoveByAutomation()
 		break;
 	// 掴みかかる
 	case 2:
+		// 画像
 		if (image_change > 279 || 240 > image_change) {
 			image_change = 200;
 		}
 		image_change++;
 		if (image_change > 279) image_change = 279;
 
+		// 変数操作
 		if (attack_count == 200) {
 			lockon = atan2(FocusPos.y - pos.y, FocusPos.x - pos.x);
 			for (int i = 0; i < 4; i++) {
@@ -1323,33 +1355,35 @@ void cEnemyBoss::MoveByAutomation()
 		break;
 	// 色々
 	case 3:
+		// 画像
 		if (image_change > 239 || 200 > image_change) {
 			image_change = 200;
 		}
 		image_change++;
 		if (image_change > 239) image_change = 239;
 
+		// 変数操作
 		if (attack_count == 10) {
-
 			enemy_move = 4;
 		}
 		break;
 	// ダウン
 	case 4:
-		// 休憩タイム
+		// 画像
 		if (image_change > 0 || 39 > image_change) {
 			image_change = 200;
 		}
 		image_change++;
 		if (image_change > 39) image_change = 39;
 
+		// 変数操作
 		if (attack_count == 20) {
-
 			attack_count = 0;
 			enemy_move = 0;
 		}
 		break;
 	}
+	// 無敵時間
 	if (invincible) {
 		const int invicible_time_max = 1;
 		++invincible_time;
@@ -1358,20 +1392,19 @@ void cEnemyBoss::MoveByAutomation()
 	}
 }
 
-void cEnemyBoss::Render(int image[])
+void cEnemyBoss::Render(int image[280])
 {
-	DrawRotaGraph(pos.x - 300 / 2, pos.y - 300 / 2,2,0, image[image_change], TRUE);
-	if (enemy_move == 1) {
+	//DrawRotaGraph(pos.x - size.x / 2, pos.y - size.y / 2,1.5,0, image[image_change], TRUE);
+	/*if (enemy_move == 1) {
 		if (direction == true)
 			DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
 		else if (direction == false)
 			DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
-
-	}
+	}*/
 	if (direction == true)
-		DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
+		DrawGraph(pos.x - size.x, pos.y - size.y/2, image[image_change], TRUE);
 	else if (direction == false)
-		DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
+		DrawTurnGraph(pos.x - size.x, pos.y - size.y/2, image[image_change], TRUE);
 }
 
 /*------------------------------------------------------------------------------*
@@ -1430,8 +1463,8 @@ void cEnemyCannon::Update()
 
 void cEnemyCannon::Render(int image[]) 
 {
-	if (image_change > 19)
-		image_change = 19;
+	if (image_change > 18)
+		image_change = 18;
 	else if (image_change <= -1)
 		image_change = 0;
 	if (direction == false)
@@ -1446,10 +1479,10 @@ void cEnemyCannon::MoveByAutomation()
 		attack_count++;
 		if (pos.x > FocusPos.x) {
 			angle = atan2(FocusPos.y - pos.y, FocusPos.x - pos.x);
-			image_change = (-angle * 180 / PI) / 4.5 - 19;
+			image_change = (-angle * 180 / PI) / 4.5 - 18;
 			int dainyu = image_change;
 
-			image_change = (dainyu - 19) * -1;
+			image_change = (dainyu - 18) * -1;
 
 			direction = true;
 		}
@@ -1497,7 +1530,7 @@ void cCoin::MoveByAutomation()
 		}
 		break;
 	case EneCoin:
-		if (image_change >= 38) {
+		if (image_change >= 37) {
 			image_change = 0;
 		}
 		break;
@@ -1517,28 +1550,52 @@ void cCoin::MoveByAutomation()
 	}
 }
 
-void cCoin::Render(int image[]) 
+void	cCoin::Render(int coin[], int Time[], int Chocolate[])
 {
-	DrawRotaGraph(pos.x, pos.y, 0.5, 0 ,image[image_change], TRUE , FALSE);
+	switch (type) {
+	case NormalCoin:
+		DrawRotaGraph(pos.x, pos.y, 0.4, 0, coin[image_change], TRUE, FALSE);
+		break;
+	case EneCoin:	
+		DrawRotaGraph(pos.x, pos.y, 0.3, 0, Chocolate[image_change], TRUE, FALSE);
+		break;
+	case RareCoin:
+		DrawRotaGraph(pos.x, pos.y, 0.4, 0, coin[image_change], TRUE, FALSE);
+		break;
+	case TimeCoin:
+		DrawRotaGraph(pos.x, pos.y, 0.4, 0, Time[image_change], TRUE, FALSE);
+		break;
+	}
 }
 
 /*------------------------------------------------------------------------------*
 | <<< cEventsSwitch >>>
 *------------------------------------------------------------------------------*/
 
+void cCrumbleWall::HitAction(cObject *hit)
+{
+	if (hit->GetType() == MapTile) Collision(hit);
+	if (hit->GetType() == PlayerBullet) Damaged();
+}
+
 void cCrumbleWall::Update()
 {
 	Physical();
+	MoveByAutomation();
 }
 
 void cCrumbleWall::MoveByAutomation()
 {
-
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
+	}
 }
 
 void cCrumbleWall::Render()
 {
-	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", pos.x);
 	DrawBox(pos.x - size.x / 2.f, pos.y - size.y / 2.f, pos.x + size.x / 2.f, pos.y + size.y / 2.f,0xfffff,true);
 }
 
@@ -1557,10 +1614,10 @@ void	cSpring::HitAction(cObject *hit) {
 void	cSpring::Update() {
 	if (flag) {
 		num++;
-		if (num <= 16) {
+		if (num <= 17) {
 			size.y -= 10;
 		}
-		if (num == 16) size.y += 10 * 16;
+		if (num == 27) size.y += 10 * 17;
 
 		if (num >= 30) {
 			num = 0;
@@ -1573,3 +1630,51 @@ void	cSpring::Render(int image[30]) {
 	DrawGraph(pos.x - sx, pos.y - sy, image[num], true);
 	// DrawBox(pos.x - size.x / 2.f, pos.y - size.y / 2.f, pos.x + size.x / 2.f, pos.y + size.y / 2.f,0xfffff,false);
 }
+
+/*------------------------------------------------------------------------------*
+| <<< cGear >>>
+*------------------------------------------------------------------------------*/
+
+void cGear::Update() {
+
+}
+void cGear::MoveByAutomation() {
+
+}
+void cGear::Render() {
+
+}
+
+/*------------------------------------------------------------------------------*
+| <<< cMoveWall >>>
+*------------------------------------------------------------------------------*/
+
+void cMoveWall::Update() 
+{
+	//if (hp == 0)hp = 1;
+	MoveByAutomation();
+	Physical();
+	
+}
+void cMoveWall::MoveByAutomation() 
+{
+
+	if (hp == 1)flag = true;
+	if (flag == true) {
+		// 画像を進める
+		// 壁を上に移動させる
+		image_change != 19 ? image_change++ : image_change = 19;
+	}
+}
+void cMoveWall::RenderSwitch(int img[]) 
+{
+	// 普通の描画関数でOK
+	DrawRotaGraph(pos.x, pos.y + size.y / 2, 1, 0, img[image_change], TRUE, FALSE);
+	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", hp);
+}
+
+void cMoveWall::RenderWall(int img[])
+{
+	
+}
+
