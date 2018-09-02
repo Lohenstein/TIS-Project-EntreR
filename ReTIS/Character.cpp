@@ -325,7 +325,7 @@ void	cPlayer::Update() {
 		DetachAnchor();
 		anchor = new cAnchor(pos, { 10.f, 10.f, 10.f }, 30.f, -stick_rad, WireAnchor);
 	}
-	if (pad_b[XINPUT_BUTTON_START] == 1) {
+	if (pad_b[XINPUT_BUTTON_START] == 1 || key[KEY_INPUT_R] == 1) {
 		scene->IsPaused = !scene->IsPaused;
 	}
 	// ŒŠ‚É—Ž‚Á‚±‚¿‚½
