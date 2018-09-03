@@ -59,7 +59,7 @@ public:
 class cPlayer : public cCharacterBase {
 protected:
 	int img[4][30];
-	bool springon = false;
+	bool springon;
 public:
 	cAnchor		*anchor;
 	cAnchorWire *anchorwire[120];
@@ -80,6 +80,8 @@ public:
 		IsOverFlag  = false;
 		mp = 300;
 		coin = 0, ecoin = 0, rcoin = 0;
+		count = 0;
+		springon = false;
 		LoadDivGraph("data/img/amecha/walk.png", 30, 1, 30, 606, 551, img[0]);
 		LoadDivGraph("data/img/amecha/idol.png", 30, 1, 30, 606, 544, img[1]);
 		LoadDivGraph("data/img/amecha/jump.png", 30, 1, 30, 606, 558, img[2]);
@@ -168,6 +170,7 @@ public:
 	int player_move_pattern;
 	bool attack_flag;
 	float lockon;
+	float handradian;
 
 	cEnemyGunman(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
@@ -188,12 +191,13 @@ public:
 		player_move_pattern = 0;
 		attack_count = false;
 		lockon = 0.f;
+		handradian = 0;
 	}
 	~cEnemyGunman() {}
 
 	void MoveByAutomation();
 	void Update();
-	void Render(int image[],int imagedead[]);
+	void Render(int image[],int hand[],int gunhand[]);
 };
 
 class cEnemyHardBody : public cEnemy {
@@ -233,6 +237,7 @@ public:
 		move_pattern = 0;
 		lockon = 0.f;
 	}
+	//void HitAction(cObject *hit);
 	void Update();
 	void MoveByAutomation();
 	void Render(int img[]);
@@ -334,7 +339,9 @@ protected:
 public:
 	bool direction;
 	int image_change;
+	float move_radian;
 
+	int move_number;
 	short move_pattern;
 	short count;
 	float lockon;
@@ -348,6 +355,8 @@ public:
 		type = Enemy;
 		hp = 1;
 
+		move_number = 0;
+		move_radian = 0.f;
 		image_change = 0;
 		direction = false;
 		move_pattern = 0;
@@ -373,11 +382,11 @@ public:
 	VECTOR bulletsize;
 	float lockon;
 	int rad;
+
 	cEnemyBoss(float x, float y, float w, float h, float s, bool p) {
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
 		speed = s;
-		landing = false;
 		type = Enemy;
 		hp = 1;
 
@@ -395,7 +404,7 @@ public:
 	}
 	void Update();
 	void MoveByAutomation();
-	void Render(int image[]);
+	void Render(int image[280]);
 };
 
 class cEnemyCircularSaw :public cEnemy {
@@ -562,7 +571,7 @@ public:
 		addtimeon = false;
 	}
 	void	Update();
-	void	Render(int image[]);
+	void	Render(int coin[],int Time[],int Chocolate[]);
 	void	MoveByAutomation();
 	void	HitAction(cObject *hit) {
 		hp = 0;
@@ -592,7 +601,7 @@ public:
 	void Update();
 	void Render();
 	void MoveByAutomation();
-
+	void HitAction(cObject *hit);
 };
 
 class cSpring : public cEnemy {
@@ -613,6 +622,52 @@ public:
 	int		GetNum() { return num; }
 	void	HitAction(cObject *hit);
 };
+
+class cGear : public cEnemy {
+protected:
+	float	sx, sy;
+	int		num = 0;
+public:
+	cGear(int x, int y) {
+		pos = { (float)x, (float)y, 0.f };
+		size = { 250.f / 2.f, 250.f / 2.f, 0.f };
+		sx = 250 / 2.f, sy = 250 / 2.f;
+		type = Gear;
+	}
+	void	Render();
+	void	MoveByAutomation();
+	void	Update();
+	int		GetNum() { return num; }
+	void	HitAction(cObject *hit);
+};
+
+class cMoveWall : public cEnemy {
+protected:
+	bool	flag;
+	int		switch_num;
+	int		wall_num;
+	VECTOR switchpos;
+	int		image_change;
+public:
+	cMoveWall(int x, int y,int sx,int sy) {
+		pos = { (float)x, (float)y, 0.f };
+		switchpos = { (float)sx,(float)sy,0.f };
+		flag = false;
+		size = {300.f / 2.f, 300.f / 2.f, 0.f };
+		sx = 250 / 2.f, sy = 250 / 2.f;
+		type = MapTile;
+		hp = 2;
+
+		switch_num = 0;
+		wall_num = 0;
+		image_change = 0;
+	}
+	void	RenderSwitch(int img[]);
+	void	RenderWall(int img[]);
+	void	Update();
+	void	MoveByAutomation();
+};
+
 
 class cCharacterManager {
 protected:
@@ -638,21 +693,27 @@ public:
 	cCoin							*coin[ENEMY_MAX];
 	cCrumbleWall					*crumblewall[ENEMY_MAX];
 	cSpring							*spring[ENEMY_MAX];
+	cGear							*gear[ENEMY_MAX];
+	cMoveWall						*movewall[ENEMY_MAX];
 
 	int		wireman_img[273];
 	int		jumpman_img[120];
 	int		bossmiddle_img[200];
 	int		hardbody_img[20];
 	int		fryingman_img[123];
-	int		gunman_imgdead[24];
-	int		gunman_img[111];
+	int		gunman_img[148];
+	int		gunman_handg[1];
+	int		gunman_hand[1];
 	int		circularsaw_img[5];
-	int		cannon_img[20];
+	int		cannon_img[19];
 	int		spring_img[30];
 	int		floorimg;
 	int		boss_img[280];
-	int		jugem_img[123];
+	int		jugem_img[75];
 	int		allcoin_img[117];
+	int		chocolate_img[38];
+	int		watch_img[39];
+	int		switch_img[20];
 
 	void	Update(int gettime);
 	void	Render();
@@ -663,20 +724,26 @@ public:
 	cCharacterManager(string name) {
 		LoadCharacters(name);
 		LoadDivGraph("data/img/enemy/Jumpman.PNG", 120, 30, 4, 300, 300, jumpman_img);
-		LoadDivGraph("data/img/enemy/Gunman.PNG", 24, 24, 1, 300, 300, gunman_imgdead);
-		LoadDivGraph("data/img/enemy/GUNMAN1.PNG", 111, 37, 2, 300, 300, gunman_img);
-		LoadDivGraph("data/img/enemy/BigGun.PNG", 20, 20, 1, 300, 300, cannon_img);
+		//LoadDivGraph("data/img/enemy/Gunman.PNG", 24, 24, 1, 300, 300, gunman_imgdead);
+		//LoadDivGraph("data/img/enemy/GUNMAN2.PNG", 111, 37, 4, 300, 300, gunman_img);
+		LoadDivGraph("data/img/enemy/GUNMAN2.PNG", 148, 37, 4, 300, 300, gunman_img);
+		LoadDivGraph("data/img/enemy/hand.PNG", 1,1,1, 300, 300, gunman_hand);
+		LoadDivGraph("data/img/enemy/gunhand.PNG", 1,1,1, 300, 300, gunman_handg);
+		LoadDivGraph("data/img/enemy/BigGun.PNG", 19,19, 1, 300, 300, cannon_img);
 		LoadDivGraph("data/img/enemy/hardbody.PNG", 30, 15, 2, 300, 300, hardbody_img);
 		LoadDivGraph("data/img/enemy/Fryingman.PNG", 120, 40, 3, 300, 300, fryingman_img);
-		LoadDivGraph("data/img/enemy/Jugem.PNG", 100, 40, 3, 300, 300, jugem_img);
+		LoadDivGraph("data/img/enemy/Jugem.PNG", 75, 25, 3, 300, 300, jugem_img);
 		LoadDivGraph("data/img/enemy/Bossmiddle.PNG", 200, 50, 4, 300, 300, bossmiddle_img);
 		LoadDivGraph("data/img/enemy/Wireman.PNG", 273, 39, 7, 300, 300, wireman_img);
 		LoadDivGraph("data/img/enemy/CircularSaw.PNG", 5, 5, 1, 300, 300, circularsaw_img);
-		LoadDivGraph("data/img/enemy/BigGun.PNG", 10, 10, 1, 300, 300, cannon_img);
 		LoadDivGraph("data/img/enemy/AllCoin.PNG", 117, 39, 3, 300, 300, allcoin_img);
-		LoadDivGraph("data/img/enemy/BigGun.PNG", 10, 10, 1, 300, 300, cannon_img);
-		LoadDivGraph("data/img/enemy/Boss.PNG", 280, 40, 7, 300, 300, boss_img);
+		LoadDivGraph("data/img/enemy/BigGun.PNG", 19, 19, 1, 300, 300, cannon_img);
+		//LoadDivGraph("data/img/enemy/Boss.PNG", 280, 40, 7, 600, 600, boss_img);
 		LoadDivGraph("data/img/enemy/spring.PNG", 30, 30, 1, 250, 250, spring_img);
+		LoadDivGraph("data/img/enemy/Chocolate.PNG", 38, 38, 1, 300, 300, chocolate_img);
+		LoadDivGraph("data/img/enemy/Watch.PNG", 39, 39, 1, 300, 300, watch_img);
+		LoadDivGraph("data/img/enemy/Switch.PNG", 20, 20, 1, 300, 300, switch_img);
+
 	}
 	~cCharacterManager() {
 		DeleteCharacters();
@@ -685,14 +752,15 @@ public:
 		for (int i = 0; i < 200; i++) { DeleteGraph(bossmiddle_img[i]); }
 		for (int i = 0; i < 30; i++) { DeleteGraph(hardbody_img[i]); }
 		for (int i = 0; i < 123; i++) { DeleteGraph(fryingman_img[i]); }
-		for (int i = 0; i < 24; i++) { DeleteGraph(gunman_imgdead[i]); }
-		for (int i = 0; i < 111; i++) { DeleteGraph(gunman_img[i]); }
+		for (int i = 0; i < 148; i++) { DeleteGraph(gunman_img[i]); }
 		for (int i = 0; i <   5; i++) { DeleteGraph(circularsaw_img[i]); }
-		for (int i = 0; i <  20; i++) { DeleteGraph(cannon_img[i]); }
+		for (int i = 0; i <  19; i++) { DeleteGraph(cannon_img[i]); }
 		for (int i = 0; i < 117; i++) { DeleteGraph(allcoin_img[i]); }
 		for (int i = 0; i < 280; i++) { DeleteGraph(boss_img[i]); }
-		for (int i = 0; i < 123; i++) { DeleteGraph(jugem_img[i]); }
+		for (int i = 0; i < 75; i++) { DeleteGraph(jugem_img[i]); }
 		for (int i = 0; i < 30;  i++) { DeleteGraph(spring_img[i]); }
+		for (int i = 0; i < 38; i++) { DeleteGraph(chocolate_img[i]); }
+		for (int i = 0; i < 39; i++) { DeleteGraph(watch_img[i]); }
 		DeleteGraph(floorimg);
 	}
 
@@ -713,6 +781,9 @@ public:
 	cObject *GetEnemyBoss() { return (cObject*)boss; }
 	cObject *GetSpring(int num) { return (cObject*)spring[num]; }
 	cObject *GetCrumbleWall(int num) { return (cObject*)crumblewall[num]; }
+	cObject *GetGear(int num) { return (cObject*)gear[num]; }
+	cObject *GetMoveWall(int num) { return (cObject*)movewall[num]; }
+
 
 	bool	GetAddSwitch() { return player->addtimeswitch; }
 	bool	GetAddSwitchChange() { return player->addtimeswitch = false; }
@@ -737,5 +808,7 @@ enum character {
 	eEvents,		// 14
 	eJugem,			// 15
 	eSpring,		// 16
-	eCrumblewall	// 17
+	eCrumblewall,	// 17
+	eGear,			// 18
+	eMovewall		// 19
 };
