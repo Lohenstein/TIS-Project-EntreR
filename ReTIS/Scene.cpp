@@ -42,8 +42,6 @@ void	cGame::Collision() {
 
 	CollisionAroundMaptile(character->GetPlayer());
 	if (character->GetAnchor() != nullptr) CollisionAroundMaptile(character->GetAnchor());
-	if (character->GetEnemyBoss() != nullptr) CollisionAroundMaptile(character->GetEnemyBoss());
-
 	for (int k = 0; k < ENEMY_MAX; k++) {
 		if (character->GetEnemyJumpman(k)		!= nullptr) CollisionAroundMaptile(character->GetEnemyJumpman(k));
 		if (character->GetEnemyHardBody(k)		!= nullptr) CollisionAroundMaptile(character->GetEnemyHardBody(k));
@@ -53,6 +51,7 @@ void	cGame::Collision() {
 		if (character->GetEnemyFryingman(k)		!= nullptr) CollisionAroundMaptile(character->GetEnemyFryingman(k));
 		if (character->GetEnemyJugem(k)			!= nullptr) CollisionAroundMaptile(character->GetEnemyJugem(k));
 		if (character->GetCrumbleWall(k)		!= nullptr) CollisionAroundMaptile(character->GetCrumbleWall(k));
+		if (character->GetMoveWall(k)			!= nullptr) CollisionAroundMaptile(character->GetMoveWall(k));
 	}
 	for (int k = 0; k < BULLET_MAX; k++) {
 		if (bullet.GetBullet(k) != nullptr) {
@@ -82,16 +81,16 @@ void	cGame::Collision() {
 				if (character->GetEnemyBossmiddle(j) != nullptr) CheckHitRectAndRect(character->GetDropFloor(i), character->GetEnemyBossmiddle(j));
 			}*/
 		}
+		//---------------------------------------------------------------------------
+		// 壊れるオブジェクトはすべての敵に当たり判定を付けています
 		if (character->GetCrumbleWall(i) != nullptr) {
 			CheckHitRectAndRect(character->GetPlayer(), character->GetCrumbleWall(i));
-			/*for (int j = 0; j < ENEMY_MAX; j++) {
-			if (character->GetEnemyJumpman(j)	 != nullptr) CheckHitRectAndRect(character->GetDropFloor(i), character->GetEnemyJumpman(j));
-			if (character->GetEnemyHardBody(j)	 != nullptr) CheckHitRectAndRect(character->GetDropFloor(i), character->GetEnemyHardBody(j));
-			if (character->GetEnemyWireman(j)	 != nullptr) CheckHitRectAndRect(character->GetDropFloor(i), character->GetEnemyWireman(j));
-			if (character->GetEnemyWireAnchor(j) != nullptr) CheckHitRectAndRect(character->GetDropFloor(i), character->GetEnemyWireAnchor(j));
-			if (character->GetEnemyGunman(j)	 != nullptr) CheckHitRectAndRect(character->GetDropFloor(i), character->GetEnemyGunman(j));
-			if (character->GetEnemyBossmiddle(j) != nullptr) CheckHitRectAndRect(character->GetDropFloor(i), character->GetEnemyBossmiddle(j));
-			}*/
+		 	for (int j = 0; j < ENEMY_MAX; j++) {
+			if (character->GetEnemyJumpman(j)	 != nullptr) CheckHitRectAndRect(character->GetCrumbleWall(i), character->GetEnemyJumpman(j));
+			if (character->GetEnemyHardBody(j)	 != nullptr) CheckHitRectAndRect(character->GetCrumbleWall(i), character->GetEnemyHardBody(j));
+			if (character->GetEnemyGunman(j)	 != nullptr) CheckHitRectAndRect(character->GetCrumbleWall(i), character->GetEnemyGunman(j));
+			if (character->GetEnemyBossmiddle(j) != nullptr) CheckHitRectAndRect(character->GetCrumbleWall(i), character->GetEnemyBossmiddle(j));
+			}
 		}
 		if (character->GetCoin(i) != nullptr) {
 			CheckHitRectAndRect(character->GetPlayer(), character->GetCoin(i));
@@ -114,6 +113,7 @@ void	cGame::Collision() {
 				if (character->GetEnemyFryingman(j) != nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyFryingman(j));
 				if (character->GetEnemyJugem(j)		!= nullptr)	CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyJugem(j));
 				if (character->GetCrumbleWall(j)	!= nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetCrumbleWall(j));
+				if (character->GetMoveWall(j)		!= nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetMoveWall(j));
 			}
 		}
 	}
