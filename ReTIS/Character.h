@@ -61,7 +61,8 @@ protected:
 	int img[4][30];
 	bool springon = false;
 public:
-	cAnchor *anchor;
+	cAnchor		*anchor;
+	cAnchorWire *anchorwire[120];
 	float	rad2anchor, dis2anchor, wrad, wrad_old, swing;
 	bool	IsAnchored = false;
 	bool	IsFall = false;

@@ -25,6 +25,20 @@ void	cAnchor::Render(VECTOR cpos) {
 	DrawLineAA(GetPos().x, GetPos().y, cpos.x, cpos.y, 0xFF00000);
 }
 
+void	cAnchorWire::HitAction(cObject *hit) {
+	if (hit->GetType() == MapTile) {
+		flag = false;
+	}
+}
+
+void	cAnchorWire::Update(VECTOR a) {
+	pos = a;
+}
+
+void	cAnchorWire::Render() {
+	DrawCircleAA(GetPos().x, GetPos().y, 4.f, 10, 0xFF0000, true);
+}
+
 void	cBullet::Update() {
 	if (type == PlayerBullet || type == EnemyBullet)
 	pos.x += cos(rad) * speed;

@@ -52,7 +52,8 @@ enum eObjectType {
 	WireAnchor,
 	Spring,
 	JugemBullet,	// “GƒWƒ…ƒQƒ€
-	Crumblewall		//‰ó‚ê‚é•Ç
+	Crumblewall,		//‰ó‚ê‚é•Ç
+	WireAnchorWire
 };
 
 extern void		CheckHitRectAndRect(cObject *obj1, cObject *obj2);

@@ -49,6 +49,28 @@ public:
 	bool	GetFlag() { return flag; }
 };
 
+class cAnchorWire : public cObject {
+protected:
+	float speed;
+	float rad;
+	float distance;
+	bool  flag;
+public:
+	cAnchorWire(VECTOR p, VECTOR s, float sp, float r, eObjectType t) {
+		pos = p;
+		size = s;
+		speed = sp;
+		distance = 0.f;
+		rad = r;
+		flag = true;
+		type = t;
+	}
+	void	Update(VECTOR getpos);
+	void	Render();
+	void	HitAction(cObject *hit);
+	bool	GetFlag() { return flag; }
+};
+
 class cBulletManager {
 protected:
 	cBullet *bullet[BULLET_MAX];

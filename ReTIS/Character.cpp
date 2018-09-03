@@ -194,21 +194,31 @@ void	cPlayer::UpdateAnchor() {
 		// ”ò‚ñ‚Å‚é‚Æ‚«
 		if (anchor->GetFlag()) {
 			anchor->Update();
-			if (sqrtf((anchor->GetPos().x - pos.x) * (anchor->GetPos().x - pos.x) + (anchor->GetPos().y - pos.y) * (anchor->GetPos().y - pos.y)) >= 600.f) {
+			float distance = sqrtf((anchor->GetPos().x - pos.x) * (anchor->GetPos().x - pos.x) + (anchor->GetPos().y - pos.y) * (anchor->GetPos().y - pos.y));
+			if ( distance >= 600.f) {
 				DetachAnchor();
+			}
+			else {
+				VECTOR wirepos;
+				float rad = atan2f(pos.y - anchor->GetPos().y, pos.x - anchor->GetPos().x) - DX_PI_F;
+				for (int i = 0; i < (int)distance / 5; i++) {
+					wirepos.x = pos.x + (cosf(rad) * (4.f * i));
+					wirepos.y = pos.y + (sinf(rad) * (4.f * i));
+					anchorwire[i] = new cAnchorWire(wirepos, { 4.f, 4.f, 0.f }, 0.f, rad, WireAnchorWire);
+				}
 			}
 		}
 		else {
 			// ‚­‚Á‚Â‚¢‚½‚Æ‚«
 			if (!IsAnchored) {
-				savepos = pos;
+				savepos    = pos;
 				rad2anchor = atan2f(pos.y - anchor->GetPos().y, pos.x - anchor->GetPos().x) - (DX_PI_F / 2.f);
 				dis2anchor = sqrtf((anchor->GetPos().x - pos.x) * (anchor->GetPos().x - pos.x) + (anchor->GetPos().y - pos.y) * (anchor->GetPos().y - pos.y));
 				IsAnchored = true;
-				swing = 0.f;
+				swing      = 0.f;
 				jump_count = 0;
-				wrad_old = 0;
-				wrad = cosf(rad2anchor);// * (rad2anchor / (DX_PI_F / 2.f));
+				wrad_old   = 0;
+				wrad       = cosf(rad2anchor);// * (rad2anchor / (DX_PI_F / 2.f));
 				if (wrad > wrad_old) anchor_dir = 1;
 				if (wrad < wrad_old) anchor_dir = -1;
 			}
@@ -257,6 +267,12 @@ void	cPlayer::DetachAnchor() {
 			delete anchor;
 			anchor = nullptr;
 		}
+		for (int i = 0; i < 120; i++) {
+			if (anchorwire[i] != nullptr) {
+				delete anchorwire[i];
+				anchorwire[i] = nullptr;
+			}
+		}
 	}
 }
 //  << •`‰æ >>
@@ -274,7 +290,14 @@ void	cPlayer::Render() {
 	else {
 		DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
 	}
-	if (anchor != nullptr) anchor->Render(pos);
+	if (anchor != nullptr) {
+		anchor->Render(pos);
+		for (int i = 0; i < 120; i++) {
+			if (anchorwire[i] != nullptr) {
+				anchorwire[i]->Render();
+			}
+		}
+	}
 }
 
 //  << XV >>
