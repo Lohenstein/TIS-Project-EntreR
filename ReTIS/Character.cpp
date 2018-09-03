@@ -116,6 +116,9 @@ void	cCharacterBase::HitAction(cObject *hit) {
 	case Spring:
 		jump = 40.f;
 		break;
+	case Crumblewall:
+		
+		break;
 	}
 }
 void	cCharacterBase::Damaged() {
@@ -462,8 +465,8 @@ void	cCharacterManager::Render() {
 		if (coin[i]			!= nullptr) coin[i]			->Render(allcoin_img);
 		if (spring[i]		!= nullptr) spring[i]		->Render(spring_img);
 		if (jugem[i]		!= nullptr) jugem[i]		->Render(jugem_img);
+		if (crumblewall[i]	!= nullptr)	crumblewall[i]	->Render();
 	}
-//	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", nowtime);
 }
 void	cCharacterManager::Update(int gettime) {
 	player->Update();
@@ -481,11 +484,10 @@ void	cCharacterManager::Update(int gettime) {
 		if (coin[i]			!= nullptr) coin[i]			->Update();
 		if (jugem[i]		!= nullptr) jugem[i]		->Update();
 		if (spring[i]		!= nullptr) spring[i]		->Update();
+		if (crumblewall[i]	!= nullptr) crumblewall[i]	->Update();
 	}
 	DeleteDeathCharacters();
 	if (mp > 300) mp = 300;
-//	nowtime = gettime;
-	if (pad_b[XINPUT_BUTTON_X] == 2) gettime = 10;
 }
 
 
@@ -506,6 +508,7 @@ void	cCharacterManager::DeleteCharacters() {
 		delete movefloor[i];
 		delete jugem[i];
 		delete spring[i];
+		delete crumblewall[i];
 		
 
 		jumpman[i]		= nullptr;
@@ -517,6 +520,7 @@ void	cCharacterManager::DeleteCharacters() {
 		movefloor[i]	= nullptr;
 		jugem[i]		= nullptr;
 		spring[i]		= nullptr;
+		crumblewall[i]	= nullptr;
 	}
 }
 void	cCharacterManager::DeleteDeathCharacters() {
@@ -571,6 +575,12 @@ void	cCharacterManager::DeleteDeathCharacters() {
 			if (jugem[i]->GetHp() <= 0) {
 				delete jugem[i];
 				jugem[i] = nullptr;
+			}
+		}
+		if (crumblewall[i] != nullptr) {
+			if (crumblewall[i]->GetHp() <= 0) {
+				delete crumblewall[i];
+				crumblewall[i] = nullptr;
 			}
 		}
 	}
@@ -692,6 +702,14 @@ void	cCharacterManager::LoadCharacters(string name) {
 			for (int i = 0; i < ENEMY_MAX; i++) {
 				if (jugem[i] == nullptr) {
 					jugem[i] = new cEnemyJugem(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
+					break;
+				}
+			}
+			break;
+		case eCrumblewall:
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				if (crumblewall[i] == nullptr) {
+					crumblewall[i] = new cCrumbleWall(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)));
 					break;
 				}
 			}
@@ -1508,19 +1526,20 @@ void cCoin::Render(int image[])
 | <<< cEventsSwitch >>>
 *------------------------------------------------------------------------------*/
 
-void cCrumbleWalll::Update()
+void cCrumbleWall::Update()
 {
 	Physical();
 }
 
-void cCrumbleWalll::MoveByAutomation()
+void cCrumbleWall::MoveByAutomation()
 {
 
 }
 
-void cCrumbleWalll::Render(int image[])
+void cCrumbleWall::Render()
 {
-	 DrawBox(pos.x - size.x / 2.f, pos.y - size.y / 2.f, pos.x + size.x / 2.f, pos.y + size.y / 2.f,0xfffff,true);
+	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", pos.x);
+	DrawBox(pos.x - size.x / 2.f, pos.y - size.y / 2.f, pos.x + size.x / 2.f, pos.y + size.y / 2.f,0xfffff,true);
 }
 
 /*------------------------------------------------------------------------------*

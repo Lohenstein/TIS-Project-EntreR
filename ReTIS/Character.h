@@ -569,7 +569,7 @@ public:
 	}
 };
 
-class cCrumbleWalll : public cEnemy{
+class cCrumbleWall : public cEnemy{
 public:
 	int attack_count;
 	int move_pattern;
@@ -579,24 +579,17 @@ public:
 	bool direction;
 	VECTOR bulletpos;
 	VECTOR bulletsize;
-
-	cCrumbleWalll(float x, float y, float w, float h, float s, bool p) {
+	cCrumbleWall(float x, float y, float w, float h) {
 		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
-		speed = s;
-		type = Enemy;
+		type = Crumblewall;
 		landing = false;
 		hp = 2;
 
-		bulletsize = { 50,50,0 };
-		angle = 0.f;
 		image_change = 0;
-		attack_count = 0;
-		direction = false;
-		move_pattern = 0;
 	}
 	void Update();
-	void Render(int image[]);
+	void Render();
 	void MoveByAutomation();
 
 };
@@ -642,7 +635,7 @@ public:
 	cDropFloor						*dropfloor[ENEMY_MAX];
 	cMoveFloor						*movefloor[ENEMY_MAX];
 	cCoin							*coin[ENEMY_MAX];
-	cCrumbleWalll					*crumblewall[ENEMY_MAX];
+	cCrumbleWall					*crumblewall[ENEMY_MAX];
 	cSpring							*spring[ENEMY_MAX];
 
 	int		wireman_img[273];
@@ -718,7 +711,7 @@ public:
 	cObject *GetEnemyJugem(int num) { return (cObject*)jugem[num]; }
 	cObject *GetEnemyBoss() { return (cObject*)boss; }
 	cObject *GetSpring(int num) { return (cObject*)spring[num]; }
-	cObject *GetCrumbleWalll(int num) { return (cObject*)crumblewall[num]; }
+	cObject *GetCrumbleWall(int num) { return (cObject*)crumblewall[num]; }
 
 	bool	GetAddSwitch() { return player->addtimeswitch; }
 	bool	GetAddSwitchChange() { return player->addtimeswitch = false; }
@@ -743,4 +736,5 @@ enum character {
 	eEvents,		// 14
 	eJugem,			// 15
 	eSpring,		// 16
+	eCrumblewall	// 17
 };

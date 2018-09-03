@@ -52,6 +52,7 @@ void	cGame::Collision() {
 		if (character->GetCannon(k)				!= nullptr) CollisionAroundMaptile(character->GetCannon(k));
 		if (character->GetEnemyFryingman(k)		!= nullptr) CollisionAroundMaptile(character->GetEnemyFryingman(k));
 		if (character->GetEnemyJugem(k)			!= nullptr) CollisionAroundMaptile(character->GetEnemyJugem(k));
+		if (character->GetCrumbleWall(k)		!= nullptr) CollisionAroundMaptile(character->GetCrumbleWall(k));
 	}
 	for (int k = 0; k < BULLET_MAX; k++) {
 		if (bullet.GetBullet(k) != nullptr) {
@@ -81,8 +82,8 @@ void	cGame::Collision() {
 				if (character->GetEnemyBossmiddle(j) != nullptr) CheckHitRectAndRect(character->GetDropFloor(i), character->GetEnemyBossmiddle(j));
 			}*/
 		}
-		if (character->GetCrumbleWalll(i) != nullptr) {
-			CheckHitRectAndRect(character->GetPlayer(), character->GetCrumbleWalll(i));
+		if (character->GetCrumbleWall(i) != nullptr) {
+			CheckHitRectAndRect(character->GetPlayer(), character->GetCrumbleWall(i));
 			/*for (int j = 0; j < ENEMY_MAX; j++) {
 			if (character->GetEnemyJumpman(j)	 != nullptr) CheckHitRectAndRect(character->GetDropFloor(i), character->GetEnemyJumpman(j));
 			if (character->GetEnemyHardBody(j)	 != nullptr) CheckHitRectAndRect(character->GetDropFloor(i), character->GetEnemyHardBody(j));
@@ -112,6 +113,7 @@ void	cGame::Collision() {
 				if (character->GetEnemyBossmiddle(j)!= nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyBossmiddle(j));
 				if (character->GetEnemyFryingman(j) != nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyFryingman(j));
 				if (character->GetEnemyJugem(j)		!= nullptr)	CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyJugem(j));
+				if (character->GetCrumbleWall(j)	!= nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetCrumbleWall(j));
 			}
 		}
 	}
@@ -125,7 +127,7 @@ void	cGame::Collision() {
 		if (character->GetCircularSaw(i)	!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetCircularSaw(i));
 		if (character->GetEnemyFryingman(i) != nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyFryingman(i));
 		if (character->GetEnemyJugem(i)	    != nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyJugem(i));
-
+		if (character->GetCrumbleWall(i)	!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetCrumbleWall(i));
 	}
 }	
 
