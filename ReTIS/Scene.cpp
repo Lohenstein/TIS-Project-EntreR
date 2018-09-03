@@ -142,6 +142,7 @@ void	cGame::Update() {
 		// ŽžŠÔUPˆ—
 		if (character->GetAddSwitch() == true) {
 			sec += 10;
+
 			character->GetAddSwitchChange();
 		}
 		character->Update(GetTime());
