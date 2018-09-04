@@ -702,6 +702,7 @@ void	cCharacterManager::LoadCharacters(string name) {
 				break;
 			}
 			break;
+
 		case eCircularsaw:
 			for (int i = 0; i < ENEMY_MAX; i++) {
 				if (circularsaw[i] == nullptr) {
