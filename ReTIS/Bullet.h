@@ -51,16 +51,16 @@ public:
 
 class cAnchorWire : public cObject {
 protected:
-	float speed;
+	int		num;
 	float rad;
 	float distance;
 	bool  flag;
 public:
 	VECTOR save;
-	cAnchorWire(VECTOR p, VECTOR s, float sp, float r, eObjectType t) {
+	cAnchorWire(VECTOR p, VECTOR s, int n, float r, eObjectType t) {
 		pos = p;
 		size = s;
-		speed = sp;
+		num = n;
 		distance = 0.f;
 		rad = r;
 		flag = false;
@@ -70,6 +70,7 @@ public:
 	void	Render();
 	void	HitAction(cObject *hit);
 	bool	GetFlag() { return flag; }
+	void	ResetFlag() { flag = false; }
 };
 
 class cBulletManager {

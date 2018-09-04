@@ -31,6 +31,7 @@ void	cAnchorWire::HitAction(cObject *hit) {
 		save.x = pos.x;
 		save.y = pos.y;
 		save.z = rad;
+		IsBended[num] = true;
 	}
 }
 
@@ -39,7 +40,12 @@ void	cAnchorWire::Update(VECTOR a) {
 }
 
 void	cAnchorWire::Render() {
-	DrawCircleAA(GetPos().x, GetPos().y, 2.f, 10, 0xFF0000, true);
+	if (IsBended[num] == true) {
+		DrawCircleAA(GetPos().x, GetPos().y, 2.f, 10, 0x00FF00, true);
+	}
+	else {
+		DrawCircleAA(GetPos().x, GetPos().y, 2.f, 10, 0xFF0000, true);
+	}
 }
 
 void	cBullet::Update() {

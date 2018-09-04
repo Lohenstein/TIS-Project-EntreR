@@ -2,7 +2,7 @@
 #include "Main.h"
 VECTOR	FocusPos, FocusOld, WirePos ,FocusCam, MouseAdd;
 bool	AnchorStretch = true;
-bool	IsClearFlag, IsOverFlag;
+bool	IsClearFlag, IsOverFlag, IsBended[120];
 int		coin, ecoin, rcoin, tcoin;
 int		mp;
 
@@ -205,7 +205,7 @@ void	cPlayer::UpdateAnchor() {
 					VECTOR wirepos;
 					wirepos.x = pos.x + (cosf(rad) * (5.f * (float)i));
 					wirepos.y = pos.y + (sinf(rad) * (5.f * (float)i));
-					anchorwire[i] = new cAnchorWire(wirepos, { 5.f, 5.f, 0.f }, 0.f, rad, WireAnchorWire);
+					anchorwire[i] = new cAnchorWire(wirepos, { 5.f, 5.f, 0.f }, i, rad, WireAnchorWire);
 				}
 			}
 		}
@@ -224,36 +224,58 @@ void	cPlayer::UpdateAnchor() {
 				if (wrad < wrad_old) anchor_dir = -1;
 			}
 			else{
-				// ぶら下がっているとき
-				if (trigger_r > 55) dis2anchor -= trigger_r / 32.f;
-				if (trigger_l > 55) dis2anchor += trigger_l / 32.f;
-
 				wrad_old = wrad;
 				wrad = cosf(swing) * rad2anchor;
 
 				if (wrad > wrad_old) anchor_dir = 1;
 				if (wrad < wrad_old) anchor_dir = -1;
 
-				pos.x = anchor->GetPos().x + cosf(wrad + DX_PI_F / 2.f) * dis2anchor;
-				pos.y = anchor->GetPos().y + sinf(wrad + DX_PI_F / 2.f) * dis2anchor;
+				float	bend_distance;
+				int		bend_count = 0;
+				VECTOR	bend_pos = anchor->GetPos();
 
-				for (int i = 0; i < (int)dis2anchor / 5; i++) {
-					if (i != 0) {
-						if (anchorwire[i - 1]->GetFlag() == true) {
-
+				// ワイヤーの屈折処理
+				for (int i = 0; i < 120; i++) {
+					if (i < (int)dis2anchor / 5) {
+						if (IsBended[i]) {
+							bend_pos = anchorwire[i]->GetPos();
+							bend_pos.z += 1.f;
+							bend_count = 0;
+						}
+						//HitCheck(scene, (cObject*)anchorwire[i]);
+						VECTOR wirepos;
+						wirepos.x = bend_pos.x + (cosf(wrad + DX_PI_F / 2.f) * (5.f * (float)bend_count));
+						wirepos.y = bend_pos.y + (sinf(wrad + DX_PI_F / 2.f) * (5.f * (float)bend_count));
+						anchorwire[i] = new cAnchorWire(wirepos, { 5.f, 5.f, 0.f }, i, rad, WireAnchorWire);
+					
+						bend_count++;
+					}
+					else {
+						if (anchorwire[i] != nullptr) {
+							// ワイヤーを縮めたときに余った分を消す
+							delete anchorwire[i];
+							anchorwire[i] = nullptr;
 						}
 					}
-					VECTOR wirepos;
-					wirepos.x = anchor->GetPos().x + (cosf(wrad + DX_PI_F / 2.f) * (5.f * (float)i));
-					wirepos.y = anchor->GetPos().y + (sinf(wrad + DX_PI_F / 2.f) * (5.f * (float)i));
-					anchorwire[i] = new cAnchorWire(wirepos, { 5.f, 5.f, 0.f }, 0.f, wrad, WireAnchorWire);
+					//if (anchorwire[i] != nullptr) anchorwire[i]->ResetFlag();
 				}
+
+				pos.x = anchor->GetPos().x + cosf(wrad + DX_PI_F / 2.f) * dis2anchor;
+				pos.y = anchor->GetPos().y + sinf(wrad + DX_PI_F / 2.f) * dis2anchor;
 
 				swing += DX_PI_F / 45.f;
 				jump = 0.f;
 
+				// ぶら下がっているとき
+				if (trigger_r > 55) dis2anchor -= trigger_r / 32.f;
+				if (trigger_l > 55) dis2anchor += trigger_l / 32.f;
+				if (dis2anchor >= 600.f) DetachAnchor();
+
 			}
 		}
+	}
+	for (int i = 0; i < 120; i++) {
+		IsBended[i] = false;
 	}
 }
 //  << 切り離し時の慣性計算をしつつ初期化 >>
@@ -282,7 +304,6 @@ void	cPlayer::DetachAnchor() {
 //------------------------------------------------------------------------
 void	cPlayer::Render() {
 
-
 	int halfw = 70;
 	int halfh = 65;
 
@@ -298,6 +319,7 @@ void	cPlayer::Render() {
 	for (int i = 0; i < 120; i++) {
 		if (anchorwire[i] != nullptr) {
 			anchorwire[i]->Render();
+			//DrawFormatString(anchorwire[i]->GetPos().x, anchorwire[i]->GetPos().y, 0xFFFFFF, "%d", i);
 		}
 	}
 	//if (springon == true)
