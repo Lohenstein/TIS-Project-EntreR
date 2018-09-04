@@ -22,3 +22,4 @@
 #include "Include.h"
 
 extern	bool	IsQuit;
+extern	int		FrameStartTime;

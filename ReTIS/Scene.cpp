@@ -429,19 +429,26 @@ void	LoadStage(string str, bool reload) {
 	// リロードならファイルパスは同じなので変えない
 	if (!reload) stagepath = str; // ステージのファイルパス
 
-	DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
-
-	// Now Loading描画
-	int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
-	DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
-	
-	// 裏画面
-	ScreenFlip();
-
 	// ステージ初期化
 	scene.reset();
+
+	SetUseASyncLoadFlag(true);
+
 	scene.reset(new cGame);
-	
+
+	SetUseASyncLoadFlag(false);
+
+	while (GetASyncLoadNum() != 0 && !ScreenFlip() && !ProcessMessage() && !ClearDrawScreen()) {
+
+		while (GetNowCount() - FrameStartTime < 1000 / 60) {}
+		FrameStartTime = GetNowCount();
+
+		DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
+		// Now Loading描画
+		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
+		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 40), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading... %d", GetASyncLoadNum());
+	}
+
 	// リロードの場合はタイトルの初期化をしない
 	if (!reload) title.reset();
 
