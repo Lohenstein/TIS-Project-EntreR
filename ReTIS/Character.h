@@ -4,7 +4,7 @@ extern VECTOR FocusPos;
 extern VECTOR FocusOld;
 extern VECTOR FocusCam;
 extern VECTOR MouseAdd;
-extern bool	  IsClearFlag, IsOverFlag;
+extern bool	  IsClearFlag, IsOverFlag, IsBended[120];
 extern int mp;
 
 extern int coin, ecoin, rcoin;
@@ -63,6 +63,7 @@ protected:
 public:
 	cAnchor		*anchor;
 	cAnchorWire *anchorwire[120];
+
 	float	rad2anchor, dis2anchor, wrad, wrad_old, swing;
 	bool	IsAnchored = false;
 	bool	IsFall = false;
@@ -86,6 +87,9 @@ public:
 		LoadDivGraph("data/img/amecha/idol.png", 30, 1, 30, 606, 544, img[1]);
 		LoadDivGraph("data/img/amecha/jump.png", 30, 1, 30, 606, 558, img[2]);
 		LoadDivGraph("data/img/amecha/shot.png", 30, 1, 30, 606, 544, img[3]);
+		for (int i = 0; i < 120; i++) {
+			IsBended[i] = false;
+		}
 	}
 	~cPlayer() {
 		for (int i = 0; i < 30; i++) {
@@ -99,6 +103,9 @@ public:
 	void	Render();
 	void	Update();
 	void	HitAction(cObject *hit);
+	/*void	HitCheck(cGame &main, cObject *anc) {
+		main.CollisionAroundMaptile(anc);
+	}*/
 	cObject *GetAnchor() { return (cObject*)anchor; }
 	cObject *GetAnchorWire(int num) { return (cObject*)anchorwire[num]; }
 };
