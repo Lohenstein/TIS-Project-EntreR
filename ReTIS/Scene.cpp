@@ -36,6 +36,7 @@ void	cGame::CollisionAroundMaptile(cObject *hit) {
 		}
 	}
 }
+
 void	cGame::Collision() {
 
 	CheckHitRectAndRect(character->GetPlayer(), character->GetClear());
@@ -52,6 +53,12 @@ void	cGame::Collision() {
 		if (character->GetEnemyJugem(k)			!= nullptr) CollisionAroundMaptile(character->GetEnemyJugem(k));
 		if (character->GetCrumbleWall(k)		!= nullptr) CollisionAroundMaptile(character->GetCrumbleWall(k));
 		if (character->GetMoveWall(k)			!= nullptr) CollisionAroundMaptile(character->GetMoveWall(k));
+	}
+	// Wire
+	for (int i = 0; i < 120; i++) {
+		if (character->GetAnchorWire(i) != nullptr) {
+			CollisionAroundMaptile(character->GetAnchorWire(i));
+		}
 	}
 	for (int k = 0; k < BULLET_MAX; k++) {
 		if (bullet.GetBullet(k) != nullptr) {
@@ -142,6 +149,7 @@ void	cGame::Update() {
 		// 時間UP処理
 		if (character->GetAddSwitch() == true) {
 			sec += 10;
+
 			character->GetAddSwitchChange();
 		}
 		character->Update(GetTime());
@@ -292,21 +300,27 @@ void	cGame::RenderGui() {
 
 void	cGame::DrawPauseMenu() {
 
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 155);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, trans > 155 ? 155 : trans);
 	DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-	int w;
+	// もっかいスタートボタン押したらポーズ解除
+	if (pad_b[XINPUT_BUTTON_START] == 1 && trans != 0) IsPaused = false;
+	trans += 2;
+
 	// 各メニューへ移動
 	switch (pause.draw(550, 280, 3, pause_str)) {
 	case PAUSE_CONTINUE:
 		IsPaused = false;
+		trans    = 0;
 		break;
 	case PAUSE_RESTART:
 		LoadStage("this is reload", true);
+		trans = 0;
 		break;
 	case PAUSE_BACK2TITLE:
 
+		trans = 0;
 		// タイトルに戻る
 		title.reset(new cTitle);
 		gamemode = Game::mode_title;

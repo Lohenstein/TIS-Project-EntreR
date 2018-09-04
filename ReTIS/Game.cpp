@@ -6,7 +6,7 @@ namespace Game
 
 }
 
-int		gamemode = Game::mode_game;
+int		gamemode;
 int		font_handle[FONT_MAX];
 int		icon_handle[14];
 bool	IsWindowed;
