@@ -450,7 +450,7 @@ void	cEnemy::Render() {
 void	cCharacterManager::Render() {
 	player->Render();
 	clear->DebugRender();
-	//if (boss != nullptr) boss->Render(boss_img);
+	if (boss != nullptr) boss->Render(boss_img);
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (jumpman[i]		!= nullptr) jumpman[i]		->Render(jumpman_img);
 		if (hardbody[i]		!= nullptr) hardbody[i]		->Render(hardbody_img);
@@ -470,7 +470,7 @@ void	cCharacterManager::Render() {
 }
 void	cCharacterManager::Update(int gettime) {
 	player->Update();
-	//if (boss!= nullptr) boss->Update();
+	if (boss!= nullptr) boss->Update();
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (jumpman[i]		!= nullptr) jumpman[i]		->Update();
 		if (hardbody[i]		!= nullptr) hardbody[i]		->Update();
@@ -649,12 +649,12 @@ void	cCharacterManager::LoadCharacters(string name) {
 				}
 			}
 			break;
-		/*case eBoss:
+		case eBoss:
 			if (boss == nullptr) {
 				boss = new cEnemyBoss(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)), stoi(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
 				break;
 			}
-			break;*/
+			break;
 		case eCircularsaw:
 			for (int i = 0; i < ENEMY_MAX; i++) {
 				if (circularsaw[i] == nullptr) {
@@ -719,14 +719,14 @@ void	cCharacterManager::LoadCharacters(string name) {
 				}
 			}
 			break;
-		/*case eMovewall:
+		case eMovewall:
 			for (int i = 0; i < ENEMY_MAX; i++) {
 				if (movewall[i] == nullptr) {
 					movewall[i] = new cMoveWall(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)));
 					break;
 				}
 			}
-			break;*/
+			break;
 		default:
 			MessageBox(NULL, "キャラクターシート読み込み時に\n存在しないパラメータが読み込まれました。", "Debug - Error", MB_OK);
 			break;
@@ -1214,18 +1214,17 @@ void cEnemyJugem::Update()
 void cEnemyJugem::MoveByAutomation()
 {
 	
-	if (hp != 1) {
-		//if (move_number== 360)move_number = 0;
-		move_radian = r2d(move_number);
-		pos.y += sin(move_radian) * 5;
-		move_number++;
+	//if (move_number== 360)move_number = 0;
+	move_radian = r2d(move_number);
+	pos.y += sin(move_radian) * 5;
+	move_number++;
 
 
-		image_change++;
-		if (image_change == 4) image_change = 0;
-		if (count % 50 == 0)speed *= -1;
+	image_change++;
+	if (image_change == 50) image_change = 25;
+	if (count % 50 == 0)speed *= -1;
 
-
+	if (FocusPos.x + WINDOW_SIZE_X / 2 > pos.x) {
 		count++;
 		pos.x += speed * 5;
 		if (count % 50 == 0 && move_pattern != 2) {
@@ -1238,7 +1237,7 @@ void cEnemyJugem::MoveByAutomation()
 			if (count = 100) {
 				move_pattern = 1;
 				count = 0;
-			}
+			}	
 			break;
 			// 攻撃
 		case 1:
@@ -1261,24 +1260,12 @@ void cEnemyJugem::MoveByAutomation()
 			}
 			break;
 		}
-
-		if (invincible) {
-			const int invicible_time_max = 1;
-			++invincible_time;
-			if (invincible_time >= invicible_time_max)
-				invincible = false;
-		}
 	}
-	// 死亡時下に落下するようにする
-	if (hp == 1) {
-
-		direction ? pos.x+=10:pos.x-=10;
-		pos.y+=10;
-		if (image_change < 8)image_change = 24;
-
-		if (image_change <= 47)image_change++;
-		//image_change < 8 ? image_change = 24 : image_change++;
-		if (image_change == 47 || (ceiling == true || landing == true))hp = 0;
+	if (invincible) {
+		const int invicible_time_max = 1;
+		++invincible_time;
+		if (invincible_time >= invicible_time_max)
+			invincible = false;
 	}
 }
 
@@ -1297,14 +1284,14 @@ void cEnemyJugem::Render(int img[])
 /*------------------------------------------------------------------------------*
 | <<< cEnemyBoss >>>
 *------------------------------------------------------------------------------*/
-/*
+
 void cEnemyBoss::Update()
 {
 	MoveByAutomation();
 	//Physical();
-}*/
+}
 
-/*void cEnemyBoss::MoveByAutomation()
+void cEnemyBoss::MoveByAutomation()
 {
 	switch (enemy_move)
 	{
@@ -1315,7 +1302,7 @@ void cEnemyBoss::Update()
 		if (image_change > 30) {
 			image_change = 0;
 		}
-		if (image_change > 239 || 200 > image_change) {
+		/*if (image_change > 239 || 200 > image_change) {
 			image_change = 200;
 		}
 		image_change++;
@@ -1329,7 +1316,7 @@ void cEnemyBoss::Update()
 		if (attack_count == 100) {
 			rad = -90;
 			enemy_move = 1;
-		}*//*
+		}*/
 		break;
 	// 銃
 	case 1:
@@ -1404,21 +1391,21 @@ void cEnemyBoss::Update()
 			invincible = false;
 	}
 }
-*//*
+
 void cEnemyBoss::Render(int image[280])
 {
 	//DrawRotaGraph(pos.x - size.x / 2, pos.y - size.y / 2,1.5,0, image[image_change], TRUE);
-	if (enemy_move == 1) {
+	/*if (enemy_move == 1) {
 		if (direction == true)
 			DrawGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
 		else if (direction == false)
 			DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
-	}
+	}*/
 	if (direction == true)
 		DrawGraph(pos.x - size.x, pos.y - size.y/2, image[image_change], TRUE);
 	else if (direction == false)
 		DrawTurnGraph(pos.x - size.x, pos.y - size.y/2, image[image_change], TRUE);
-}*/
+}
 
 /*------------------------------------------------------------------------------*
 | <<< cEnemyCircularSaw >>>
@@ -1649,14 +1636,13 @@ void	cSpring::Render(int image[30]) {
 *------------------------------------------------------------------------------*/
 
 void cGear::Update() {
-	MoveByAutomation();
+
 }
 void cGear::MoveByAutomation() {
-	image_change++;
-	if (image_change == 5)image_change = 0;
+
 }
 void cGear::Render() {
-	//DrawGraph(pos.x - sx, pos.y - sy, image[num], true);
+
 }
 
 /*------------------------------------------------------------------------------*
@@ -1667,14 +1653,28 @@ void cMoveWall::Update()
 {
 	//if (hp == 0)hp = 1;
 	MoveByAutomation();
-	if (hp != 1)Physical();
+	Physical();
+	
 }
 void cMoveWall::MoveByAutomation() 
 {
 
+	if (hp == 1)flag = true;
+	if (flag == true) {
+		// 画像を進める
+		// 壁を上に移動させる
+		image_change != 19 ? image_change++ : image_change = 19;
+	}
 }
 void cMoveWall::RenderSwitch(int img[]) 
 {
 	// 普通の描画関数でOK
 	DrawRotaGraph(pos.x, pos.y + size.y / 2, 1, 0, img[image_change], TRUE, FALSE);
+	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", hp);
 }
+
+void cMoveWall::RenderWall(int img[])
+{
+	
+}
+

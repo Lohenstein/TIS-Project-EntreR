@@ -342,7 +342,7 @@ public:
 
 	int move_number;
 	short move_pattern;
-	int count;
+	short count;
 	float lockon;
 	VECTOR bulletsize;
 	int		bulletspeed;
@@ -352,7 +352,7 @@ public:
 		speed = s;
 		landing = false;
 		type = Enemy;
-		hp = 2;
+		hp = 1;
 
 		move_number = 0;
 		move_radian = 0.f;
@@ -372,7 +372,7 @@ public:
 class cEnemyBoss :public cEnemy {
 protected:
 public:
-	/*bool direction;
+	bool direction;
 	int image_change;
 
 	short enemy_move;
@@ -381,27 +381,29 @@ public:
 	VECTOR bulletsize;
 	float lockon;
 	int rad;
-	*/
-	VECTOR bulletpos;
-	float PlayTime;
-	float lockon;
 
-	cEnemyBoss(float x, float y, float z, float w, float h, float s, bool p) {
-		pos = { x, y, z };
+	cEnemyBoss(float x, float y, float w, float h, float s, bool p) {
+		pos = { x, y, 0.f };
 		size = { w, h, 0.f };
 		speed = s;
 		type = Enemy;
 		hp = 1;
 
-		rad = 0.f;
-		PlayTime = 0.f;
+		image_change = 0;
+		direction = false;
+		enemy_move = 0;
+		attack_count = 0;
+		for (int i = 0; i < 4; i++) {
+			attackpos[i] = {0,0,0};
+		}
 		lockon = 0.f;
-		bulletpos = { 0,0,0 };
+		rad = 0;
+		bulletsize = {10,10,0};
+		
 	}
 	void Update();
 	void MoveByAutomation();
 	void Render(int image[280]);
-	void Render3d(int model[]);
 };
 
 class cEnemyCircularSaw :public cEnemy {
@@ -623,66 +625,44 @@ public:
 class cGear : public cEnemy {
 protected:
 	float	sx, sy;
-	int		image_change;
-	float	addrad;
-
+	int		num = 0;
 public:
 	cGear(int x, int y) {
 		pos = { (float)x, (float)y, 0.f };
 		size = { 250.f / 2.f, 250.f / 2.f, 0.f };
 		sx = 250 / 2.f, sy = 250 / 2.f;
 		type = Gear;
-		image_change = 0;
 	}
 	void	Render();
 	void	MoveByAutomation();
 	void	Update();
+	int		GetNum() { return num; }
 	void	HitAction(cObject *hit);
 };
-/*class cwall :public cObject {
-	int image_change;
-
-public:
-	bool flag;
-	cwall(int x,int y) {
-		size = { 250,250,0 };
-		type = MapTile;
-
-		flag = true;
-		//wall_num = 0;
-		//image_change = 0;
-	}
-	bool GetFlag() { return flag; }
-	VECTOR GetPos() { return pos; }
-};*/
-
-
 
 class cMoveWall : public cEnemy {
 protected:
+	bool	flag;
 	int		switch_num;
 	int		wall_num;
 	VECTOR switchpos;
 	int		image_change;
 public:
-	class cwall :public cObject {
-		int image_change;
+	cMoveWall(int x, int y,int sx,int sy) {
+		pos = { (float)x, (float)y, 0.f };
+		switchpos = { (float)sx,(float)sy,0.f };
+		flag = false;
+		size = {300.f / 2.f, 300.f / 2.f, 0.f };
+		sx = 250 / 2.f, sy = 250 / 2.f;
+		type = MapTile;
+		hp = 2;
 
-	public:
-		bool flag;
-		cwall(int x, int y) {
-			size = { 250,250,0 };
-			type = MapTile;
-
-			flag = true;
-			//wall_num = 0;
-			//image_change = 0;
-		}
-		bool GetFlag() { return flag; }
-		VECTOR GetPos() { return pos; }
-	};
-
+		switch_num = 0;
+		wall_num = 0;
+		image_change = 0;
+	}
 	void	RenderSwitch(int img[]);
+	void	RenderWall(int img[]);
 	void	Update();
 	void	MoveByAutomation();
 };
@@ -714,7 +694,6 @@ public:
 	cSpring							*spring[ENEMY_MAX];
 	cGear							*gear[ENEMY_MAX];
 	cMoveWall						*movewall[ENEMY_MAX];
-	cMoveWall::cwall				*wall[ENEMY_MAX];
 
 	int		wireman_img[273];
 	int		jumpman_img[120];
@@ -729,14 +708,11 @@ public:
 	int		spring_img[30];
 	int		floorimg;
 	int		boss_img[280];
-	int		jugem_img[48];
+	int		jugem_img[75];
 	int		allcoin_img[117];
 	int		chocolate_img[38];
 	int		watch_img[39];
 	int		switch_img[20];
-	int		gear_img[5];
-	int		Boss_handle[4];
-	int		Boss_AttachIndex = (Boss_AttachIndex,0,-1,FALSE);
 
 	void	Update(int gettime);
 	void	Render();
@@ -755,7 +731,7 @@ public:
 		LoadDivGraph("data/img/enemy/BigGun.PNG", 19,19, 1, 300, 300, cannon_img);
 		LoadDivGraph("data/img/enemy/hardbody.PNG", 30, 15, 2, 300, 300, hardbody_img);
 		LoadDivGraph("data/img/enemy/Fryingman.PNG", 120, 40, 3, 300, 300, fryingman_img);
-		LoadDivGraph("data/img/enemy/Jugem.PNG", 48, 24, 2, 300, 300, jugem_img);
+		LoadDivGraph("data/img/enemy/Jugem.PNG", 75, 25, 3, 300, 300, jugem_img);
 		LoadDivGraph("data/img/enemy/Bossmiddle.PNG", 200, 50, 4, 300, 300, bossmiddle_img);
 		LoadDivGraph("data/img/enemy/Wireman.PNG", 273, 39, 7, 300, 300, wireman_img);
 		LoadDivGraph("data/img/enemy/CircularSaw.PNG", 5, 5, 1, 300, 300, circularsaw_img);
@@ -766,11 +742,7 @@ public:
 		LoadDivGraph("data/img/enemy/Chocolate.PNG", 38, 38, 1, 300, 300, chocolate_img);
 		LoadDivGraph("data/img/enemy/Watch.PNG", 39, 39, 1, 300, 300, watch_img);
 		LoadDivGraph("data/img/enemy/Switch.PNG", 20, 20, 1, 300, 300, switch_img);
-		LoadDivGraph("data/img/enemy/Gear.PNG", 1, 1, 1, 300, 300, gear_img);
-		Boss_handle[0] = MV1LoadModel("ボス_ダウン.mv1");		// 3d用
-		Boss_handle[1] = MV1LoadModel("ボス_ビーム.mv1");		// 3d用
-		Boss_handle[2] = MV1LoadModel("ボス_自機狙い.mv1");		// 3d用
-		Boss_handle[3] = MV1LoadModel("ボス_自機狙い_砲台.mv1");		// 3d用
+
 	}
 	~cCharacterManager() {
 		DeleteCharacters();
@@ -788,7 +760,6 @@ public:
 		for (int i = 0; i < 30;  i++) { DeleteGraph(spring_img[i]); }
 		for (int i = 0; i < 38; i++) { DeleteGraph(chocolate_img[i]); }
 		for (int i = 0; i < 39; i++) { DeleteGraph(watch_img[i]); }
-		for (int i = 0; i < 1; i++) { DeleteGraph(gear_img[i]); }
 		DeleteGraph(floorimg);
 	}
 
@@ -811,7 +782,6 @@ public:
 	cObject *GetCrumbleWall(int num) { return (cObject*)crumblewall[num]; }
 	cObject *GetGear(int num) { return (cObject*)gear[num]; }
 	cObject *GetMoveWall(int num) { return (cObject*)movewall[num]; }
-	cObject *GetWall(int num){return (cObject*) wall[num];}
 
 
 	bool	GetAddSwitch() { return player->addtimeswitch; }
