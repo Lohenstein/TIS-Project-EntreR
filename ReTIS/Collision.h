@@ -54,7 +54,9 @@ enum eObjectType {
 	JugemBullet,	// “GƒWƒ…ƒQƒ€
 	Crumblewall,	// ‰ó‚ê‚é•Ç
 	Gear,			// Ž•ŽÔ
-	MoveWall
+	MoveWall,
+	WireAnchorWire,
+	NothingObject
 };
 
 extern void		CheckHitRectAndRect(cObject *obj1, cObject *obj2);

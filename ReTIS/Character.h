@@ -4,7 +4,7 @@ extern VECTOR FocusPos;
 extern VECTOR FocusOld;
 extern VECTOR FocusCam;
 extern VECTOR MouseAdd;
-extern bool	  IsClearFlag, IsOverFlag;
+extern bool	  IsClearFlag, IsOverFlag, IsBended[120];
 extern int mp;
 
 extern int coin, ecoin, rcoin;
@@ -61,7 +61,9 @@ protected:
 	int img[4][30];
 	bool springon;
 public:
-	cAnchor *anchor;
+	cAnchor		*anchor;
+	cAnchorWire *anchorwire[120];
+
 	float	rad2anchor, dis2anchor, wrad, wrad_old, swing;
 	bool	IsAnchored = false;
 	bool	IsFall = false;
@@ -85,6 +87,9 @@ public:
 		LoadDivGraph("data/img/amecha/idol.png", 30, 1, 30, 606, 544, img[1]);
 		LoadDivGraph("data/img/amecha/jump.png", 30, 1, 30, 606, 558, img[2]);
 		LoadDivGraph("data/img/amecha/shot.png", 30, 1, 30, 606, 544, img[3]);
+		for (int i = 0; i < 120; i++) {
+			IsBended[i] = false;
+		}
 	}
 	~cPlayer() {
 		for (int i = 0; i < 30; i++) {
@@ -98,7 +103,11 @@ public:
 	void	Render();
 	void	Update();
 	void	HitAction(cObject *hit);
+	/*void	HitCheck(cGame &main, cObject *anc) {
+		main.CollisionAroundMaptile(anc);
+	}*/
 	cObject *GetAnchor() { return (cObject*)anchor; }
+	cObject *GetAnchorWire(int num) { return (cObject*)anchorwire[num]; }
 };
 
 class cEnemy : public cCharacterBase {
@@ -640,31 +649,67 @@ public:
 	void	HitAction(cObject *hit);
 };
 
+/*class cWall :public cEnemy {
+protected:
+	int count;
+public:
+	cWall() {
+		type = MapTile;
+		count = 10;
+		size = { 250,250,0 };
+		pos = { 0,0,0 };
+		hp = 5;
+	}
+	//void Update(bool flag,VECTOR wallpos);
+	//void Render();
+	void Update(cMoveWall *movewall);
+};*/
+
 class cMoveWall : public cEnemy {
 protected:
+	
 	bool	flag;
 	int		switch_num;
 	int		wall_num;
-	VECTOR switchpos;
+	VECTOR wallpos;
 	int		image_change;
 public:
+	class cWall :public cEnemy {
+	protected:
+		int count;
+	public:
+		cWall() {
+			type = MapTile;
+			count = 10;
+			size = { 250,250,0 };
+			pos = { 600,600,0};
+			hp = 5;
+		}
+		void Update();
+		void Render();
+	};
 	cMoveWall(int x, int y,int sx,int sy) {
 		pos = { (float)x, (float)y, 0.f };
-		switchpos = { (float)sx,(float)sy,0.f };
+		wallpos = { (float)sx,(float)sy,0.f };
 		flag = false;
 		size = {300.f / 2.f, 300.f / 2.f, 0.f };
 		sx = 250 / 2.f, sy = 250 / 2.f;
-		type = MapTile;
+		type = NothingObject;
 		hp = 2;
-
+	
 		switch_num = 0;
 		wall_num = 0;
 		image_change = 0;
 	}
+	cWall wall;
 	void	RenderSwitch(int img[]);
 	void	RenderWall(int img[]);
 	void	Update();
 	void	MoveByAutomation();
+	int 	GetHp() { return hp; }
+	bool	GetFlag() { return flag; }
+	VECTOR	GetWallPos() { return wallpos; }
+	void	Switchon() {}
 };
 
 
@@ -694,6 +739,7 @@ public:
 	cSpring							*spring[ENEMY_MAX];
 	cGear							*gear[ENEMY_MAX];
 	cMoveWall						*movewall[ENEMY_MAX];
+	cMoveWall::cWall				*wall[ENEMY_MAX];
 
 	int		wireman_img[273];
 	int		jumpman_img[120];
@@ -765,6 +811,7 @@ public:
 
 	cObject *GetPlayer() { return (cObject*)player; }
 	cObject *GetAnchor() { return (cObject*)player->GetAnchor(); }
+	cObject *GetAnchorWire(int num) { return (cObject*)player->GetAnchorWire(num); }
 	cObject *GetClear() { return (cObject*)clear; }
 	cObject *GetEnemyJumpman(int num) { return (cObject*)jumpman[num]; }
 	cObject *GetEnemyHardBody(int num) { return (cObject*)hardbody[num]; }
@@ -782,7 +829,8 @@ public:
 	cObject *GetCrumbleWall(int num) { return (cObject*)crumblewall[num]; }
 	cObject *GetGear(int num) { return (cObject*)gear[num]; }
 	cObject *GetMoveWall(int num) { return (cObject*)movewall[num]; }
-
+	cObject *GetWall(int num) { return (cObject*)wall[num]; }
+	int GetSwitchHp(int num) { return movewall[num]->GetHp(); }
 
 	bool	GetAddSwitch() { return player->addtimeswitch; }
 	bool	GetAddSwitchChange() { return player->addtimeswitch = false; }
