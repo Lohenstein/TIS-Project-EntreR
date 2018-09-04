@@ -100,6 +100,7 @@ public:
 	void	Update();
 	void	HitAction(cObject *hit);
 	cObject *GetAnchor() { return (cObject*)anchor; }
+	cObject *GetAnchorWire(int num) { return (cObject*)anchorwire[num]; }
 };
 
 class cEnemy : public cCharacterBase {
@@ -766,6 +767,7 @@ public:
 
 	cObject *GetPlayer() { return (cObject*)player; }
 	cObject *GetAnchor() { return (cObject*)player->GetAnchor(); }
+	cObject *GetAnchorWire(int num) { return (cObject*)player->GetAnchorWire(num); }
 	cObject *GetClear() { return (cObject*)clear; }
 	cObject *GetEnemyJumpman(int num) { return (cObject*)jumpman[num]; }
 	cObject *GetEnemyHardBody(int num) { return (cObject*)hardbody[num]; }

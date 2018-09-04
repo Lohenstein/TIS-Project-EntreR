@@ -27,7 +27,10 @@ void	cAnchor::Render(VECTOR cpos) {
 
 void	cAnchorWire::HitAction(cObject *hit) {
 	if (hit->GetType() == MapTile) {
-		flag = false;
+		flag = true;
+		save.x = pos.x;
+		save.y = pos.y;
+		save.z = rad;
 	}
 }
 
@@ -36,7 +39,7 @@ void	cAnchorWire::Update(VECTOR a) {
 }
 
 void	cAnchorWire::Render() {
-	DrawCircleAA(GetPos().x, GetPos().y, 4.f, 10, 0xFF0000, true);
+	DrawCircleAA(GetPos().x, GetPos().y, 2.f, 10, 0xFF0000, true);
 }
 
 void	cBullet::Update() {

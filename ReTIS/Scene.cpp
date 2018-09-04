@@ -36,6 +36,7 @@ void	cGame::CollisionAroundMaptile(cObject *hit) {
 		}
 	}
 }
+
 void	cGame::Collision() {
 
 	CheckHitRectAndRect(character->GetPlayer(), character->GetClear());
@@ -52,6 +53,12 @@ void	cGame::Collision() {
 		if (character->GetEnemyJugem(k)			!= nullptr) CollisionAroundMaptile(character->GetEnemyJugem(k));
 		if (character->GetCrumbleWall(k)		!= nullptr) CollisionAroundMaptile(character->GetCrumbleWall(k));
 		if (character->GetMoveWall(k)			!= nullptr) CollisionAroundMaptile(character->GetMoveWall(k));
+	}
+	// Wire
+	for (int i = 0; i < 120; i++) {
+		if (character->GetAnchorWire(i) != nullptr) {
+			CollisionAroundMaptile(character->GetAnchorWire(i));
+		}
 	}
 	for (int k = 0; k < BULLET_MAX; k++) {
 		if (bullet.GetBullet(k) != nullptr) {

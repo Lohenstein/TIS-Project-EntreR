@@ -56,13 +56,14 @@ protected:
 	float distance;
 	bool  flag;
 public:
+	VECTOR save;
 	cAnchorWire(VECTOR p, VECTOR s, float sp, float r, eObjectType t) {
 		pos = p;
 		size = s;
 		speed = sp;
 		distance = 0.f;
 		rad = r;
-		flag = true;
+		flag = false;
 		type = t;
 	}
 	void	Update(VECTOR getpos);

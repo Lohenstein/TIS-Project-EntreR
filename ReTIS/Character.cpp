@@ -133,10 +133,12 @@ void	cCharacterBase::Collision(cObject *hit) {
 	float rad = col_CheckRadian(hit->GetSize(), GetSize());
 	int	  dir = col_HitRadian(GetPos(), hit->GetPos(), rad);
 	//int   o_dir = col_HitRadian(GetOldPos(), hit->GetPos(), rad);
+
 	// 方向毎に処理
 	landing = false;
 	ceiling = false;
 	bottomhit = false;
+
 	// *引っかかる不具合がある
 	switch (dir) {
 	case 1: // right
@@ -193,8 +195,18 @@ void	cPlayer::UpdateAnchor() {
 		// 飛んでるとき
 		if (anchor->GetFlag()) {
 			anchor->Update();
-			if (sqrtf((anchor->GetPos().x - pos.x) * (anchor->GetPos().x - pos.x) + (anchor->GetPos().y - pos.y) * (anchor->GetPos().y - pos.y)) >= 600.f) {
+			float distance	= sqrtf((anchor->GetPos().x - pos.x) * (anchor->GetPos().x - pos.x) + (anchor->GetPos().y - pos.y) * (anchor->GetPos().y - pos.y));
+			float rad		= atan2f(pos.y - anchor->GetPos().y, pos.x - anchor->GetPos().x) - DX_PI_F;
+			if (distance >= 600.f) {
 				DetachAnchor();
+			}
+			else{
+				for (int i = 0; i < (int)distance / 5; i++) {
+					VECTOR wirepos;
+					wirepos.x = pos.x + (cosf(rad) * (5.f * (float)i));
+					wirepos.y = pos.y + (sinf(rad) * (5.f * (float)i));
+					anchorwire[i] = new cAnchorWire(wirepos, { 5.f, 5.f, 0.f }, 0.f, rad, WireAnchorWire);
+				}
 			}
 		}
 		else {
@@ -225,6 +237,18 @@ void	cPlayer::UpdateAnchor() {
 				pos.x = anchor->GetPos().x + cosf(wrad + DX_PI_F / 2.f) * dis2anchor;
 				pos.y = anchor->GetPos().y + sinf(wrad + DX_PI_F / 2.f) * dis2anchor;
 
+				for (int i = 0; i < (int)dis2anchor / 5; i++) {
+					if (i != 0) {
+						if (anchorwire[i - 1]->GetFlag() == true) {
+
+						}
+					}
+					VECTOR wirepos;
+					wirepos.x = anchor->GetPos().x + (cosf(wrad + DX_PI_F / 2.f) * (5.f * (float)i));
+					wirepos.y = anchor->GetPos().y + (sinf(wrad + DX_PI_F / 2.f) * (5.f * (float)i));
+					anchorwire[i] = new cAnchorWire(wirepos, { 5.f, 5.f, 0.f }, 0.f, wrad, WireAnchorWire);
+				}
+
 				swing += DX_PI_F / 45.f;
 				jump = 0.f;
 
@@ -237,16 +261,6 @@ void	cPlayer::UpdateAnchor() {
 void	cPlayer::DetachAnchor() {
 	if (anchor != nullptr) {
 		if (IsAnchored) {
-			// 移動量の計算
-			float distance_x = pos.x - old.x;
-			float distance_y = pos.y - old.y;
-
-			save_speed	= speed;			// 速度を保存
-			speed		= distance_x;		// 移動速度をアンカー使用時の速度に設定
-			inertia		= 90 * distance_x;	// 慣性を最大に設定（範囲りみったがあるから-+だけ欲しくて掛けてる）
-			IsFrying	= true;				// 飛行判定をtrueに
-
-			//DebugMsgBox("%f", distance_x);
 
 			delete anchor;
 			IsAnchored = false;
@@ -255,6 +269,12 @@ void	cPlayer::DetachAnchor() {
 		else {
 			delete anchor;
 			anchor = nullptr;
+		}
+		for (int i = 0; i < 120; i++) {
+			if (anchorwire[i] != nullptr) {
+				delete anchorwire[i];
+				anchorwire[i] = nullptr;
+			}
 		}
 	}
 }
@@ -275,6 +295,11 @@ void	cPlayer::Render() {
 		DrawRotaGraph(pos.x, pos.y - 5.f, 0.28, 0.0, img[animmode][anim], true, rect);
 	}
 	if (anchor != nullptr) anchor->Render(pos);
+	for (int i = 0; i < 120; i++) {
+		if (anchorwire[i] != nullptr) {
+			anchorwire[i]->Render();
+		}
+	}
 	//if (springon == true)
 		//DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", springon);
 		
