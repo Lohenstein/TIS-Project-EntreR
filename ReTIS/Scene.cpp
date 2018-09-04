@@ -105,6 +105,9 @@ void	cGame::Collision() {
 		if (character->GetSpring(i) != nullptr) {
 			CheckHitRectAndRect(character->GetPlayer(), character->GetSpring(i));
 		}
+		if (character->GetMoveWall(i) != nullptr) {
+			CheckHitRectAndRect(character->GetPlayer(), character->GetMoveWall(i));
+		}
 	}
 
 	// ’e‚ÆƒLƒƒƒ‰ƒNƒ^
@@ -120,7 +123,7 @@ void	cGame::Collision() {
 				if (character->GetEnemyFryingman(j) != nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyFryingman(j));
 				if (character->GetEnemyJugem(j)		!= nullptr)	CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyJugem(j));
 				if (character->GetCrumbleWall(j)	!= nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetCrumbleWall(j));
-				if (character->GetMoveWall(j)		!= nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetMoveWall(j));
+				if (character->GetMoveWall(j)		!= nullptr && character->GetSwitchHp(j) != 1) CheckHitRectAndRect(bullet.GetBullet(i), character->GetMoveWall(j));
 			}
 		}
 	}

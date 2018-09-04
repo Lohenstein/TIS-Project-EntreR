@@ -642,31 +642,67 @@ public:
 	void	HitAction(cObject *hit);
 };
 
+/*class cWall :public cEnemy {
+protected:
+	int count;
+public:
+	cWall() {
+		type = MapTile;
+		count = 10;
+		size = { 250,250,0 };
+		pos = { 0,0,0 };
+		hp = 5;
+	}
+	//void Update(bool flag,VECTOR wallpos);
+	//void Render();
+	void Update(cMoveWall *movewall);
+};*/
+
 class cMoveWall : public cEnemy {
 protected:
+	
 	bool	flag;
 	int		switch_num;
 	int		wall_num;
-	VECTOR switchpos;
+	VECTOR wallpos;
 	int		image_change;
 public:
+	class cWall :public cEnemy {
+	protected:
+		int count;
+	public:
+		cWall() {
+			type = MapTile;
+			count = 10;
+			size = { 250,250,0 };
+			pos = { 600,600,0};
+			hp = 5;
+		}
+		void Update();
+		void Render();
+	};
 	cMoveWall(int x, int y,int sx,int sy) {
 		pos = { (float)x, (float)y, 0.f };
-		switchpos = { (float)sx,(float)sy,0.f };
+		wallpos = { (float)sx,(float)sy,0.f };
 		flag = false;
 		size = {300.f / 2.f, 300.f / 2.f, 0.f };
 		sx = 250 / 2.f, sy = 250 / 2.f;
-		type = MapTile;
+		type = NothingObject;
 		hp = 2;
-
+	
 		switch_num = 0;
 		wall_num = 0;
 		image_change = 0;
 	}
+	cWall wall;
 	void	RenderSwitch(int img[]);
 	void	RenderWall(int img[]);
 	void	Update();
 	void	MoveByAutomation();
+	int 	GetHp() { return hp; }
+	bool	GetFlag() { return flag; }
+	VECTOR	GetWallPos() { return wallpos; }
+	void	Switchon() {}
 };
 
 
@@ -696,6 +732,7 @@ public:
 	cSpring							*spring[ENEMY_MAX];
 	cGear							*gear[ENEMY_MAX];
 	cMoveWall						*movewall[ENEMY_MAX];
+	cMoveWall::cWall				*wall[ENEMY_MAX];
 
 	int		wireman_img[273];
 	int		jumpman_img[120];
@@ -785,7 +822,8 @@ public:
 	cObject *GetCrumbleWall(int num) { return (cObject*)crumblewall[num]; }
 	cObject *GetGear(int num) { return (cObject*)gear[num]; }
 	cObject *GetMoveWall(int num) { return (cObject*)movewall[num]; }
-
+	cObject *GetWall(int num) { return (cObject*)wall[num]; }
+	int GetSwitchHp(int num) { return movewall[num]->GetHp(); }
 
 	bool	GetAddSwitch() { return player->addtimeswitch; }
 	bool	GetAddSwitchChange() { return player->addtimeswitch = false; }

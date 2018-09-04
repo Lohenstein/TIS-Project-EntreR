@@ -118,6 +118,8 @@ void	cCharacterBase::HitAction(cObject *hit) {
 	case Crumblewall:
 		Collision(hit);
 		break;
+	case NothingObject:
+		break;
 	}
 }
 void	cCharacterBase::Damaged() {
@@ -341,7 +343,7 @@ void	cPlayer::Update() {
 		}
 	}
 
-	if ((key[KEY_INPUT_SPACE] == 1 || pad_b[XINPUT_BUTTON_A] == 1) && jump_count < 2) {
+	if ((key[KEY_INPUT_SPACE] == 1 || pad_b[XINPUT_BUTTON_A] == 1) && jump_count < 2 && count == 0) {
 		jump = 20.f;
 		++jump_count;
 		DetachAnchor();
@@ -459,6 +461,11 @@ void	cPlayer::HitAction(cObject *hit) {
 	case Crumblewall:
 		Collision(hit);
 		break;
+	case MoveWall:
+		Collision(hit);
+		break;
+	case NothingObject:
+		break;
 	}
 }
 /*------------------------------------------------------------------------------*
@@ -490,7 +497,8 @@ void	cCharacterManager::Render() {
 		if (spring[i]		!= nullptr) spring[i]		->Render(spring_img);
 		if (jugem[i]		!= nullptr) jugem[i]		->Render(jugem_img);
 		if (crumblewall[i]	!= nullptr)	crumblewall[i]	->Render();
-		if (movewall[i] != nullptr) movewall[i]->RenderSwitch(switch_img);
+		if (movewall[i]		!= nullptr) movewall[i]		->RenderSwitch(switch_img);
+		//if (wall[i]			!= nullptr) wall[i]			->Render();
 	}
 }
 void	cCharacterManager::Update(int gettime) {
@@ -511,6 +519,8 @@ void	cCharacterManager::Update(int gettime) {
 		if (spring[i]		!= nullptr) spring[i]		->Update();
 		if (crumblewall[i]	!= nullptr) crumblewall[i]	->Update();
 		if (movewall[i]		!= nullptr) movewall[i]		->Update();
+		//if (wall[i] != nullptr)wall[i]->Update(movewall[i]->GetFlag(), movewall[i]->GetWallPos());
+		//if (wall[i] != nullptr) wall[i]->Update(movewall[i]);
 	}
 	DeleteDeathCharacters();
 	if (mp > 300) mp = 300;
@@ -537,6 +547,7 @@ void	cCharacterManager::DeleteCharacters() {
 		delete crumblewall[i];
 		delete cannon[i];
 		delete coin[i];
+		delete movewall[i];
 		
 
 		jumpman[i]		= nullptr;
@@ -551,6 +562,7 @@ void	cCharacterManager::DeleteCharacters() {
 		crumblewall[i]	= nullptr;
 		cannon[i]		= nullptr;
 		coin[i]			= nullptr;
+		movewall[i]		= nullptr;
 	}
 }
 void	cCharacterManager::DeleteDeathCharacters() {
@@ -1675,6 +1687,11 @@ void cGear::Render() {
 | <<< cMoveWall >>>
 *------------------------------------------------------------------------------*/
 
+void cMoveWall::Switchon()
+{
+
+}
+
 void cMoveWall::Update() 
 {
 	//if (hp == 0)hp = 1;
@@ -1683,12 +1700,12 @@ void cMoveWall::Update()
 }
 void cMoveWall::MoveByAutomation() 
 {
-
 	if (hp == 1)flag = true;
-	if (flag == true) {
+	if (flag == true && image_change != 19) {
 		// ‰æ‘œ‚ði‚ß‚é
 		// •Ç‚ðã‚ÉˆÚ“®‚³‚¹‚é
 		image_change != 19 ? image_change++ : image_change = 19;
+		type = NothingObject;
 	}
 }
 void cMoveWall::RenderSwitch(int img[]) 
@@ -1700,6 +1717,49 @@ void cMoveWall::RenderSwitch(int img[])
 
 void cMoveWall::RenderWall(int img[])
 {
-	
+	//DrawBox(wall->GetPos().x - size.x / 2.f, wall->GetPos().y - size.y / 2.f, wall->GetPos().x + size.x / 2.f, wall->GetPos().y + size.y / 2.f, 0xfffff, true);
 }
 
+/*------------------------------------------------------------------------------*
+| <<< cWall >>>
+*------------------------------------------------------------------------------*/
+
+/*void cWall::Update(bool flag,VECTOR wallpos)
+{
+	pos = wallpos;
+	if (flag == true) {
+		if (count != 0) {
+			count--;
+			pos.y -= 10;
+		}
+	}
+	else pos = wallpos;
+}*/
+
+/*void cWall::Render()
+{
+	DrawBox(pos.x - size.x / 2.f, pos.y - size.y / 2.f, pos.x + size.x / 2.f, pos.y + size.y / 2.f, 0xfffff, true);
+	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", wall[i]->GetHp());
+}*/
+/*void cWall::Update(cMoveWall *movewall)
+{
+	pos = movewall->wallpos;
+	if (flag == true) {
+		if (count != 0) {
+			count--;
+			pos.y -= 10;
+		}
+	}
+	else pos = wallpos;
+}*/
+
+/*void cMoveWall::cWall::Update(cMoveWall *movewall)
+{
+	//pos = movewall->GetPos();
+}
+
+void cMoveWall::cWall::Render()
+{
+	DrawBox(pos.x - size.x / 2.f, pos.y - size.y / 2.f, pos.x + size.x / 2.f, pos.y + size.y / 2.f, 0xfffff, true);
+	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", GetHp());
+}*/
