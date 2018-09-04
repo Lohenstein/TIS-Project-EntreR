@@ -98,6 +98,9 @@ void	cGame::Collision() {
 		if (character->GetSpring(i) != nullptr) {
 			CheckHitRectAndRect(character->GetPlayer(), character->GetSpring(i));
 		}
+		if (character->GetGear(i) != nullptr) {
+			CheckHitRectAndRect(character->GetPlayer(), character->GetGear(i));
+		}
 	}
 
 	// ’e‚ÆƒLƒƒƒ‰ƒNƒ^
