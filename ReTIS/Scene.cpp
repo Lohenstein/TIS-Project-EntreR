@@ -108,6 +108,16 @@ void	cGame::Collision() {
 		if (character->GetMoveWall(i) != nullptr) {
 			CheckHitRectAndRect(character->GetPlayer(), character->GetMoveWall(i));
 		}
+		if (character->GetWall(i) != nullptr) {
+			CheckHitRectAndRect(character->GetPlayer(), character->GetWall(i));
+			for (int j = 0; j < ENEMY_MAX; j++) {
+				if (character->GetEnemyJumpman(j) != nullptr) CheckHitRectAndRect(character->GetWall(i), character->GetEnemyJumpman(j));
+				if (character->GetEnemyHardBody(j) != nullptr) CheckHitRectAndRect(character->GetWall(i), character->GetEnemyHardBody(j));
+				if (character->GetEnemyGunman(j) != nullptr) CheckHitRectAndRect(character->GetWall(i), character->GetEnemyGunman(j));
+				if (character->GetEnemyBossmiddle(j) != nullptr) CheckHitRectAndRect(character->GetWall(i), character->GetEnemyBossmiddle(j));
+			}
+
+		}
 	}
 
 	// ’e‚ÆƒLƒƒƒ‰ƒNƒ^
@@ -138,6 +148,7 @@ void	cGame::Collision() {
 		if (character->GetEnemyFryingman(i) != nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyFryingman(i));
 		if (character->GetEnemyJugem(i)	    != nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyJugem(i));
 		if (character->GetCrumbleWall(i)	!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetCrumbleWall(i));
+		if (character->GetGear(i)			!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetGear(i));
 	}
 }	
 

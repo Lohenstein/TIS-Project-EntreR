@@ -336,9 +336,9 @@ void	cPlayer::Update() {
 	// èÊÇËà⁄ÇÈ
 	FocusOld = FocusPos;
 	FocusPos = pos;
+	if (count != 0)inertia = 0;
 
-
-	if ((key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2 || stick_lx >= 100 || stick_lx <= -100) && springon == false) {
+	if ((key[KEY_INPUT_LEFT] == 2 || key[KEY_INPUT_RIGHT] == 2 || stick_lx >= 100 || stick_lx <= -100) && count == 0) {
 		if (key[KEY_INPUT_LEFT] == 2 || stick_lx <= -100) {
 			rect = true;
 			inertia -= 4;				// à⁄ìÆó É∆Çå∏è≠
@@ -488,6 +488,9 @@ void	cPlayer::HitAction(cObject *hit) {
 		break;
 	case NothingObject:
 		break;
+	case Gear:
+		Damaged();
+		break;
 	}
 }
 /*------------------------------------------------------------------------------*
@@ -520,7 +523,9 @@ void	cCharacterManager::Render() {
 		if (jugem[i]		!= nullptr) jugem[i]		->Render(jugem_img);
 		if (crumblewall[i]	!= nullptr)	crumblewall[i]	->Render();
 		if (movewall[i]		!= nullptr) movewall[i]		->RenderSwitch(switch_img);
-		//if (wall[i]			!= nullptr) wall[i]			->Render();
+		if (movewall[i]		!= nullptr) movewall[i]		->RenderWall(wall[i] != nullptr?wall[i]->GetHp():movewall[i]->GetHp());
+		if (wall[i]			!= nullptr) wall[i]			->Render();
+		if (gear[i]			!= nullptr) gear[i]			->Render(gear_img);
 	}
 }
 void	cCharacterManager::Update(int gettime) {
@@ -541,8 +546,9 @@ void	cCharacterManager::Update(int gettime) {
 		if (spring[i]		!= nullptr) spring[i]		->Update();
 		if (crumblewall[i]	!= nullptr) crumblewall[i]	->Update();
 		if (movewall[i]		!= nullptr) movewall[i]		->Update();
-		//if (wall[i] != nullptr)wall[i]->Update(movewall[i]->GetFlag(), movewall[i]->GetWallPos());
+		if (wall[i]			!= nullptr)wall[i]			->Update(movewall[i]->GetFlag(), movewall[i]->GetWallPos());
 		//if (wall[i] != nullptr) wall[i]->Update(movewall[i]);
+		if (gear[i]			!= nullptr) gear[i]			->Update();
 	}
 	DeleteDeathCharacters();
 	if (mp > 300) mp = 300;
@@ -570,7 +576,8 @@ void	cCharacterManager::DeleteCharacters() {
 		delete cannon[i];
 		delete coin[i];
 		delete movewall[i];
-		
+		delete gear[i];
+
 
 		jumpman[i]		= nullptr;
 		hardbody[i]		= nullptr;
@@ -585,6 +592,7 @@ void	cCharacterManager::DeleteCharacters() {
 		cannon[i]		= nullptr;
 		coin[i]			= nullptr;
 		movewall[i]		= nullptr;
+		gear[i]			= nullptr;
 	}
 }
 void	cCharacterManager::DeleteDeathCharacters() {
@@ -783,6 +791,19 @@ void	cCharacterManager::LoadCharacters(string name) {
 			for (int i = 0; i < ENEMY_MAX; i++) {
 				if (movewall[i] == nullptr) {
 					movewall[i] = new cMoveWall(stoi(str.at(1)), stoi(str.at(2)), stoi(str.at(3)), stoi(str.at(4)));
+					//break;
+				}
+				if (wall[i] == nullptr) {
+					wall[i] = new cWall();
+					break;
+				}
+
+			}
+			break;
+		case eGear:
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				if (gear[i] == nullptr) {
+					gear[i] = new cGear(stoi(str.at(1)), stoi(str.at(2)));
 					break;
 				}
 			}
@@ -1273,52 +1294,64 @@ void cEnemyJugem::Update()
 
 void cEnemyJugem::MoveByAutomation()
 {
-	
+
 	//if (move_number== 360)move_number = 0;
 	move_radian = r2d(move_number);
 	pos.y += sin(move_radian) * 5;
 	move_number++;
 
+	
+	if (hp == 1) {
+		if (image_change < 20)image_change = 24;
+		image_change++;
+		if (image_change == 48) image_change = 47;
+		pos.y += 10;
+		direction ? pos.x -= 5:pos.x += 5;
+		if (righthit == true || lefthit == true || landing == true || pos.y > 100000) hp = 0;
+	}
 
-	image_change++;
-	if (image_change == 50) image_change = 25;
-	if (count % 50 == 0)speed *= -1;
-
-	if (FocusPos.x + WINDOW_SIZE_X / 2 > pos.x) {
-		count++;
-		pos.x += speed * 5;
-		if (count % 50 == 0 && move_pattern != 2) {
-			direction ? direction = false : direction = true;
-		}
-		switch (move_pattern) {
-			// à⁄ìÆ
-		case 0:
-
-			if (count = 100) {
-				move_pattern = 1;
-				count = 0;
-			}	
-			break;
-			// çUåÇ
-		case 1:
-			//image_change++;
-			if (count == 100) {
-				bullet.CurvedShot(pos, bulletsize, bulletspeed, PI * direction, JugemBullet, direction);
-				move_pattern = 2;
-				count = 0;
-			}
-			break;
-			// ã≠çUåÇ
-		case 2:
-			//image_change++;
-			if (count == 200) {
-				bullet.CurvedShot(pos, bulletsize, bulletspeed, PI * direction, JugemBullet, direction);
+	if (hp > 1) {
+		righthit = false;
+		lefthit = false;
+		if (image_change == 4) image_change = 0;
+		image_change++;
+		if (count % 50 == 0)speed *= -1;
+		if (FocusPos.x + WINDOW_SIZE_X / 2 > pos.x) {
+			count++;
+			pos.x += speed * 5;
+			if (count % 50 == 0 && move_pattern != 2) {
 				direction ? direction = false : direction = true;
-				bullet.CurvedShot(pos, bulletsize, bulletspeed, PI * direction, JugemBullet, direction);
-				move_pattern = 0;
-				count = 0;
 			}
-			break;
+			switch (move_pattern) {
+				// à⁄ìÆ
+			case 0:
+
+				if (count = 100) {
+					move_pattern = 1;
+					count = 0;
+				}
+				break;
+				// çUåÇ
+			case 1:
+				//image_change++;
+				if (count == 100) {
+					bullet.CurvedShot(pos, bulletsize, bulletspeed, PI * direction, JugemBullet, direction);
+					move_pattern = 2;
+					count = 0;
+				}
+				break;
+				// ã≠çUåÇ
+			case 2:
+				//image_change++;
+				if (count == 200) {
+					bullet.CurvedShot(pos, bulletsize, bulletspeed, PI * direction, JugemBullet, direction);
+					direction ? direction = false : direction = true;
+					bullet.CurvedShot(pos, bulletsize, bulletspeed, PI * direction, JugemBullet, direction);
+					move_pattern = 0;
+					count = 0;
+				}
+				break;
+			}
 		}
 	}
 	if (invincible) {
@@ -1339,6 +1372,8 @@ void cEnemyJugem::Render(int img[])
 	else {
 		DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, img[image_change], TRUE);
 	}
+	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", hp);
+
 }
 
 /*------------------------------------------------------------------------------*
@@ -1696,23 +1731,18 @@ void	cSpring::Render(int image[30]) {
 *------------------------------------------------------------------------------*/
 
 void cGear::Update() {
-
+	MoveByAutomation();
 }
 void cGear::MoveByAutomation() {
-
+	num != 12 ? num++ : num = 0;
 }
-void cGear::Render() {
-
+void cGear::Render(int img[]) {
+	DrawGraph(pos.x - sx, pos.y - sy, img[num], true);
 }
 
 /*------------------------------------------------------------------------------*
 | <<< cMoveWall >>>
 *------------------------------------------------------------------------------*/
-
-void cMoveWall::Switchon()
-{
-
-}
 
 void cMoveWall::Update() 
 {
@@ -1735,53 +1765,23 @@ void cMoveWall::RenderSwitch(int img[])
 	// ïÅí ÇÃï`âÊä÷êîÇ≈OK
 	DrawRotaGraph(pos.x, pos.y + size.y / 2, 1, 0, img[image_change], TRUE, FALSE);
 	//DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", hp);
+
 }
 
-void cMoveWall::RenderWall(int img[])
+void cMoveWall::RenderWall(int hp)
 {
-	//DrawBox(wall->GetPos().x - size.x / 2.f, wall->GetPos().y - size.y / 2.f, wall->GetPos().x + size.x / 2.f, wall->GetPos().y + size.y / 2.f, 0xfffff, true);
+	//DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", hp);
 }
 
 /*------------------------------------------------------------------------------*
 | <<< cWall >>>
 *------------------------------------------------------------------------------*/
-
-/*void cWall::Update(bool flag,VECTOR wallpos)
+void cWall::Update(bool flag,VECTOR wallpos)
 {
-	pos = wallpos;
-	if (flag == true) {
-		if (count != 0) {
-			count--;
-			pos.y -= 10;
-		}
+	if (count == 10)pos = wallpos;
+	if (flag && count != 0) {
+		//pos = wallpos;
+		count--;
+		pos.y -= 32;
 	}
-	else pos = wallpos;
-}*/
-
-/*void cWall::Render()
-{
-	DrawBox(pos.x - size.x / 2.f, pos.y - size.y / 2.f, pos.x + size.x / 2.f, pos.y + size.y / 2.f, 0xfffff, true);
-	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", wall[i]->GetHp());
-}*/
-/*void cWall::Update(cMoveWall *movewall)
-{
-	pos = movewall->wallpos;
-	if (flag == true) {
-		if (count != 0) {
-			count--;
-			pos.y -= 10;
-		}
-	}
-	else pos = wallpos;
-}*/
-
-/*void cMoveWall::cWall::Update(cMoveWall *movewall)
-{
-	//pos = movewall->GetPos();
 }
-
-void cMoveWall::cWall::Render()
-{
-	DrawBox(pos.x - size.x / 2.f, pos.y - size.y / 2.f, pos.x + size.x / 2.f, pos.y + size.y / 2.f, 0xfffff, true);
-	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", GetHp());
-}*/

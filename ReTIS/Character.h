@@ -148,7 +148,7 @@ public:
 		speed = s;
 		type = Enemy;
 		landing = false;
-		hp = 2;
+		hp = 3;
 
 		move_flag = false;
 		jump_count = 0;
@@ -360,8 +360,10 @@ public:
 		size = { w, h, 0.f };
 		speed = s;
 		landing = false;
+		lefthit = false;
+		righthit = false;
 		type = Enemy;
-		hp = 1;
+		hp = 2;
 
 		move_number = 0;
 		move_radian = 0.f;
@@ -642,28 +644,27 @@ public:
 		sx = 250 / 2.f, sy = 250 / 2.f;
 		type = Gear;
 	}
-	void	Render();
+	void	Render(int img[]);
 	void	MoveByAutomation();
 	void	Update();
 	int		GetNum() { return num; }
-	void	HitAction(cObject *hit);
 };
 
-/*class cWall :public cEnemy {
+class cWall :public cEnemy {
 protected:
 	int count;
 public:
 	cWall() {
 		type = MapTile;
 		count = 10;
-		size = { 250,250,0 };
+		size = { 128,128,0 };
 		pos = { 0,0,0 };
 		hp = 5;
 	}
-	//void Update(bool flag,VECTOR wallpos);
+	void Update(bool flag,VECTOR wallpos);
 	//void Render();
-	void Update(cMoveWall *movewall);
-};*/
+	void Update();
+};
 
 class cMoveWall : public cEnemy {
 protected:
@@ -674,36 +675,22 @@ protected:
 	VECTOR wallpos;
 	int		image_change;
 public:
-	class cWall :public cEnemy {
-	protected:
-		int count;
-	public:
-		cWall() {
-			type = MapTile;
-			count = 10;
-			size = { 250,250,0 };
-			pos = { 600,600,0};
-			hp = 5;
-		}
-		void Update();
-		void Render();
-	};
-	cMoveWall(int x, int y,int sx,int sy) {
+	cMoveWall(int x, int y, int sx, int sy) {
 		pos = { (float)x, (float)y, 0.f };
 		wallpos = { (float)sx,(float)sy,0.f };
 		flag = false;
-		size = {300.f / 2.f, 300.f / 2.f, 0.f };
+		size = { 300.f / 2.f, 300.f / 2.f, 0.f };
 		sx = 250 / 2.f, sy = 250 / 2.f;
 		type = NothingObject;
 		hp = 2;
-	
+
 		switch_num = 0;
 		wall_num = 0;
 		image_change = 0;
 	}
-	cWall wall;
+
 	void	RenderSwitch(int img[]);
-	void	RenderWall(int img[]);
+	void	RenderWall(int hp);
 	void	Update();
 	void	MoveByAutomation();
 	int 	GetHp() { return hp; }
@@ -739,7 +726,9 @@ public:
 	cSpring							*spring[ENEMY_MAX];
 	cGear							*gear[ENEMY_MAX];
 	cMoveWall						*movewall[ENEMY_MAX];
-	cMoveWall::cWall				*wall[ENEMY_MAX];
+	//cMoveWall::cWall				*wall[ENEMY_MAX];
+	// Ç±Ç¡ÇøÇÃwallÇì«Ç›çûÇÒÇ≈Ç¢ÇÈ
+	cWall							*wall[ENEMY_MAX];
 
 	int		wireman_img[273];
 	int		jumpman_img[120];
@@ -754,11 +743,12 @@ public:
 	int		spring_img[30];
 	int		floorimg;
 	int		boss_img[280];
-	int		jugem_img[75];
+	int		jugem_img[48];
 	int		allcoin_img[117];
 	int		chocolate_img[38];
 	int		watch_img[39];
 	int		switch_img[20];
+	int		gear_img[13];
 
 	void	Update(int gettime);
 	void	Render();
@@ -769,15 +759,13 @@ public:
 	cCharacterManager(string name) {
 		LoadCharacters(name);
 		LoadDivGraph("data/img/enemy/Jumpman.PNG", 120, 30, 4, 300, 300, jumpman_img);
-		//LoadDivGraph("data/img/enemy/Gunman.PNG", 24, 24, 1, 300, 300, gunman_imgdead);
-		//LoadDivGraph("data/img/enemy/GUNMAN2.PNG", 111, 37, 4, 300, 300, gunman_img);
 		LoadDivGraph("data/img/enemy/GUNMAN2.PNG", 148, 37, 4, 300, 300, gunman_img);
 		LoadDivGraph("data/img/enemy/hand.PNG", 1,1,1, 300, 300, gunman_hand);
 		LoadDivGraph("data/img/enemy/gunhand.PNG", 1,1,1, 300, 300, gunman_handg);
 		LoadDivGraph("data/img/enemy/BigGun.PNG", 19,19, 1, 300, 300, cannon_img);
 		LoadDivGraph("data/img/enemy/hardbody.PNG", 30, 15, 2, 300, 300, hardbody_img);
 		LoadDivGraph("data/img/enemy/Fryingman.PNG", 120, 40, 3, 300, 300, fryingman_img);
-		LoadDivGraph("data/img/enemy/Jugem.PNG", 75, 25, 3, 300, 300, jugem_img);
+		LoadDivGraph("data/img/enemy/Jugem.PNG", 48, 24, 2, 300, 300, jugem_img);
 		LoadDivGraph("data/img/enemy/Bossmiddle.PNG", 200, 50, 4, 300, 300, bossmiddle_img);
 		LoadDivGraph("data/img/enemy/Wireman.PNG", 273, 39, 7, 300, 300, wireman_img);
 		LoadDivGraph("data/img/enemy/CircularSaw.PNG", 5, 5, 1, 300, 300, circularsaw_img);
@@ -788,6 +776,7 @@ public:
 		LoadDivGraph("data/img/enemy/Chocolate.PNG", 38, 38, 1, 300, 300, chocolate_img);
 		LoadDivGraph("data/img/enemy/Watch.PNG", 39, 39, 1, 300, 300, watch_img);
 		LoadDivGraph("data/img/enemy/Switch.PNG", 20, 20, 1, 300, 300, switch_img);
+		LoadDivGraph("data/img/enemy/Gear.PNG", 13, 13, 1, 300, 300, gear_img);
 
 	}
 	~cCharacterManager() {
@@ -806,6 +795,7 @@ public:
 		for (int i = 0; i < 30;  i++) { DeleteGraph(spring_img[i]); }
 		for (int i = 0; i < 38; i++) { DeleteGraph(chocolate_img[i]); }
 		for (int i = 0; i < 39; i++) { DeleteGraph(watch_img[i]); }
+		for (int i = 0; i < 13; i++) { DeleteGraph(gear_img[i]); }
 		DeleteGraph(floorimg);
 	}
 
@@ -857,5 +847,5 @@ enum character {
 	eSpring,		// 16
 	eCrumblewall,	// 17
 	eGear,			// 18
-	eMovewall		// 19
+	eMovewall,		// 19
 };
