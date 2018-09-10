@@ -105,6 +105,19 @@ void	cGame::Collision() {
 		if (character->GetSpring(i) != nullptr) {
 			CheckHitRectAndRect(character->GetPlayer(), character->GetSpring(i));
 		}
+		if (character->GetMoveWall(i) != nullptr) {
+			CheckHitRectAndRect(character->GetPlayer(), character->GetMoveWall(i));
+		}
+		if (character->GetWall(i) != nullptr) {
+			CheckHitRectAndRect(character->GetPlayer(), character->GetWall(i));
+			for (int j = 0; j < ENEMY_MAX; j++) {
+				if (character->GetEnemyJumpman(j) != nullptr) CheckHitRectAndRect(character->GetWall(i), character->GetEnemyJumpman(j));
+				if (character->GetEnemyHardBody(j) != nullptr) CheckHitRectAndRect(character->GetWall(i), character->GetEnemyHardBody(j));
+				if (character->GetEnemyGunman(j) != nullptr) CheckHitRectAndRect(character->GetWall(i), character->GetEnemyGunman(j));
+				if (character->GetEnemyBossmiddle(j) != nullptr) CheckHitRectAndRect(character->GetWall(i), character->GetEnemyBossmiddle(j));
+			}
+
+		}
 	}
 
 	// 弾とキャラクタ
@@ -120,7 +133,7 @@ void	cGame::Collision() {
 				if (character->GetEnemyFryingman(j) != nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyFryingman(j));
 				if (character->GetEnemyJugem(j)		!= nullptr)	CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyJugem(j));
 				if (character->GetCrumbleWall(j)	!= nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetCrumbleWall(j));
-				if (character->GetMoveWall(j)		!= nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetMoveWall(j));
+				if (character->GetMoveWall(j)		!= nullptr && character->GetSwitchHp(j) != 1) CheckHitRectAndRect(bullet.GetBullet(i), character->GetMoveWall(j));
 			}
 		}
 	}
@@ -135,6 +148,7 @@ void	cGame::Collision() {
 		if (character->GetEnemyFryingman(i) != nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyFryingman(i));
 		if (character->GetEnemyJugem(i)	    != nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyJugem(i));
 		if (character->GetCrumbleWall(i)	!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetCrumbleWall(i));
+		if (character->GetGear(i)			!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetGear(i));
 	}
 }	
 
@@ -179,6 +193,7 @@ void	cGame::Render() {
 	dialog->Render();
 	gui->Render();
 	RenderGui();
+	character->BossRender();
 
 	// クリア時
 	if (IsClearFlag) {
@@ -199,6 +214,9 @@ void	cGame::Render() {
 		}
 	}
 	*/
+
+	//MV1SetPosition(character->boss_3d_cleave, VGet(0, 0, 3000));
+	//MV1DrawModel(character->boss_3d_cleave);
 	//DrawFormatString(10, 10, 0xFFFFFF, "操作キャラの座標:x=%d, y=%d", (int)FocusPos.x, (int)FocusPos.y);
 }
 
@@ -451,19 +469,26 @@ void	LoadStage(string str, bool reload) {
 	// リロードならファイルパスは同じなので変えない
 	if (!reload) stagepath = str; // ステージのファイルパス
 
-	DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
-
-	// Now Loading描画
-	int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
-	DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 20), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
-	
-	// 裏画面
-	ScreenFlip();
-
 	// ステージ初期化
 	scene.reset();
+
+	SetUseASyncLoadFlag(true);
+
 	scene.reset(new cGame);
-	
+
+	SetUseASyncLoadFlag(false);
+
+	while (GetASyncLoadNum() != 0 && !ScreenFlip() && !ProcessMessage() && !ClearDrawScreen()) {
+
+		while (GetNowCount() - FrameStartTime < 1000 / 60) {}
+		FrameStartTime = GetNowCount();
+
+		DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
+		// Now Loading描画
+		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
+		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 40), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading... %d", GetASyncLoadNum());
+	}
+
 	// リロードの場合はタイトルの初期化をしない
 	if (!reload) title.reset();
 

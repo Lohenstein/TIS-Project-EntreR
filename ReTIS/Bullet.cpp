@@ -62,7 +62,7 @@ void	cBullet::Update() {
 		flag = false;
 	}
 	else if (type == JugemBullet) {
-		pos.x += cos(rad) * speed;
+		//pos.x += cos(rad) * speed;
 		pos.y += sin((direction ? rad -= 0.05 : rad += 0.05)) * speed;
 
 		if (speed == 0)

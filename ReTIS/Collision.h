@@ -55,7 +55,8 @@ enum eObjectType {
 	Crumblewall,	// ‰ó‚ê‚é•Ç
 	Gear,			// Ž•ŽÔ
 	MoveWall,
-	WireAnchorWire
+	WireAnchorWire,
+	NothingObject
 };
 
 extern void		CheckHitRectAndRect(cObject *obj1, cObject *obj2);
