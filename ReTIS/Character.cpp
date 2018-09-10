@@ -507,7 +507,7 @@ void	cEnemy::Render() {
 void	cCharacterManager::Render() {
 	player->Render();
 	clear->DebugRender();
-	if (boss != nullptr) boss->Render(boss_img);
+	if (boss != nullptr) boss->Render(boss_move_3d,attachIndex);
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (jumpman[i]		!= nullptr) jumpman[i]		->Render(jumpman_img);
 		if (hardbody[i]		!= nullptr) hardbody[i]		->Render(hardbody_img);
@@ -893,11 +893,17 @@ void cEnemyJumpman::Render(int image[120])
 *------------------------------------------------------------------------------*/
 void cEnemyGunman::MoveByAutomation()
 {
-	if (direction)
+	if (direction && move_pattern == 0)
 		handradian = atan2(pos.y - FocusPos.y, pos.x - FocusPos.x);
-	else lockon = atan2(FocusPos.y - pos.y,FocusPos.x - pos.x);
+	else if (!direction && move_pattern == 0) lockon = atan2(FocusPos.y - pos.y,FocusPos.x - pos.x);
+	
+	if (move_pattern == 1) {
+		handradian++;
+		//lockon--;
+	}
+
 	if (FocusPos.x + WINDOW_SIZE_X / 2 > pos.x) {
-		pos.x < FocusPos.x ? direction = false : direction = true;
+		if (move_pattern != 1)pos.x < FocusPos.x ? direction = false : direction = true;
 		switch (move_pattern) {
 		case 0:
 			image_change = 0;
@@ -931,7 +937,7 @@ void cEnemyGunman::MoveByAutomation()
 						bulletpos.x += 40;
 					}
 					//direction ? bullet.Shot(bulletpos, bulletsize, 10, lockon, EnemyBullet) : bullet.Shot(bulletpos, bulletsize, -10, PI, EnemyBullet);
-					direction ? bullet.Shot(bulletpos, bulletsize, 10, lockon, EnemyBullet) : bullet.Shot(bulletpos, bulletsize, -10, PI, EnemyBullet);
+					direction ? bullet.Shot(bulletpos, bulletsize, 10, lockon, EnemyBullet) : bullet.Shot(bulletpos, bulletsize, 10, lockon, EnemyBullet);
 					if (direction) lockon = atan2(pos.y - FocusPos.y,pos.x - FocusPos.x);
 				}
 			}
@@ -941,6 +947,10 @@ void cEnemyGunman::MoveByAutomation()
 			}
 			break;
 		case 2:
+			if (attack_count == 0) {
+				handradian = d2r(90);
+				lockon = d2r(-90);
+			}
 			if (image_change != 0)
 				image_change--;
 			attack_count++;
@@ -985,14 +995,23 @@ void cEnemyGunman::Render(int image[],int hand[],int gunhand[])
 		if (direction) {
 
 			DrawRotaGraph(pos.x + 8, pos.y - 15, 0.7, handradian, hand[0], TRUE, FALSE);
-			DrawRotaGraph(pos.x, pos.y, 0.7, 0, image[0], TRUE, FALSE);
+			DrawRotaGraph(pos.x, pos.y, 0.7, 0, image[image_change], TRUE, FALSE);
 			DrawRotaGraph(pos.x + 8, pos.y - 15, 0.7, handradian, gunhand[0], TRUE, FALSE);
 		}
 		// ‰E•ûŒü
 		else {
-			DrawRotaGraph(pos.x - 8, pos.y - 15, 0.7, lockon, hand[0], TRUE, TRUE);
-			DrawRotaGraph(pos.x, pos.y, 0.7, 0, image[0], TRUE, TRUE);
-			DrawRotaGraph(pos.x - 8, pos.y - 15, 0.7, lockon, gunhand[0], TRUE, TRUE);
+			
+			if (move_pattern == 1) {
+				DrawRotaGraph(pos.x - 8, pos.y - 15, 0.7, handradian, hand[0], TRUE, TRUE);
+				DrawRotaGraph(pos.x, pos.y, 0.7, 0, image[image_change], TRUE, TRUE);
+				DrawRotaGraph(pos.x - 8, pos.y - 15, 0.7,  handradian, gunhand[0], TRUE, TRUE);
+			}
+			else {
+				DrawRotaGraph(pos.x - 8, pos.y - 15, 0.7, lockon, hand[0], TRUE, TRUE);
+				DrawRotaGraph(pos.x, pos.y, 0.7, 0, image[image_change], TRUE, TRUE);
+				DrawRotaGraph(pos.x - 8, pos.y - 15, 0.7, lockon, gunhand[0], TRUE, TRUE);
+			}
+			
 		}
 	}
 	else if (hp == 1) {
@@ -1313,7 +1332,7 @@ void cEnemyJugem::MoveByAutomation()
 	if (hp > 1) {
 		righthit = false;
 		lefthit = false;
-		if (image_change == 4) image_change = 0;
+		if (image_change == 3) image_change = 0;
 		image_change++;
 		if (count % 50 == 0)speed *= -1;
 		if (FocusPos.x + WINDOW_SIZE_X / 2 > pos.x) {
@@ -1487,8 +1506,15 @@ void cEnemyBoss::MoveByAutomation()
 	}
 }
 
-void cEnemyBoss::Render(int image[280])
+void cEnemyBoss::Render(int model[5],int attach)
 {
+	//pos = { 0,0,0 };
+	//MV1SetAttachAnimTime(model[0], attach, 0);
+	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%f,%f", pos.x,pos.y);
+
+	MV1SetPosition(model[0], pos);
+	MV1DrawModel(model[0]);
+	//ScreenFlip();
 	//DrawRotaGraph(pos.x - size.x / 2, pos.y - size.y / 2,1.5,0, image[image_change], TRUE);
 	/*if (enemy_move == 1) {
 		if (direction == true)
@@ -1496,10 +1522,11 @@ void cEnemyBoss::Render(int image[280])
 		else if (direction == false)
 			DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, image[image_change], TRUE);
 	}*/
-	if (direction == true)
+	/*if (direction == true)
 		DrawGraph(pos.x - size.x, pos.y - size.y/2, image[image_change], TRUE);
 	else if (direction == false)
-		DrawTurnGraph(pos.x - size.x, pos.y - size.y/2, image[image_change], TRUE);
+		DrawTurnGraph(pos.x - size.x, pos.y - size.y/2, image[image_change], TRUE);*/
+
 }
 
 /*------------------------------------------------------------------------------*
@@ -1784,4 +1811,14 @@ void cWall::Update(bool flag,VECTOR wallpos)
 		count--;
 		pos.y -= 32;
 	}
+}
+
+/*------------------------------------------------------------------------------*
+| <<< BossRender() >>>
+*------------------------------------------------------------------------------*/
+
+void cCharacterManager::BossRender()
+{
+	MV1SetPosition(boss_3d_cleave, VGet(1000, 0, 3000));
+	MV1DrawModel(boss_3d_cleave);
 }

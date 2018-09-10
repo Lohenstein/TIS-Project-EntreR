@@ -193,6 +193,7 @@ void	cGame::Render() {
 	dialog->Render();
 	gui->Render();
 	RenderGui();
+	character->BossRender();
 
 	// クリア時
 	if (IsClearFlag) {
@@ -205,6 +206,8 @@ void	cGame::Render() {
 		trans += 2;
 	}
 
+	//MV1SetPosition(character->boss_3d_cleave, VGet(0, 0, 3000));
+	//MV1DrawModel(character->boss_3d_cleave);
 	//DrawFormatString(10, 10, 0xFFFFFF, "操作キャラの座標:x=%d, y=%d", (int)FocusPos.x, (int)FocusPos.y);
 }
 

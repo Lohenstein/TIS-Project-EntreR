@@ -414,7 +414,7 @@ public:
 	}
 	void Update();
 	void MoveByAutomation();
-	void Render(int image[280]);
+	void Render(int model[0],int attachs);
 };
 
 class cEnemyCircularSaw :public cEnemy {
@@ -726,7 +726,7 @@ public:
 	cSpring							*spring[ENEMY_MAX];
 	cGear							*gear[ENEMY_MAX];
 	cMoveWall						*movewall[ENEMY_MAX];
-	//cMoveWall::cWall				*wall[ENEMY_MAX];
+	// cMoveWall::cWall				*wall[ENEMY_MAX];
 	// こっちのwallを読み込んでいる
 	cWall							*wall[ENEMY_MAX];
 
@@ -749,6 +749,13 @@ public:
 	int		watch_img[39];
 	int		switch_img[20];
 	int		gear_img[13];
+	int		boss_3d_down;
+	int		boss_3d_beam;
+	int		boss_3d_lockon;
+	int		boss_3d_barrage;
+	int		boss_3d_cleave;
+	int		boss_move_3d[5];
+	int		attachIndex;
 
 	void	Update(int gettime);
 	void	Render();
@@ -756,6 +763,7 @@ public:
 	void	LoadCharacters(string name);
 	void	DeleteCharacters();
 	void	DeleteDeathCharacters();
+	void	BossRender();
 	cCharacterManager(string name) {
 		LoadCharacters(name);
 		LoadDivGraph("data/img/enemy/Jumpman.PNG", 120, 30, 4, 300, 300, jumpman_img);
@@ -777,7 +785,16 @@ public:
 		LoadDivGraph("data/img/enemy/Watch.PNG", 39, 39, 1, 300, 300, watch_img);
 		LoadDivGraph("data/img/enemy/Switch.PNG", 20, 20, 1, 300, 300, switch_img);
 		LoadDivGraph("data/img/enemy/Gear.PNG", 13, 13, 1, 300, 300, gear_img);
-
+		boss_3d_down = MV1LoadModel("data/img/enemy/ボス_ダウン.mv1");
+		boss_3d_beam = MV1LoadModel("data/img/enemy/ボス_ビーム.mv1");
+		boss_3d_lockon = MV1LoadModel("data/img/enemy/ボス_自機狙い.mv1");
+		boss_3d_barrage = MV1LoadModel("data/img/enemy/ボス_弾幕.mv1");
+		boss_3d_cleave = MV1LoadModel("data/img/enemy/ボス_薙ぎ払い.mv1");
+		boss_move_3d[0] = MV1LoadModel("data/img/enemy/ボス_ダウン.mv1");
+		for (int i = 0; i < 4; i++) {
+			boss_move_3d[i] = MV1SetRotationXYZ(boss_move_3d[i], VGet(2.827435, -3.979354, 0));
+		}
+		attachIndex = MV1AttachAnim(boss_3d_down,0,-1,FALSE);
 	}
 	~cCharacterManager() {
 		DeleteCharacters();
@@ -796,6 +813,11 @@ public:
 		for (int i = 0; i < 38; i++) { DeleteGraph(chocolate_img[i]); }
 		for (int i = 0; i < 39; i++) { DeleteGraph(watch_img[i]); }
 		for (int i = 0; i < 13; i++) { DeleteGraph(gear_img[i]); }
+		MV1DeleteModel(boss_3d_down);
+		MV1DeleteModel(boss_3d_beam);
+		MV1DeleteModel(boss_3d_lockon);
+		MV1DeleteModel(boss_3d_barrage);
+		MV1DeleteModel(boss_3d_cleave);
 		DeleteGraph(floorimg);
 	}
 
