@@ -14,6 +14,43 @@ void	CheckHitRectAndRect(cObject *obj1, cObject *obj2) {
 	}
 }
 
+bool	CheckHitMapTile(cObject *obj1, int x, int y) {
+	if (obj1->GetPos().x - (obj1->GetSize().x / 2.f) <= x * bsize + bsize &&
+		x * bsize <= obj1->GetPos().x + (obj1->GetSize().x / 2.f) &&
+		obj1->GetPos().y - (obj1->GetSize().y / 2.f) <= y * bsize + bsize &&
+		y * bsize <= obj1->GetPos().y + (obj1->GetSize().y / 2.f)) {
+
+		return true;
+	}
+	return false;
+}
+
+bool	CheckCollisionAroundMaptile(cObject *hit) {
+
+	VECTOR pos = hit->GetPos();
+
+	int csize = 20;
+	int x = (int)pos.x / (int)bsize, y = (int)pos.y / (int)bsize;
+	int startx = x - csize / 2, starty = y - csize / 2;
+	int endx = x + csize / 2, endy = y + csize / 2;
+
+	if (startx < 0) startx = 0;
+	if (endx > stage_size_x) endx = stage_size_x;
+	if (starty < 0) starty = 0;
+	if (endy > stage_size_y) endy = stage_size_y;
+
+	for (int i = startx; i < endx; i++) {
+		for (int j = starty; j < endy; j++) {
+			if (stage_collision[i][j]) {
+				if (CheckHitMapTile(hit, i, j)) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
 void	CheckHitRectAndCircle(cObject *obj1, cObject *obj2) {
 	if ((obj2->GetPos().x > obj1->GetPos().x - (obj1->GetSize().x / 2.f) && obj2->GetPos().x < obj1->GetPos().x + (obj1->GetSize().x / 2.f) && obj2->GetPos().y > obj1->GetPos().y - (obj1->GetSize().y / 2.f) - obj2->GetSize().z && obj2->GetPos().y < obj1->GetPos().y + (obj1->GetSize().y / 2.f) + obj2->GetSize().z) ||
 		(obj2->GetPos().x > obj1->GetPos().x - (obj1->GetSize().x / 2.f) - obj2->GetSize().z && obj2->GetPos().x < obj1->GetPos().x + (obj1->GetSize().x / 2.f) + obj2->GetSize().z && obj2->GetPos().y > obj1->GetPos().y - (obj1->GetSize().y / 2.f) && obj2->GetPos().y < obj1->GetPos().y + (obj1->GetSize().y / 2.f)) ||

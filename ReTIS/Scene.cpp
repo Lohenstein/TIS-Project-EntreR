@@ -190,7 +190,15 @@ void	cGame::Render() {
 		DrawOver();
 		trans += 2;
 	}
-
+	/*
+	for (int i = 0; i < stage->GetStageSizeX(); i++) {
+		for (int j = 0; j < stage->GetStageSizeY(); j++) {
+			if (stage_collision[i][j]) {
+				DrawBox(i, j, i+1, j+1, 0xFFFFFF, true);
+			}
+		}
+	}
+	*/
 	//DrawFormatString(10, 10, 0xFFFFFF, "‘€ìƒLƒƒƒ‰‚ÌÀ•W:x=%d, y=%d", (int)FocusPos.x, (int)FocusPos.y);
 }
 

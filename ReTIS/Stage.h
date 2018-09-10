@@ -3,6 +3,10 @@
 const float bsize = 32.f;	// マップタイルのサイズ
 using namespace std;
 
+extern bool **stage_collision;
+extern int stage_size_x;
+extern int stage_size_y;
+
 /*------------------------------------------------------------------------------*
 | <<< マップタイルクラス >>>
 *------------------------------------------------------------------------------*/
@@ -47,9 +51,14 @@ public:
 	};
 	~cStageManager() {
 		for (int i = 0; i < 3200; i++) { DeleteGraph(image[i]); }
-		for (int i = 0; i < stage_x; i++) { delete[] stage[i]; }
+		for (int i = 0; i < stage_x; i++) {
+			delete[] stage[i]; 
+			delete[] stage_collision[i];
+		}
 		delete[] stage;
+		delete[] stage_collision;
 		stage = nullptr;
+		stage_collision = nullptr;
 	}
 	void	LoadStageData(string name);	// 最初に必ず通すこと！
 	//VECTOR	*GetPos(int x, int y) { return &stage[x][y].GetPos(); }
