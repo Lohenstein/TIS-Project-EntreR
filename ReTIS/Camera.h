@@ -44,4 +44,5 @@ public:
 	void	Update(VECTOR focus);
 	void	Render(int handle,int getx,int gety);
 	void	SetStageSize(int x, int y) {sx = x, sy = y;}
+	void	AutoScrol(VECTOR focus);
 };
