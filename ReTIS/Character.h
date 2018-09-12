@@ -63,6 +63,7 @@ protected:
 public:
 	cAnchor		*anchor;
 	cAnchorWire *anchorwire[120];
+	VECTOR		bend_save[120];
 
 	float	rad2anchor, dis2anchor, wrad, wrad_old, swing;
 	bool	IsAnchored = false;
@@ -88,7 +89,7 @@ public:
 		LoadDivGraph("data/img/amecha/jump.png", 30, 1, 30, 606, 558, img[2]);
 		LoadDivGraph("data/img/amecha/shot.png", 30, 1, 30, 606, 544, img[3]);
 		for (int i = 0; i < 120; i++) {
-			IsBended[i] = false;
+			bend_save[i] = { -1.f, -1.f, -1.f };
 		}
 	}
 	~cPlayer() {

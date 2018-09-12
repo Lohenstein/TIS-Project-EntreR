@@ -62,6 +62,8 @@ enum eObjectType {
 extern void		CheckHitRectAndRect(cObject *obj1, cObject *obj2);
 extern void		CheckHitRectAndCircle(cObject *obj1, cObject *obj2);
 extern void		CheckHitRectAndRollingRect(cObject *obj1, cObject *obj2);
+extern bool		CheckHitMapTile(cObject *obj1, int x, int y);
+extern bool		CheckCollisionAroundMaptile(cObject *hit);
 //extern void		CheckHitRollingRectAndCircle(cObject *obj1, cObject *obj2);
 extern float	col_CheckRadian(VECTOR p1, VECTOR p2);
 extern int		col_HitRadian(VECTOR p1, VECTOR p2, float rad);

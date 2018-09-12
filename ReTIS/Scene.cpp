@@ -212,6 +212,15 @@ void	cGame::Render() {
 		DrawOver();
 		trans += 2;
 	}
+	/*
+	for (int i = 0; i < stage->GetStageSizeX(); i++) {
+		for (int j = 0; j < stage->GetStageSizeY(); j++) {
+			if (stage_collision[i][j]) {
+				DrawBox(i, j, i+1, j+1, 0xFFFFFF, true);
+			}
+		}
+	}
+	*/
 
 
 		//MV1SetPosition(character->boss_3d_cleave, VGet(0, 0, 3000));

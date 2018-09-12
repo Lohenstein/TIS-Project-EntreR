@@ -214,43 +214,62 @@ void	cPlayer::UpdateAnchor() {
 		else {
 			// ‚­‚Á‚Â‚¢‚½‚Æ‚«
 			if (!IsAnchored) {
-				savepos = pos;
+				savepos	   = pos;
 				rad2anchor = atan2f(pos.y - anchor->GetPos().y, pos.x - anchor->GetPos().x) - (DX_PI_F / 2.f);
 				dis2anchor = sqrtf((anchor->GetPos().x - pos.x) * (anchor->GetPos().x - pos.x) + (anchor->GetPos().y - pos.y) * (anchor->GetPos().y - pos.y));
 				IsAnchored = true;
-				swing = 0.f;
+				swing	   = 0.f;
 				jump_count = 0;
-				wrad_old = 0;
-				wrad = cosf(rad2anchor);// * (rad2anchor / (DX_PI_F / 2.f));
+				wrad_old   = 0;
+				wrad	   = cosf(rad2anchor);// * (rad2anchor / (DX_PI_F / 2.f));
 				if (wrad > wrad_old) anchor_dir = 1;
 				if (wrad < wrad_old) anchor_dir = -1;
+				for (int i = 0; i < 120; i++) {
+					bend_save[i] = { -1.f, -1.f, -1.f };
+				}
 			}
 			else{
 				wrad_old = wrad;
-				wrad = cosf(swing) * rad2anchor;
+				wrad	 = cosf(swing) * rad2anchor;
 
 				if (wrad > wrad_old) anchor_dir = 1;
 				if (wrad < wrad_old) anchor_dir = -1;
 
 				float	bend_distance;
 				int		bend_count = 0;
-				VECTOR	bend_pos = anchor->GetPos();
+				int		all_count  = 0;
+				VECTOR	bend_pos   = anchor->GetPos();
+				bend_save[0] = anchor->GetPos();
+				bend_save[0].z = 0.f;
+				bend_pos.z = 0.f;
+				VECTOR  wirepos;
 
 				// ƒƒCƒ„[‚Ì‹üÜˆ—
 				for (int i = 0; i < 120; i++) {
 					if (i < (int)dis2anchor / 5) {
-						if (IsBended[i]) {
-							bend_pos = anchorwire[i]->GetPos();
-							bend_pos.z += 1.f;
-							bend_count = 0;
-						}
-						//HitCheck(scene, (cObject*)anchorwire[i]);
-						VECTOR wirepos;
 						wirepos.x = bend_pos.x + (cosf(wrad + DX_PI_F / 2.f) * (5.f * (float)bend_count));
 						wirepos.y = bend_pos.y + (sinf(wrad + DX_PI_F / 2.f) * (5.f * (float)bend_count));
 						anchorwire[i] = new cAnchorWire(wirepos, { 5.f, 5.f, 0.f }, i, rad, WireAnchorWire);
-					
+						
+						if (CheckCollisionAroundMaptile((cObject*)anchorwire[i])) {
+							if (bend_save[i].x == -1.f && bend_save[i].y == -1) {
+								bend_save[i] = wirepos;
+							}
+							else{
+								bend_pos.x = bend_save[i].x;
+								bend_pos.y = bend_save[i].y;
+								bend_pos.z += 1.f;
+								bend_count = 0;
+
+								anchorwire[i] = new cAnchorWire(bend_save[i], { 5.f, 5.f, 0.f }, i, rad, WireAnchorWire);
+							}
+						}
+						else {
+							bend_save[i] = wirepos;
+						}
+
 						bend_count++;
+						all_count++;
 					}
 					else {
 						if (anchorwire[i] != nullptr) {
@@ -262,8 +281,7 @@ void	cPlayer::UpdateAnchor() {
 					//if (anchorwire[i] != nullptr) anchorwire[i]->ResetFlag();
 				}
 
-				pos.x = anchor->GetPos().x + cosf(wrad + DX_PI_F / 2.f) * dis2anchor;
-				pos.y = anchor->GetPos().y + sinf(wrad + DX_PI_F / 2.f) * dis2anchor;
+				pos = wirepos;
 
 				swing += DX_PI_F / 45.f;
 				jump = 0.f;

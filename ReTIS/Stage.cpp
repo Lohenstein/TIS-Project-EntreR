@@ -3,6 +3,10 @@
 
 using namespace std;
 
+bool	**stage_collision;
+int		stage_size_x;
+int		stage_size_y;
+
 vector<string> split(string& input, char delimiter)
 {
 	istringstream stream(input);
@@ -42,12 +46,14 @@ void	cStageManager::LoadStageData(string name) {
 		// 最初の一行目はマップの大きさ情報
 		if (count == 0) {
 			// 大きさを格納
-			stage_x = stoi(str_mapdata.at(0));
-			stage_y = stoi(str_mapdata.at(1));
+			stage_x = stage_size_x = stoi(str_mapdata.at(0));
+			stage_y = stage_size_y = stoi(str_mapdata.at(1));
 			// マップの大きさ分クラスの配列を確保
 			stage = new cStageMapTile*[stage_x];
+			stage_collision = new bool*[stage_x];
 			for (int i = 0; i < stage_x; i++) {
 				stage[i] = new cStageMapTile[stage_y];
+				stage_collision[i] = new bool[stage_y];
 			}
 		}
 		else {
@@ -57,6 +63,13 @@ void	cStageManager::LoadStageData(string name) {
 				VECTOR size = { bsize, bsize, NULL };
 				stage[i][count - 1].SetData(pos, size, stoi(str_mapdata.at(i)));
 				stage[i][count - 1].SetBg(stoi(str_bg1.at(i)), stoi(str_bg2.at(i)));
+				// 当たり判定用？
+				if (stoi(str_mapdata.at(i)) != -1) {
+					stage_collision[i][count - 1] = true;
+				}
+				else {
+					stage_collision[i][count - 1] = false;
+				}
 			}
 		}
 		count++;
