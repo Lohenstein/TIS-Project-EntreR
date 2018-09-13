@@ -541,7 +541,7 @@ void	cEnemy::Render() {
 void	cCharacterManager::Render() {
 	player->Render();
 	clear->DebugRender();
-	if (boss != nullptr) boss->Render(boss_move_3d,attachIndex);
+	//if (boss != nullptr) boss->Render(boss_3d_down,attachIndex);
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (jumpman[i]		!= nullptr) jumpman[i]		->Render(jumpman_img);
 		if (hardbody[i]		!= nullptr) hardbody[i]		->Render(hardbody_img);
@@ -564,7 +564,6 @@ void	cCharacterManager::Render() {
 }
 void	cCharacterManager::Update(int gettime) {
 	player->Update();
-	if (boss!= nullptr) boss->Update();
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (jumpman[i]		!= nullptr) jumpman[i]		->Update();
 		if (hardbody[i]		!= nullptr) hardbody[i]		->Update();
@@ -583,6 +582,7 @@ void	cCharacterManager::Update(int gettime) {
 		if (wall[i]			!= nullptr)wall[i]			->Update(movewall[i]->GetFlag(), movewall[i]->GetWallPos());
 		//if (wall[i] != nullptr) wall[i]->Update(movewall[i]);
 		if (gear[i]			!= nullptr) gear[i]			->Update();
+		if (boss[i]			!= nullptr) boss[i]			->Update();
 	}
 	DeleteDeathCharacters();
 	if (mp > 300) mp = 300;
@@ -593,8 +593,6 @@ void	cCharacterManager::DeleteCharacters() {
 
 	delete player;
 	player = nullptr;
-	delete boss;
-	boss   = nullptr;
 	for (int i = 0; i < ENEMY_MAX; i++) {
 
 		delete jumpman[i];
@@ -611,6 +609,7 @@ void	cCharacterManager::DeleteCharacters() {
 		delete coin[i];
 		delete movewall[i];
 		delete gear[i];
+		delete boss[i];
 
 
 		jumpman[i]		= nullptr;
@@ -627,17 +626,21 @@ void	cCharacterManager::DeleteCharacters() {
 		coin[i]			= nullptr;
 		movewall[i]		= nullptr;
 		gear[i]			= nullptr;
+		boss[i]			= nullptr;
 	}
 }
 void	cCharacterManager::DeleteDeathCharacters() {
 	if (player->GetHp() <= 0) {
 		IsOverFlag = true;
 	}
-	if (boss != nullptr) {
-		if (boss->GetHp() <= 0) {
-			delete boss;
-			boss = nullptr;
+	for (int i = 0; i < ENEMY_MAX; i++) {
+		if (boss[i] != nullptr) {
+			if (boss[i]->GetHp() <= 0) {
+				delete boss[i];
+				boss[i] = nullptr;
+			}
 		}
+
 	}
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (jumpman[i] != nullptr) {
@@ -756,7 +759,6 @@ void	cCharacterManager::LoadCharacters(string name) {
 				break;
 			}
 			break;
-
 		case eCircularsaw:
 			for (int i = 0; i < ENEMY_MAX; i++) {
 				if (circularsaw[i] == nullptr) {
@@ -1435,6 +1437,12 @@ void cEnemyJugem::Render(int img[])
 
 void cEnemyBoss::Update()
 {
+	if (CheckHitKey(KEY_INPUT_LEFT) > 0) {
+		pos.x -= 10;
+	}
+	if (CheckHitKey(KEY_INPUT_RIGHT) > 0) {
+		pos.x += 10;
+	}
 	MoveByAutomation();
 	//Physical();
 }
@@ -1540,14 +1548,16 @@ void cEnemyBoss::MoveByAutomation()
 	}
 }
 
-void cEnemyBoss::Render(int model[5],int attach)
+void cEnemyBoss::Render(int model,int attach)
 {
+	MV1SetScale(model, VGet(0.05, 0.05, 0.05));
+
 	//pos = { 0,0,0 };
 	//MV1SetAttachAnimTime(model[0], attach, 0);
 	DrawFormatString((int)FocusPos.x, (int)FocusPos.y, 0xFFFFFF, "%f,%f", pos.x,pos.y);
 
-	MV1SetPosition(model[0], pos);
-	MV1DrawModel(model[0]);
+	//MV1SetPosition(model[0], pos);
+	//MV1DrawModel(model[0]);
 	//ScreenFlip();
 	//DrawRotaGraph(pos.x - size.x / 2, pos.y - size.y / 2,1.5,0, image[image_change], TRUE);
 	/*if (enemy_move == 1) {
@@ -1853,6 +1863,23 @@ void cWall::Update(bool flag,VECTOR wallpos)
 
 void cCharacterManager::BossRender()
 {
-	MV1SetPosition(boss_3d_cleave, VGet(1000, 0, 3000));
-	MV1DrawModel(boss_3d_cleave);
+	MV1SetScale(boss_3d_down, VGet(0.1, 0.1, 0.05));
+	//if (playtime < attachIndex)playtime++;
+	for (int i = 0; i < ENEMY_MAX; i++) {
+	
+		if (boss[i] != nullptr) {
+			MV1SetAttachAnimTime(boss_3d_down, attachIndex, 10);
+			//MV1SetAttachAnimTime(boss_3d_down,attachIndex,playtime);
+			MV1SetRotationXYZ(boss_3d_down, VGet(0.f, angleY, 0.f));
+			boss[i]->Render(boss_3d_down, 10);
+			MV1SetPosition(boss_3d_down,boss[i]->GetBossPos());
+			//MV1SetPosition(boss_3d_cleave, boss[i]->GetBossPos());
+			//MV1DrawModel(boss_3d_down);
+			DrawFormatString(FocusPos.x, FocusPos.y + i * 10, 0xFFFFFF, "%f",angleY);
+			ScreenPos = ConvWorldPosToScreenPos(MV1GetFramePosition(boss_3d_down, 26));
+		}
+	}
+	//DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%f,%f",boss->GetBossPos().x,boss->GetBossPos().y);
+	//DrawPixel(boss->GetPos().x,boss->GetPos().y,0xfffff);
+	//DrawBox(boss->GetPos().x, boss->GetPos().y, boss->GetPos().x + 500, boss->GetPos().y + 500, 0xfffff, true);
 }

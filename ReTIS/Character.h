@@ -344,6 +344,7 @@ public:
 	void Update();
 	void MoveByAutomation();
 	void Render(int image[]);
+	
 };
 
 class cEnemyJugem :public cEnemy {
@@ -394,6 +395,7 @@ public:
 	short attack_count;
 	VECTOR attackpos[5];
 	VECTOR bulletsize;
+	VECTOR BossPos;
 	float lockon;
 	int rad;
 
@@ -414,11 +416,15 @@ public:
 		lockon = 0.f;
 		rad = 0;
 		bulletsize = {10,10,0};
-		
+		//BossPos = size;
+		//BossPos = VScale(pos, 0.1);
 	}
 	void Update();
 	void MoveByAutomation();
-	void Render(int model[0],int attachs);
+	void Render(int model,int attachs);
+	VECTOR GetBossPos() { return pos; }
+	void BossMovel() { pos.x += 10; }
+	void BossMover() { pos.y += 10; }
 };
 
 class cEnemyCircularSaw :public cEnemy {
@@ -718,7 +724,7 @@ public:
 	cEnemyJumpman					*jumpman[ENEMY_MAX];
 	cEnemyBossmiddle				*bossmiddle[ENEMY_MAX];
 	cEnemyJugem						*jugem[ENEMY_MAX];
-	cEnemyBoss						*boss;
+	cEnemyBoss						*boss[ENEMY_MAX];
 
 	// Entity
 	cEnemyCircularSaw				*circularsaw[ENEMY_MAX];
@@ -759,7 +765,12 @@ public:
 	int		boss_3d_barrage;
 	int		boss_3d_cleave;
 	int		boss_move_3d[5];
-	int		attachIndex;
+	int		attachIndex = MV1AttachAnim(boss_3d_down, 0, -1, FALSE);
+	float	playtime = 0.f;
+
+	float angleY = 1.f;
+
+	VECTOR ScreenPos;
 
 	void	Update(int gettime);
 	void	Render();
@@ -798,7 +809,7 @@ public:
 		for (int i = 0; i < 4; i++) {
 			boss_move_3d[i] = MV1SetRotationXYZ(boss_move_3d[i], VGet(2.827435f, -3.979354f, 0));
 		}
-		attachIndex = MV1AttachAnim(boss_3d_down,0,-1,FALSE);
+		MV1SetScale(boss_3d_down, VGet(0.5, 0.5, 0.5));
 	}
 	~cCharacterManager() {
 		DeleteCharacters();

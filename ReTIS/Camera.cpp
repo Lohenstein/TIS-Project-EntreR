@@ -96,6 +96,10 @@ void cCamera::Update(VECTOR focus) {
 	if (camera_py > 3000.f) camera_py = 3000.f;
 }
 
+void cCamera::AutoScrol(VECTOR focuse){
+
+}
+
 void cCamera::Render(int handle,int getx,int gety) {
 	int imageid;
 	// ”wŒiF‹ó

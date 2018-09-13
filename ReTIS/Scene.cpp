@@ -124,7 +124,7 @@ void	cGame::Collision() {
 	for (int i = 0; i < BULLET_MAX; i++) {
 		if (bullet.GetBullet(i) != nullptr) {
 			CheckHitRectAndRect(character->GetPlayer(), bullet.GetBullet(i));
-			if (character->GetEnemyBoss() != nullptr)	CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyBoss());
+			// if (character->GetEnemyBoss() != nullptr)	CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyBoss());
 			for (int j = 0; j < ENEMY_MAX; j++) {
 				if (character->GetEnemyJumpman(j)	!= nullptr) CheckHitRectAndRect(bullet.GetBullet(i), character->GetEnemyJumpman(j));
 				if (character->GetEnemyHardBody(j)	!= nullptr) CheckHitRectAndRollingRect(bullet.GetBullet(i), character->GetEnemyHardBody(j));
@@ -138,7 +138,7 @@ void	cGame::Collision() {
 		}
 	}
 	// キャラクタ同士
-	if (character->GetEnemyBoss() != nullptr)	CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyBoss());
+	// if (character->GetEnemyBoss() != nullptr)	CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyBoss());
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (character->GetEnemyJumpman(i)	!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetEnemyJumpman(i));
 		if (character->GetEnemyHardBody(i)	!= nullptr) CheckHitRectAndRollingRect(character->GetPlayer(), character->GetEnemyHardBody(i));
@@ -178,6 +178,8 @@ void	cGame::Update() {
 }
 
 void	cGame::Render() {
+	
+
 	// 描画先ウィンドウを変更
 	SetDrawScreen(bghandle);
 	ClearDrawScreen();
@@ -186,10 +188,16 @@ void	cGame::Render() {
 	character->Render();
 	stage->Render();
 	bullet.Render();
+
+	DrawBox(character->ScreenPos.x, character->ScreenPos.y, character->ScreenPos.x + 100, character->ScreenPos.y + 100, 0xfffff, true);
+
+
 	// 戻す
 	SetDrawScreen(DX_SCREEN_BACK);
-
+	
 	camera->Render(bghandle,stage->GetStageSizeX(),stage->GetStageSizeY());
+	SetupCamera_Ortho(-0.01f);
+	character->BossRender();
 	dialog->Render();
 	gui->Render();
 	RenderGui();
@@ -215,7 +223,8 @@ void	cGame::Render() {
 	}
 	*/
 
-	//MV1SetPosition(character->boss_3d_cleave, VGet(0, 0, 3000));
+
+		//MV1SetPosition(character->boss_3d_cleave, VGet(0, 0, 3000));
 	//MV1DrawModel(character->boss_3d_cleave);
 	//DrawFormatString(10, 10, 0xFFFFFF, "操作キャラの座標:x=%d, y=%d", (int)FocusPos.x, (int)FocusPos.y);
 }
