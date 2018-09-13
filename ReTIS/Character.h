@@ -1,5 +1,6 @@
 #pragma once
 
+extern int	  anchorimg, wireimg;
 extern VECTOR FocusPos;
 extern VECTOR FocusOld;
 extern VECTOR FocusCam;
@@ -88,6 +89,8 @@ public:
 		LoadDivGraph("data/img/amecha/idol.png", 30, 1, 30, 606, 544, img[1]);
 		LoadDivGraph("data/img/amecha/jump.png", 30, 1, 30, 606, 558, img[2]);
 		LoadDivGraph("data/img/amecha/shot.png", 30, 1, 30, 606, 544, img[3]);
+		wireimg   = LoadGraph("data/img/parts/wire.png");
+		anchorimg = LoadGraph("data/img/parts/anchor.png");
 		for (int i = 0; i < 120; i++) {
 			bend_save[i] = { -1.f, -1.f, -1.f };
 		}
@@ -254,16 +257,16 @@ public:
 	float GetPosy() { return recty; }
 	float GetRadrightbottom()  { return cos(rad); }
 	float GetRadleftbottom() { 
-		rad = d2r(angle * 2);
-		return cos(rad);
+		rad = (float)d2r(angle * 2);
+		return cosf(rad);
 	}
 	float GetRadlefttop() {
-		rad = d2r(angle * 3);
-		return sin(rad);
+		rad = (float)d2r(angle * 3);
+		return sinf(rad);
 	}
 	float GetRadrighttop() {
-		rad = d2r(angle * 4);
-		return sin(rad);
+		rad = (float)d2r(angle * 4);
+		return sinf(rad);
 	}
 };
 
@@ -434,8 +437,8 @@ public:
 		now_point = 0;
 		type = Enemy;
 
-		SetPoint(0, x1, y1);
-		SetPoint(1, x2, y2);
+		SetPoint(0, (float)x1, (float)y1);
+		SetPoint(1, (float)x2, (float)y2);
 		image_change = 0;
 	}
 	void	Update(float s, int p1, int p2);
@@ -490,8 +493,8 @@ public:
 		now_point = 0;
 		type = MoveFloor;
 
-		SetPoint(0, x1, y1);
-		SetPoint(1, x2, y2);
+		SetPoint(0, (float)x1, (float)y1);
+		SetPoint(1, (float)x2, (float)y2);
 	}
 	void	Render();
 	void	Update(float s, int p1, int p2);
@@ -510,7 +513,7 @@ public:
 	cDropFloor(int w, int h, int x, int y) {
 		flag = false;
 		size = { (float)w, (float)h, 0.f };
-		SetPoint(x, y);
+		SetPoint((float)x, (float)y);
 		time = 0;
 		type = DropFloor;
 	}
@@ -681,7 +684,7 @@ public:
 		wallpos = { (float)sx,(float)sy,0.f };
 		flag = false;
 		size = { 300.f / 2.f, 300.f / 2.f, 0.f };
-		sx = 250 / 2.f, sy = 250 / 2.f;
+		sx = (int)(250 / 2.f), sy = (int)(250 / 2.f);
 		type = NothingObject;
 		hp = 2;
 
@@ -793,7 +796,7 @@ public:
 		boss_3d_cleave = MV1LoadModel("data/img/enemy/ボス_薙ぎ払い.mv1");
 		boss_move_3d[0] = MV1LoadModel("data/img/enemy/ボス_ダウン.mv1");
 		for (int i = 0; i < 4; i++) {
-			boss_move_3d[i] = MV1SetRotationXYZ(boss_move_3d[i], VGet(2.827435, -3.979354, 0));
+			boss_move_3d[i] = MV1SetRotationXYZ(boss_move_3d[i], VGet(2.827435f, -3.979354f, 0));
 		}
 		attachIndex = MV1AttachAnim(boss_3d_down,0,-1,FALSE);
 	}

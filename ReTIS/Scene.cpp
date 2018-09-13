@@ -193,7 +193,7 @@ void	cGame::Render() {
 	dialog->Render();
 	gui->Render();
 	RenderGui();
-	character->BossRender();
+	//character->BossRender();
 
 	// クリア時
 	if (IsClearFlag) {
@@ -443,7 +443,6 @@ void	cTitle::DrawOption() {
 | <<< ステージセレクトメニュー >>>
 *------------------------------------------------------------------------------*/
 void	cTitle::DrawStageSelect() {
-	int w;
 	// 各メニューへ移動
 	switch (stageselect.draw(550, 280, 4, stage_str)) {
 		// GAME START
@@ -470,25 +469,36 @@ void	LoadStage(string str, bool reload) {
 	if (!reload) stagepath = str; // ステージのファイルパス
 
 	// ステージ初期化
+
+	DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
+	// Now Loading描画
+	int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
+	DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 40), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading...");
+	DrawBox(20, 600, 1260, 620, 0x111111, true);
+	ScreenFlip();
+
+	//SetUseASyncLoadFlag(true);
+
 	scene.reset();
-
-	SetUseASyncLoadFlag(true);
-
 	scene.reset(new cGame);
 
-	SetUseASyncLoadFlag(false);
+	//SetUseASyncLoadFlag(false);
+
+	/*int load_num = GetASyncLoadNum();
 
 	while (GetASyncLoadNum() != 0 && !ScreenFlip() && !ProcessMessage() && !ClearDrawScreen()) {
 
-		while (GetNowCount() - FrameStartTime < 1000 / 60) {}
-		FrameStartTime = GetNowCount();
-
 		DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
 		// Now Loading描画
-		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
+		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading... %d", GetASyncLoadNum());
 		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 40), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading... %d", GetASyncLoadNum());
-	}
 
+		DrawBox(20, 600, 1260, 620, 0x111111, true);
+		DrawBox(20, 600, 20+((1240/load_num)*(load_num-GetASyncLoadNum())), 620, 0xFFFFFF, true);
+
+		Sleep(100);
+	}
+	*/
 	// リロードの場合はタイトルの初期化をしない
 	if (!reload) title.reset();
 

@@ -19,9 +19,9 @@ int		cMenu::draw(int mx, int my, int n, char **str) {
 	if (ease_flag != 0) {
 		double tx = Easing::OutQuint(ease_time, 1.0, x - ((double)selected * 36), x - (((double)selected + ease_flag) * 36));
 		double ty = Easing::OutQuint(ease_time, 1.0, y + ((double)selected * 61), y + (((double)selected + ease_flag) * 61));
-		int color = Easing::OutQuint(ease_time, 1.0, 222, 122);
+		int color = (int)Easing::OutQuint(ease_time, 1.0, 222, 122);
 
-		DrawGraph(tx, ty, title_selected, TRUE);
+		DrawGraph((int)tx, (int)ty, title_selected, TRUE);
 		int str_x = (x + 560) - ((selected * 36) + GetDrawFormatStringWidthToHandle(font_handle[FONT_MENU], "%s", str[selected]));
 		DrawFormatStringToHandle(str_x, y + (selected * 61) + 8, GetColor(color, color, color), font_handle[FONT_MENU], "%s", str[selected]);
 		ease_time += 30;
@@ -42,7 +42,7 @@ int		cMenu::draw(int mx, int my, int n, char **str) {
 		}
 	}
 	// Ç©Ç¡Ç±Ç¢Ç¢â°ê¸
-	DrawLineAA(x + 600, y, x + 600 - (n * 36), y + (n * 61), GetColor(170, 170, 170));
+	DrawLineAA((float)x + 600.f, y, (float)x + 600.f - ((float)n * 36.f), (float)y + ((float)n * 61.f), GetColor(170, 170, 170));
 
 
 	// ÉLÅ[ì¸óÕ

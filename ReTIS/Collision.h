@@ -20,16 +20,16 @@ public:
 	virtual void HitAction(cObject *hit) = 0;			// Õ“ËŒã‚Ìˆ—
 	float GetRadrightbottom() { return cos(rad); }
 	float GetRadleftbottom() {
-		rad = d2r(angle * 2);
-		return sin(rad);
+		rad = (float)d2r(angle * 2);
+		return sinf(rad);
 	}
 	float GetRadlefttop() {
-		rad = d2r(angle * 3);
-		return sin(rad);
+		rad = (float)d2r(angle * 3);
+		return sinf(rad);
 	}
 	float GetRadrighttop() {
-		rad = d2r(angle * 4);
-		return cos(rad);
+		rad = (float)d2r(angle * 4);
+		return cosf(rad);
 	}
 };
 
