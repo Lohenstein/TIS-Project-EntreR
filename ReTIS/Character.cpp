@@ -198,6 +198,7 @@ void	cPlayer::UpdateAnchor() {
 		// 飛んでるとき
 		if (anchor->GetFlag()) {
 			anchor->Update();
+			IsFrying = false;
 			float distance	= sqrtf((anchor->GetPos().x - pos.x) * (anchor->GetPos().x - pos.x) + (anchor->GetPos().y - pos.y) * (anchor->GetPos().y - pos.y));
 			float rad		= atan2f(pos.y - anchor->GetPos().y, pos.x - anchor->GetPos().x) - DX_PI_F;
 			if (distance >= 600.f) {
@@ -215,9 +216,11 @@ void	cPlayer::UpdateAnchor() {
 		else {
 			// くっついたとき
 			if (!IsAnchored) {
+				if (anchor->GetPos().y > pos.y) IsFrying = true;
 				savepos	   = pos;
 				rad2anchor = atan2f(pos.y - anchor->GetPos().y, pos.x - anchor->GetPos().x) - (DX_PI_F / 2.f);
 				dis2anchor = sqrtf((anchor->GetPos().x - pos.x) * (anchor->GetPos().x - pos.x) + (anchor->GetPos().y - pos.y) * (anchor->GetPos().y - pos.y));
+				save_distance = dis2anchor;
 				IsAnchored = true;
 				swing	   = 0.f;
 				jump_count = 0;
@@ -230,90 +233,116 @@ void	cPlayer::UpdateAnchor() {
 				}
 			}
 			else{
-				wrad_old = wrad;
-				wrad	 = cosf(swing) * rad2anchor;
+				if (!IsFrying) {
 
-				if (wrad > wrad_old) anchor_dir = 1;
-				if (wrad < wrad_old) anchor_dir = -1;
+					wrad_old = wrad;
+					wrad = cosf(swing) * rad2anchor;
 
-				int		bend_count = 0;
-				int		all_count  = 0;
-				int		bend_start = -1;
-				VECTOR	bend_pos   = anchor->GetPos();
-				bend_save[0] = anchor->GetPos();
-				bend_save[0].z = 0.f;
-				bend_pos.z = 0.f;
-				VECTOR  wirepos;
+					if (wrad > wrad_old) anchor_dir = 1;
+					if (wrad < wrad_old) anchor_dir = -1;
 
-				// ワイヤーの屈折処理
-				for (int i = 0; i < 120; i++) {
-					if (i < (int)dis2anchor / 5) {
-						wirepos.x = bend_pos.x + (cosf(wrad + DX_PI_F / 2.f) * (5.f * (float)bend_count));
-						wirepos.y = bend_pos.y + (sinf(wrad + DX_PI_F / 2.f) * (5.f * (float)bend_count));
-						anchorwire[i] = new cAnchorWire(wirepos, { 5.f, 5.f, 0.f }, i, wrad, WireAnchorWire);
-						
-						if (CheckCollisionAroundMaptile((cObject*)anchorwire[i])) {
-							if (bend_save[i].x == -1.f && bend_save[i].y == -1) {
-								bend_save[i] = wirepos;
-							}
-							else{
-								bend_pos.x = bend_save[i].x;
-								bend_pos.y = bend_save[i].y;
-								bend_pos.z += 1.f;
-								bend_count = 0;
+					BendWire();	// ワイヤーの屈折処理
 
-								anchorwire[i] = new cAnchorWire(bend_save[i], { 5.f, 5.f, 0.f }, i, wrad, WireAnchorWire);
-							}
-							if (bend_start == -1) {
-								bend_start = i;
-							}
-							
-							if (bend_start != -1) {
-								int cnt = 0;
-								float r = atan2f(anchorwire[i]->GetPos().y - anchor->GetPos().y, anchorwire[i]->GetPos().x - anchor->GetPos().x) - (DX_PI_F / 2.f);
-								for (int j = 0; j < i; j++) {
-									wirepos.x = anchor->GetPos().x + (cosf(r + DX_PI_F / 2.f) * (5.f * (float)cnt));
-									wirepos.y = anchor->GetPos().y + (sinf(r + DX_PI_F / 2.f) * (5.f * (float)cnt));
-									anchorwire[j] = new cAnchorWire(wirepos, { 5.f, 5.f, 0.f }, j, r, WireAnchorWire);
-									cnt++;
-								}
-								bend_start = -1;
-							}
-						}
-						else {
-							bend_save[i] = wirepos;
-						}
+					swing += DX_PI_F / 45.f;
+					jump = 0.f;
 
-						bend_count++;
-						all_count++;
-					}
-					else {
-						if (anchorwire[i] != nullptr) {
-							// ワイヤーを縮めたときに余った分を消す
-							delete anchorwire[i];
-							anchorwire[i] = nullptr;
-						}
-					}
-					//if (anchorwire[i] != nullptr) anchorwire[i]->ResetFlag();
+					// ぶら下がっているとき
+					if (trigger_r > 55) dis2anchor -= trigger_r / 32.f;
+					if (trigger_l > 55) dis2anchor += trigger_l / 32.f;
+					if (dis2anchor >= 600.f) DetachAnchor();
 				}
+				else {
 
-				pos = wirepos;
+					rad2anchor = atan2f(pos.y - anchor->GetPos().y, pos.x - anchor->GetPos().x) - (DX_PI_F / 2.f);
+					dis2anchor = sqrtf((anchor->GetPos().x - pos.x) * (anchor->GetPos().x - pos.x) + (anchor->GetPos().y - pos.y) * (anchor->GetPos().y - pos.y));
 
-				swing += DX_PI_F / 45.f;
-				jump = 0.f;
+					wrad_old = wrad;
+					wrad = cosf(swing) * rad2anchor;
 
-				// ぶら下がっているとき
-				if (trigger_r > 55) dis2anchor -= trigger_r / 32.f;
-				if (trigger_l > 55) dis2anchor += trigger_l / 32.f;
-				if (dis2anchor >= 600.f) DetachAnchor();
-
+					if (dis2anchor >= save_distance) {
+						IsFrying = false;
+						swing = 0.f;
+						jump_count = 0;
+						if (wrad > wrad_old) anchor_dir = 1;
+						if (wrad < wrad_old) anchor_dir = -1;
+					}
+					BendWire();
+				}
 			}
 		}
 	}
-	for (int i = 0; i < 120; i++) {
-		IsBended[i] = false;
-	}
 }
+//  << ワイヤーの屈折処理 >>
+//------------------------------------------------------------------------
+void	cPlayer::BendWire() {
+
+	// 変数初期化
+	int		bend_count = 0;
+	int		all_count = 0;
+	int		bend_start = -1;
+
+	VECTOR	bend_pos = anchor->GetPos();
+
+	bend_save[0] = anchor->GetPos();
+	bend_save[0].z = 0.f;
+	bend_pos.z = 0.f;
+
+	VECTOR  wirepos;
+
+	// ワイヤーの屈折処理
+	for (int i = 0; i < 120; i++) {
+		if (i < (int)dis2anchor / 5) {
+			wirepos.x = bend_pos.x + (cosf(wrad + DX_PI_F / 2.f) * (5.f * (float)bend_count));
+			wirepos.y = bend_pos.y + (sinf(wrad + DX_PI_F / 2.f) * (5.f * (float)bend_count));
+			anchorwire[i] = new cAnchorWire(wirepos, { 5.f, 5.f, 0.f }, i, wrad, WireAnchorWire);
+
+			if (CheckCollisionAroundMaptile((cObject*)anchorwire[i])) {
+				if (bend_save[i].x == -1.f && bend_save[i].y == -1) {
+					bend_save[i] = wirepos;
+				}
+				else {
+					bend_pos.x = bend_save[i].x;
+					bend_pos.y = bend_save[i].y;
+					bend_pos.z += 1.f;
+					bend_count = 0;
+
+					anchorwire[i] = new cAnchorWire(bend_save[i], { 5.f, 5.f, 0.f }, i, wrad, WireAnchorWire);
+				}
+				if (bend_start == -1) {
+					bend_start = i;
+				}
+
+				if (bend_start != -1) {
+					int cnt = 0;
+					float r = atan2f(anchorwire[i]->GetPos().y - anchor->GetPos().y, anchorwire[i]->GetPos().x - anchor->GetPos().x) - (DX_PI_F / 2.f);
+					for (int j = 0; j < i; j++) {
+						wirepos.x = anchor->GetPos().x + (cosf(r + DX_PI_F / 2.f) * (5.f * (float)cnt));
+						wirepos.y = anchor->GetPos().y + (sinf(r + DX_PI_F / 2.f) * (5.f * (float)cnt));
+						anchorwire[j] = new cAnchorWire(wirepos, { 5.f, 5.f, 0.f }, j, r, WireAnchorWire);
+						cnt++;
+					}
+					bend_start = -1;
+				}
+			}
+			else {
+				bend_save[i] = wirepos;
+			}
+
+			bend_count++;
+			all_count++;
+		}
+		else {
+			if (anchorwire[i] != nullptr) {
+				// ワイヤーを縮めたときに余った分を消す
+				delete anchorwire[i];
+				anchorwire[i] = nullptr;
+			}
+		}
+		//if (anchorwire[i] != nullptr) anchorwire[i]->ResetFlag();
+	}
+	if (!IsFrying) pos = wirepos;
+}
+
 //  << 切り離し時の慣性計算をしつつ初期化 >>
 //------------------------------------------------------------------------
 void	cPlayer::DetachAnchor() {
@@ -335,6 +364,7 @@ void	cPlayer::DetachAnchor() {
 			}
 		}
 	}
+	IsFrying = false;
 }
 //  << 描画 >>
 //------------------------------------------------------------------------
@@ -461,10 +491,10 @@ void	cPlayer::HitAction(cObject *hit) {
 	case MapTile:
 		Collision(hit);
 		DetachAnchor();
-		if (IsFrying) {
+		/*if (IsFrying) {
 			IsFrying = false;
 			speed = (float)save_speed;
-		}
+		}*/
 		break;
 	case Clear:
 		if (this->GetType() == Player) IsClearFlag = true;
@@ -755,7 +785,7 @@ void	cCharacterManager::LoadCharacters(string name) {
 			break;
 		case eBoss:
 			if (boss == nullptr) {
-				boss = new cEnemyBoss(stof(str.at(1)), stof(str.at(2)), stof(str.at(3)), stof(str.at(4)), stof(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
+				//boss = new cEnemyBoss(stof(str.at(1)), stof(str.at(2)), stof(str.at(3)), stof(str.at(4)), stof(str.at(5)), stoi(str.at(6)) == 1 ? true : false);
 				break;
 			}
 			break;

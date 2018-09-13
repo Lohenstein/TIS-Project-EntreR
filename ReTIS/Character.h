@@ -73,18 +73,19 @@ public:
 	bool	addtimeswitch = false;
 	int 	anchor_dir = 0;
 	int		save_speed;
+	float	save_distance;
 	VECTOR	savepos;
 	cPlayer(float x, float y, float w, float h, float s, bool p) {
-		pos = { x, y, 0.f };
-		size = { w, h, 0.f };
-		speed = s;
-		type = Player;
+		pos			= { x, y, 0.f };
+		size		= { w, h, 0.f };
+		speed		= s;
+		type		= Player;
 		IsClearFlag = false;
 		IsOverFlag  = false;
-		mp = 300;
+		mp			= 300;
+		count		= 0;
+		springon	= false;
 		coin = 0, ecoin = 0, rcoin = 0;
-		count = 0;
-		springon = false;
 		LoadDivGraph("data/img/amecha/walk.png", 30, 1, 30, 606, 551, img[0]);
 		LoadDivGraph("data/img/amecha/idol.png", 30, 1, 30, 606, 544, img[1]);
 		LoadDivGraph("data/img/amecha/jump.png", 30, 1, 30, 606, 558, img[2]);
@@ -106,6 +107,7 @@ public:
 	void	DetachAnchor();
 	void	Render();
 	void	Update();
+	void	BendWire();
 	void	HitAction(cObject *hit);
 	/*void	HitCheck(cGame &main, cObject *anc) {
 		main.CollisionAroundMaptile(anc);
