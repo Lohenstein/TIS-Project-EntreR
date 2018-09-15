@@ -33,6 +33,8 @@ protected:
 	int	  sx, sy;
 	float cloud[2] = {0.f, 4090.f};
 	cBackground *bg;
+	float speed;
+	float DestinationX[2] = { 0,300 }, DestinationY[2] = {0,500};
 public:
 	cCamera() {
 		bg = new cBackground();
@@ -45,4 +47,10 @@ public:
 	void	Render(int handle,int getx,int gety);
 	void	SetStageSize(int x, int y) {sx = x, sy = y;}
 	void	AutoScrol(VECTOR focus);
+	// csvからオートスクロールする場所を割り出す
+	void	AutoScrolConfig(string name);
+
+	float move = 0;
+	float mokutekiX = DestinationX[1] - DestinationX[0], mokutekiY = DestinationY[1] - DestinationY[0];
+	float ans = (float)sqrt((mokutekiX*mokutekiX) + (mokutekiY*mokutekiY));
 };

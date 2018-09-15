@@ -96,8 +96,33 @@ void cCamera::Update(VECTOR focus) {
 	if (camera_py > 3000.f) camera_py = 3000.f;
 }
 
-void cCamera::AutoScrol(VECTOR focuse){
+void cCamera::AutoScrol(VECTOR focus) {
+	window.left = (int)focus.x - WINDOW_SIZE_X / 2;
+	window.right = (int)focus.x + WINDOW_SIZE_X / 2;
+	window.top = (int)focus.y - WINDOW_SIZE_Y / 2;
+	window.bottom = (int)focus.y + WINDOW_SIZE_Y / 2;
 
+	float rad = atan2f(DestinationY[1] - DestinationY[0], DestinationX[1] - DestinationX[0]);
+	//ans = (float)sqrt(mokutekiX*mokutekiX) + (mokutekiY*mokutekiY);
+	
+	// ans -= 10;
+	// ans -= 100.f;
+	if (ans > 0) {
+		/*camera_px = DestinationX[0] + (cosf(rad + PI) * speed);
+		camera_py = DestinationY[0] + (sinf(rad + PI) * speed);*/
+
+		camera_px += 2;
+		focus.x -= 2;
+		camera_py+= 2;
+		focus.y += 2;
+		FocusCam.x += 2;
+		FocusCam.y += 2;
+		ans -= 2;
+		move += 2;
+		//camera_px += 2;
+		
+		//ans -= 10;
+	}
 }
 
 void cCamera::Render(int handle,int getx,int gety) {
@@ -125,3 +150,18 @@ void cCamera::Render(int handle,int getx,int gety) {
 	DrawRectGraph(0, 0, (int)camera_px, (int)camera_py, WINDOW_SIZE_X, WINDOW_SIZE_Y, handle, true, false);
 	// DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%f", bg->bghandle_pos_09[3][3].y);
 }
+
+/*void cCamera::AutoScrolConfig(string name)
+{
+	string scrol = name + "auto_config.csv";
+	ifstream ifs; ifs.open(scrol.c_str());
+	string line;
+	
+	while (getline(ifs, line))
+	{
+		vector<string> = str = split
+ 	}
+	for (int i = 0; i < AUTOSCROL_MAX; i++) {
+
+	}
+}*/

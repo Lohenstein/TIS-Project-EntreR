@@ -391,6 +391,7 @@ void	cPlayer::Update() {
 	if ((key[KEY_INPUT_C] == 1 || pad_b[XINPUT_BUTTON_X] == 1) && mp >= 10) {
 		mp -= 10;
 		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, -stick_rad, PlayerBullet);
+		effect.Shot(pos, 10.f, 0);
 	}
 	if (pad_b[XINPUT_BUTTON_Y] == 1) {
 		DetachAnchor();
@@ -1413,7 +1414,7 @@ void cEnemyJugem::Render(int img[])
 	else {
 		DrawTurnGraph(pos.x - 300 / 2, pos.y - 300 / 2, img[image_change], TRUE);
 	}
-	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", hp);
+	//DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", hp);
 
 }
 
@@ -1540,7 +1541,7 @@ void cEnemyBoss::Render(int model,int attach)
 
 	//pos = { 0,0,0 };
 	//MV1SetAttachAnimTime(model, attach, 0);
-	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%f,%f", pos.x,pos.y);
+	//DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%f,%f", pos.x,pos.y);
 	MV1DrawModel(model);
 
 	//MV1SetPosition(model[0], pos);
@@ -1749,7 +1750,7 @@ void cCrumbleWall::MoveByAutomation()
 
 void cCrumbleWall::Render()
 {
-	DrawBox(pos.x - size.x / 2.f, pos.y - size.y / 2.f, pos.x + size.x / 2.f, pos.y + size.y / 2.f,0xfffff,true);
+	//DrawBox(pos.x - size.x / 2.f, pos.y - size.y / 2.f, pos.x + size.x / 2.f, pos.y + size.y / 2.f,0xfffff,true);
 }
 
 /*------------------------------------------------------------------------------*
@@ -1862,7 +1863,7 @@ void cCharacterManager::BossRender()
 			MV1SetPosition(boss_3d_down,boss[i]->GetBossPos());
 			//MV1SetPosition(boss_3d_cleave, boss[i]->GetBossPos());
 			//MV1DrawModel(boss_3d_down);
-			DrawFormatString(FocusPos.x, FocusPos.y + i * 10, 0xFFFFFF, "%f",angleY);
+			//DrawFormatString(FocusPos.x, FocusPos.y + i * 10, 0xFFFFFF, "%f",angleY);
 			ScreenPos = ConvWorldPosToScreenPos(MV1GetFramePosition(boss_3d_down, 26));
 		}
 	}

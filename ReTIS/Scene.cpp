@@ -170,6 +170,7 @@ void	cGame::Update() {
 		Collision();
 		bullet.Update();
 		camera->Update(FocusPos);
+		//camera->AutoScrol(FocusPos);
 		gui->SetHp(character->GetPlayerHp());
 		dialog->Update();
 		UpdateGui();
@@ -189,7 +190,7 @@ void	cGame::Render() {
 	stage->Render();
 	bullet.Render();
 
-	DrawBox(character->ScreenPos.x, character->ScreenPos.y, character->ScreenPos.x + 100, character->ScreenPos.y + 100, 0xfffff, true);
+	//DrawBox(character->ScreenPos.x, character->ScreenPos.y, character->ScreenPos.x + 100, character->ScreenPos.y + 100, 0xfffff, true);
 
 
 	// –ß‚·
@@ -197,7 +198,7 @@ void	cGame::Render() {
 	
 	camera->Render(bghandle,stage->GetStageSizeX(),stage->GetStageSizeY());
 	SetupCamera_Ortho(-0.01f);
-	character->BossRender();
+	//character->BossRender();
 	dialog->Render();
 	gui->Render();
 	RenderGui();
@@ -226,6 +227,9 @@ void	cGame::Render() {
 		//MV1SetPosition(character->boss_3d_cleave, VGet(0, 0, 3000));
 	//MV1DrawModel(character->boss_3d_cleave);
 	//DrawFormatString(10, 10, 0xFFFFFF, "‘€ìƒLƒƒƒ‰‚ÌÀ•W:x=%d, y=%d", (int)FocusPos.x, (int)FocusPos.y);
+	
+	
+	DrawFormatString(0, 0, 0xfffff, "ƒJƒƒ‰ˆÚ“® = %f , %f", camera->ans, camera->move);
 }
 
 void	cGame::DrawOver() {
