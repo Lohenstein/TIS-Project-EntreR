@@ -18,8 +18,8 @@ void	cMoveFloor::Update(float s, int p1, int p2) {
 	old = pos;
 
 	// ˆÚ“®‚·‚é
-	pos.x = sx[0] - (cosf(rad + PI) * p);
-	pos.y = sy[0] - (sinf(rad + PI) * p);
+	pos.x = sx[0] - (cosf(rad + DX_PI_F) * p);
+	pos.y = sy[0] - (sinf(rad + DX_PI_F) * p);
 
 	// ˆÚ“®‚Ì•ûŒü‚ÉŒü‚©‚Á‚Ä“®‚©‚·
 	if (flag)
@@ -37,7 +37,7 @@ void	cMoveFloor::Update(float s, int p1, int p2) {
 }
 
 void	 cMoveFloor::Render() {
-	DrawRectGraph(GetPos().x - GetSize().x / 2.f, GetPos().y - GetSize().y / 2.f, 576, 82, 128, 32, floorimg, true, false);
+	DrawRectGraph((int)GetPos().x - (int)GetSize().x / 2, (int)GetPos().y - (int)GetSize().y / 2, 576, 82, 128, 32, floorimg, true, false);
 }
 
 void	 cMoveFloor::SetPoint(int num, float x, float y) {
@@ -69,7 +69,7 @@ void	cDropFloor::Update() {
 }
 
 void	 cDropFloor::Render() {
-	DrawRectGraph(GetPos().x - GetSize().x / 2.f, GetPos().y - GetSize().y / 2.f, 576, 32, 128, 32, floorimg, true, false);
+	DrawRectGraph((int)GetPos().x - (int)GetSize().x / 2, (int)GetPos().y - (int)GetSize().y / 2, 576, 32, 128, 32, floorimg, true, false);
 }
 
 void	cDropFloor::HitAction(cObject *hit) {

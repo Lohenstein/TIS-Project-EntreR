@@ -47,6 +47,7 @@ public:
 	void	Render(VECTOR cpos);
 	void	HitAction(cObject *hit);
 	bool	GetFlag() { return flag; }
+	float	GetRad() { return rad; }
 };
 
 class cAnchorWire : public cObject {
@@ -71,6 +72,7 @@ public:
 	void	HitAction(cObject *hit);
 	bool	GetFlag() { return flag; }
 	void	ResetFlag() { flag = false; }
+	float	GetRad() { return rad; }
 };
 
 class cBulletManager {

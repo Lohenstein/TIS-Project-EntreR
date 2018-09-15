@@ -47,7 +47,7 @@ protected:
 public:
 	cStageManager(string name) { 
 		LoadStageData(name); 
-		LoadDivGraph("data/img/block/block.png", 3200, 50, 64, bsize, bsize, image);
+		LoadDivGraph("data/img/block/block.png", 3200, 50, 64, (int)bsize, (int)bsize, image);
 	};
 	~cStageManager() {
 		for (int i = 0; i < 3200; i++) { DeleteGraph(image[i]); }

@@ -15,7 +15,7 @@ public:
 	cBackground() {						// ”z—ñ‚ÌÀ•W‰Šú‰»
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 2; j++) {
-				bghandle_pos_09[i][j].x = j;
+				bghandle_pos_09[i][j].x = (float)j;
 				bghandle_pos_09[i][j].y = -WINDOW_SIZE_Y / 4;
 			}
 		}
