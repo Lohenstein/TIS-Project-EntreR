@@ -455,14 +455,13 @@ void	LoadStage(string str, bool reload) {
 
 	SetUseASyncLoadFlag(false);
 
-	while (GetASyncLoadNum() != 0 && !ScreenFlip() && !ProcessMessage() && !ClearDrawScreen()) {
+	while (!ScreenFlip() && !ProcessMessage() && !ClearDrawScreen()) {
 
-		while (GetNowCount() - FrameStartTime < 1000 / 60) {}
-		FrameStartTime = GetNowCount();
+		if (GetASyncLoadNum() == 0) break;
 
 		DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
 		// Now Loading•`‰æ
-		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
+		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading... %d", GetASyncLoadNum());
 		DrawFormatStringToHandle(WINDOW_SIZE_X - (w + 40), 660, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Now Loading... %d", GetASyncLoadNum());
 	}
 

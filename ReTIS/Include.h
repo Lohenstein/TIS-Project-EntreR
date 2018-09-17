@@ -15,6 +15,7 @@
 #include <Windows.h>
 
 // ƒwƒbƒ_
+#include "Loader.h"
 #include "Easing.h"
 #include "Gui.h"
 #include "Dialog.h"
