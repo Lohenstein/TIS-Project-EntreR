@@ -7,6 +7,11 @@ bool	**stage_collision;
 int		stage_size_x;
 int		stage_size_y;
 
+bool	CheckCameracsv(const string& str) {
+	std::ifstream fs(str);
+	return fs.is_open();
+}
+
 vector<string> split(string& input, char delimiter)
 {
 	istringstream stream(input);
@@ -26,7 +31,10 @@ void	cStageManager::LoadStageData(string name) {
 	string main  = name + "mapdata.csv";
 	string bg1   = name + "mapdata_bg1.csv";
 	string bg2   = name + "mapdata_bg2.csv";
-
+	if (CheckCameracsv(name + "auto.csv")) {
+		IsAutoScrol = true;
+	}
+	
 	ifstream ifs_mapdata; ifs_mapdata.open(main.c_str());
 	ifstream ifs_bg1;     ifs_bg1.open(bg1.c_str());
 	ifstream ifs_bg2;     ifs_bg2.open(bg2.c_str());

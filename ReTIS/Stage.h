@@ -44,6 +44,7 @@ protected:
 	int		stage_x;
 	int		stage_y;
 	int		image[3200];
+	bool	IsAutoScrol;
 public:
 	cStageManager(string name) { 
 		LoadStageData(name); 
@@ -73,6 +74,7 @@ public:
 	void	Update();
 	void	Render();
 	void	RenderBG();
+	bool	GetIsAutoScrol() { return IsAutoScrol; }
 	cObject *GetMapTile(int x, int y) { return reinterpret_cast<cObject*>(&stage[x][y]); }
 };
 

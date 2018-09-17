@@ -33,10 +33,14 @@ protected:
 	int	  sx, sy;
 	float cloud[2] = {0.f, 4090.f};
 	cBackground *bg;
-	float speed;
-	float DestinationX[2] = { 0,300 }, DestinationY[2] = {0,500};
+	float speed = 2.f;
+	int count = 0;
 public:
-	cCamera() {
+	int	  move = -1;
+	float DestinationX[10] = {0,0,0,0,0,0,0,0,0,0 }, DestinationY[10] = { 0,0,0,0,0,0,0,0,0,0 };
+
+	cCamera(string name) {
+			//AutoScrolConfig(name);
 		bg = new cBackground();
 	};
 	~cCamera() {
@@ -50,7 +54,6 @@ public:
 	// csvからオートスクロールする場所を割り出す
 	void	AutoScrolConfig(string name);
 
-	float move = 0;
-	float mokutekiX = DestinationX[1] - DestinationX[0], mokutekiY = DestinationY[1] - DestinationY[0];
-	float ans = (float)sqrt((mokutekiX*mokutekiX) + (mokutekiY*mokutekiY));
+	float mokutekiX,mokutekiY;
+	float ans = -50.f;
 };
