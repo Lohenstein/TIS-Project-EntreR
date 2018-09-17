@@ -6,6 +6,7 @@ bool	IsClearFlag, IsOverFlag, IsBended[120];
 int		coin, ecoin, rcoin, tcoin;
 int		mp;
 int		anchorimg, wireimg;
+int		enemyscore;
 
 using namespace std;
 
@@ -42,7 +43,7 @@ void	cCharacterBase::Physical() {
 		animmode = 2;
 		anim++;
 		animjump++;
-		if (anim >= 30) anim = 30;
+		if (anim >= 30) anim = 29;
 	}
 
 
@@ -369,7 +370,7 @@ void	cPlayer::DetachAnchor() {
 //  << 描画 >>
 //------------------------------------------------------------------------
 void	cPlayer::Render() {
-
+	// 画像関係
 	int halfw = 70;
 	int halfh = 65;
 
@@ -388,9 +389,6 @@ void	cPlayer::Render() {
 			//DrawFormatString(anchorwire[i]->GetPos().x, anchorwire[i]->GetPos().y, 0xFFFFFF, "%d", i);
 		}
 	}
-	//if (springon == true)
-		//DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%d", springon);
-		
 }
 
 //  << 更新 >>
@@ -433,11 +431,14 @@ void	cPlayer::Update() {
 		jump = 20.f;
 		++jump_count;
 		DetachAnchor();
+		landing = false;
+		if (landing == false) anim = 0;
 	}
 	if ((key[KEY_INPUT_C] == 1 || pad_b[XINPUT_BUTTON_X] == 1) && mp >= 10) {
 		mp -= 10;
 		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, -stick_rad, PlayerBullet);
-		effect.Shot(pos, 10.f, 0);
+		effect.Shot(pos, 10.f, 5);
+		PlaySoundMem(sdplayershot, DX_PLAYTYPE_BACK, TRUE);
 	}
 	if (pad_b[XINPUT_BUTTON_Y] == 1) {
 		DetachAnchor();
@@ -459,6 +460,8 @@ void	cPlayer::Update() {
 			invincible = false;
 	}
 	
+	if (jump < -1) landing = false;
+
 	// 重力
 	Physical();
 	UpdateAnchor();
@@ -468,6 +471,16 @@ void	cPlayer::Update() {
 	}
 
 	old = pos;	// 過去座標
+
+
+	// サウンド関係
+	// foot
+	if (animmode == 0 && anim == 3) {
+		PlaySoundMem(sdplayerwalk[0], DX_PLAYTYPE_BACK, TRUE);
+	}
+	else if (animmode == 0 && anim == 17) {
+		PlaySoundMem(sdplayerwalk[1], DX_PLAYTYPE_BACK, TRUE);
+	}
 }
 //  << 衝突応答 >>
 //------------------------------------------------------------------------
@@ -559,7 +572,7 @@ void	cPlayer::HitAction(cObject *hit) {
 	case NothingObject:
 		break;
 	case Gear:
-		Damaged();
+		hp = 0;
 		break;
 	}
 }
@@ -588,7 +601,7 @@ void	cCharacterManager::Render() {
 		if (cannon[i]		!= nullptr) cannon[i]		->Render(cannon_img);
 		if (movefloor[i]	!= nullptr) movefloor[i]	->Render();
 		if (dropfloor[i]	!= nullptr) dropfloor[i]	->Render();
-		if (coin[i]			!= nullptr) coin[i]			->Render(allcoin_img, watch_img,chocolate_img);
+		if (coin[i]			!= nullptr) coin[i]			->Render(allcoin_img, watch_img);
 		if (spring[i]		!= nullptr) spring[i]		->Render(spring_img);
 		if (jugem[i]		!= nullptr) jugem[i]		->Render(jugem_img);
 		if (crumblewall[i]	!= nullptr)	crumblewall[i]	->Render();
@@ -674,6 +687,7 @@ void	cCharacterManager::DeleteCharacters() {
 		boss[i]			= nullptr;
 	}
 }
+// やられるかの判定
 void	cCharacterManager::DeleteDeathCharacters() {
 	if (player->GetHp() <= 0) {
 		IsOverFlag = true;
@@ -692,30 +706,35 @@ void	cCharacterManager::DeleteDeathCharacters() {
 			if (jumpman[i]->GetHp() <= 0) {
 				delete jumpman[i];
 				jumpman[i] = nullptr;
+				enemyscore += 400;
 			}
 		}
 		if (hardbody[i] != nullptr) {
 			if (hardbody[i]->GetHp() <= 0) {
 				delete hardbody[i];
 				hardbody[i] = nullptr;
+				enemyscore += 600;
 			}
 		}
 		if (fryingman[i] != nullptr) {
 			if (fryingman[i]->GetHp() <= 0) {
 				delete fryingman[i];
 				fryingman[i] = nullptr;
+				enemyscore += 200;
 			}
 		}
 		if (gunman[i] != nullptr) {
 			if (gunman[i]->GetHp() <= 0) {
 				delete gunman[i];
 				gunman[i] = nullptr;
+				enemyscore += 400;
 			}
 		}
 		if (bossmiddle[i] != nullptr) {
 			if (bossmiddle[i]->GetHp() <= 0) {
 				delete bossmiddle[i];
 				bossmiddle[i] = nullptr;
+				enemyscore += 1000;
 			}
 		}
 		if (coin[i] != nullptr) {
@@ -986,10 +1005,10 @@ void cEnemyGunman::MoveByAutomation()
 		handradian = atan2(pos.y - FocusPos.y, pos.x - FocusPos.x);
 	else if (!direction && move_pattern == 0) lockon = atan2(FocusPos.y - pos.y,FocusPos.x - pos.x);
 	
-	if (move_pattern == 1) {
+	/*if (move_pattern == 1) {
 		handradian++;
 		//lockon--;
-	}
+	}*/
 
 	if (FocusPos.x + WINDOW_SIZE_X / 2 > pos.x) {
 		if (move_pattern != 1)pos.x < FocusPos.x ? direction = false : direction = true;
@@ -1424,7 +1443,7 @@ void cEnemyJugem::MoveByAutomation()
 		if (image_change == 3) image_change = 0;
 		image_change++;
 		if (count % 50 == 0)speed *= -1;
-		if (FocusPos.x + WINDOW_SIZE_X / 2 > pos.x) {
+		if (FocusPos.x + WINDOW_SIZE_X  > pos.x) {
 			count++;
 			pos.x += speed * 5;
 			if (count % 50 == 0 && move_pattern != 2) {
@@ -1745,13 +1764,13 @@ void cCoin::MoveByAutomation()
 	switch (cointype)
 	{
 	case NormalCoin:
-		if (image_change >= 77) {
-			image_change = 39;
+		if (image_change >= 37) {
+			image_change = 0;
 		}
 		break;
 	case EneCoin:
-		if (image_change >= 37) {
-			image_change = 0;
+		if (image_change >= 77) {
+			image_change = 39;
 		}
 		break;
 	case RareCoin:
@@ -1770,14 +1789,14 @@ void cCoin::MoveByAutomation()
 	}
 }
 
-void	cCoin::Render(int coin[], int Time[], int Chocolate[])
+void	cCoin::Render(int coin[], int Time[])
 {
 	switch (type) {
 	case NormalCoin:
 		DrawRotaGraph((int)pos.x, (int)pos.y, 0.4, 0, coin[image_change], TRUE, FALSE);
 		break;
 	case EneCoin:	
-		DrawRotaGraph((int)pos.x, (int)pos.y, 0.3, 0, Chocolate[image_change], TRUE, FALSE);
+		DrawRotaGraph((int)pos.x, (int)pos.y, 0.3, 0, coin[image_change], TRUE, FALSE);
 		break;
 	case RareCoin:
 		DrawRotaGraph((int)pos.x, (int)pos.y, 0.4, 0, coin[image_change], TRUE, FALSE);

@@ -9,6 +9,7 @@ extern bool	  IsClearFlag, IsOverFlag, IsBended[120];
 extern int mp;
 
 extern int coin, ecoin, rcoin;
+extern int enemyscore;
 
 using namespace std;
 
@@ -61,6 +62,9 @@ class cPlayer : public cCharacterBase {
 protected:
 	int img[4][30];
 	bool springon;
+	//int	walksd[2];
+	//int shotsd;
+
 public:
 	cAnchor		*anchor;
 	cAnchorWire *anchorwire[120];
@@ -92,6 +96,11 @@ public:
 		LoadDivGraph("data/img/amecha/shot.png", 30, 1, 30, 606, 544, img[3]);
 		wireimg   = LoadGraph("data/img/parts/wire.png");
 		anchorimg = LoadGraph("data/img/parts/anchor.png");
+		//walksd[0] = LoadSoundMem("data/sound/Footstep-high.wav");
+		//walksd[1] = LoadSoundMem("data/sound/Footstep-low.wav");
+		//shotsd = LoadSoundMem("data/sound/shot4.mp3");
+
+
 		for (int i = 0; i < 120; i++) {
 			bend_save[i] = { -1.f, -1.f, -1.f };
 		}
@@ -593,7 +602,7 @@ public:
 		addtimeon = false;
 	}
 	void	Update();
-	void	Render(int coin[],int Time[],int Chocolate[]);
+	void	Render(int coin[],int Time[]);
 	void	MoveByAutomation();
 	void	HitAction(cObject *hit) {
 		hp = 0;
@@ -769,6 +778,7 @@ public:
 	cWall							*wall[ENEMY_MAX];
 	cDialogManager					*dialogflag[ENEMY_MAX];
 
+	// ‰æ‘œ‚Ì‚½‚ß‚Ì”z—ñ
 	int		wireman_img[273];
 	int		jumpman_img[120];
 	int		bossmiddle_img[200];
@@ -796,6 +806,8 @@ public:
 	int		boss_move_3d[5];
 	int		attachIndex = MV1AttachAnim(boss_3d_down, 0, -1, FALSE);
 	float	playtime = 0.f;
+
+
 
 	float angleY = 1.f;
 
@@ -840,6 +852,7 @@ public:
 			boss_move_3d[i] = MV1SetRotationXYZ(boss_move_3d[i], VGet(2.827435f, -3.979354f, 0));
 		}
 		MV1SetScale(boss_3d_down, VGet(0.5, 0.5, 0.5));
+
 	}
 	~cCharacterManager() {
 		DeleteCharacters();

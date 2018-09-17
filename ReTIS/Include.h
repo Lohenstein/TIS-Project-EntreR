@@ -30,3 +30,4 @@
 #include "Scene.h"
 #include "Effect.h"
 #include "Menu.h"
+#include "Sound.h"

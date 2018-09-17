@@ -47,6 +47,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	SetDrawScreen(DX_SCREEN_BACK);
 	
+	// サウンドロード
+	SoundLoad();
 
 	// メインループ
 	while (!ScreenFlip() && !ProcessMessage() && !ClearDrawScreen() && !IsQuit)
@@ -62,7 +64,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		UpdateEffekseer2D();
 		DrawEffekseer2D();
 
-		RenderFPS();
+		//RenderFPS();
 	}
 
 	// ゲーム終了

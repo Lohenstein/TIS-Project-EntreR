@@ -166,8 +166,12 @@ void	cGame::Update() {
 		character->Update(GetTime());
 		Collision();
 		bullet.Update();
-		camera->Update(FocusPos);
-		//camera->AutoScrol(FocusPos);
+		if (stage->GetIsAutoScrol()) {
+			camera->AutoScrol(FocusPos);
+		}
+		else {
+			camera->Update(FocusPos);
+		}
 		gui->SetHp(character->GetPlayerHp());
 		UpdateGui();
 		effect.Update();
@@ -221,12 +225,12 @@ void	cGame::Render() {
 	*/
 
 
-		//MV1SetPosition(character->boss_3d_cleave, VGet(0, 0, 3000));
+	//MV1SetPosition(character->boss_3d_cleave, VGet(0, 0, 3000));
 	//MV1DrawModel(character->boss_3d_cleave);
 	//DrawFormatString(10, 10, 0xFFFFFF, "操作キャラの座標:x=%d, y=%d", (int)FocusPos.x, (int)FocusPos.y);
 	
 	
-	DrawFormatString(0, 0, 0xfffff, "カメラ移動 = %f , %f", camera->ans, camera->move);
+	//DrawFormatString(0, 0, 0xfffff, "%f , %f", , camera->move);
 }
 
 void	cGame::DrawOver() {
@@ -271,6 +275,7 @@ void	cGame::DrawResult() {
 	DrawGraph(0, 0, imghandle[4], false);
 	
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	int totalscore = ((60 * min + sec) * 30) + enemyscore + coin;
 
 	if (trans > 255) {
 		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Score:%dsec", time);
@@ -285,8 +290,8 @@ void	cGame::DrawResult() {
 		DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 400, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "Coin:%dsec", time);
 	}
 	if (trans > 315) {
-		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "RareCoin:%d/5", time);
-		DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 450, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "RareCoin:%d/5", time);
+		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "RareCoin:%d/5", totalscore);
+		DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 450, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "RareCoin:%d/5", totalscore);
 	}
 	if (trans > 335 && trans % 30 != 0) {
 		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "R key: Retry / X key : Lab", time);
@@ -473,7 +478,7 @@ void	cTitle::DrawStageSelect() {
 }
 
 void	LoadStage(string str, bool reload) {
-
+	enemyscore = 0;
 	// リロードならファイルパスは同じなので変えない
 	if (!reload) stagepath = str; // ステージのファイルパス
 

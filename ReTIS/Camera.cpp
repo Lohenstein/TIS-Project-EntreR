@@ -101,27 +101,29 @@ void cCamera::AutoScrol(VECTOR focus) {
 	window.right = (int)focus.x + WINDOW_SIZE_X / 2;
 	window.top = (int)focus.y - WINDOW_SIZE_Y / 2;
 	window.bottom = (int)focus.y + WINDOW_SIZE_Y / 2;
+	if (move != 3) {
+		if (ans <= 0) {
+			move++;
+			mokutekiX = DestinationX[move + 1] - DestinationX[move];
+			mokutekiY = DestinationY[move + 1] - DestinationY[move];
+			ans = (float)sqrt((mokutekiX * mokutekiX) + (mokutekiY * mokutekiY));
+		}
 
-	float rad = atan2f(DestinationY[1] - DestinationY[0], DestinationX[1] - DestinationX[0]);
-	//ans = (float)sqrt(mokutekiX*mokutekiX) + (mokutekiY*mokutekiY);
-	
-	// ans -= 10;
-	// ans -= 100.f;
-	if (ans > 0) {
-		/*camera_px = DestinationX[0] + (cosf(rad + PI) * speed);
-		camera_py = DestinationY[0] + (sinf(rad + PI) * speed);*/
-
-		camera_px += 2;
-		focus.x -= 2;
-		camera_py+= 2;
-		focus.y += 2;
-		FocusCam.x += 2;
-		FocusCam.y += 2;
-		ans -= 2;
-		move += 2;
-		//camera_px += 2;
-		
-		//ans -= 10;
+		float rad = atan2f(DestinationY[move + 1] - DestinationY[move], DestinationX[move + 1] - DestinationX[move]);	
+		// ans -= 10;
+		// ans -= 100.f;
+		if (DestinationX[move + 1] != 0 && DestinationY[move + 1] != 0) {
+			if (ans >= 0) {
+				camera_px = camera_px - (cosf(rad + PI) * speed);
+				camera_py = camera_py - (sinf(rad + PI) * speed);
+				focus.x += -(cosf(rad + PI) * speed);
+				focus.y += -(sinf(rad + PI) * speed);
+				FocusCam.x += -(cosf(rad + PI) * speed);
+				FocusCam.y += -(sinf(rad + PI) * speed);
+				ans -= (float)sqrt(((cosf(rad + PI) * speed)*(cosf(rad + PI) * speed) + (sinf(rad + PI) * speed)*(sinf(rad + PI) * speed)));
+			}
+		}
+		else { move = 4; }
 	}
 }
 
@@ -148,20 +150,28 @@ void cCamera::Render(int handle,int getx,int gety) {
 		
 	}
 	DrawRectGraph(0, 0, (int)camera_px, (int)camera_py, WINDOW_SIZE_X, WINDOW_SIZE_Y, handle, true, false);
-	// DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%f", bg->bghandle_pos_09[3][3].y);
+	DrawFormatString(FocusPos.x, FocusPos.y, 0xFFFFFF, "%f", count);
 }
 
-/*void cCamera::AutoScrolConfig(string name)
+void cCamera::AutoScrolConfig(string name)
 {
-	string scrol = name + "auto_config.csv";
+	
+	string scrol = name + "auto.csv";
 	ifstream ifs; ifs.open(scrol.c_str());
 	string line;
 	
-	while (getline(ifs, line))
-	{
-		vector<string> = str = split
- 	}
-	for (int i = 0; i < AUTOSCROL_MAX; i++) {
+	vector<string> str = split(line, ',');
+
+
+	while (getline(ifs, line)) {
+		
+		vector<string> str = split(line, ',');
+		
+		DestinationX[count] = stof(str.at(0));
+		
+		DestinationY[count] = stof(str.at(1));
+
+		count++;
 
 	}
-}*/
+}

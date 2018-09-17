@@ -78,6 +78,29 @@ public:
 	void	DrawOption();
 };
 
+class cScore : public cBase
+{
+public:
+	int		titlebg;
+	int		menu_mode;
+
+	char *title_str[4] = { "GAME START", "STAGE SELECT", "OPTION", "QUIT GAME" };
+	char *stage_str[4] = { "SATO FACTORY", "SMALL FOREST FACTORY", "FUJI FACTORY", "BACK" };
+	char *option_str[2] = { "FULL/WINDOW", "BACK" };
+
+	cScore() {
+		titlebg = LoadGraph("data/img/wall/titlebg.png");
+		menumode = MENUMODE_MAINMENU;
+	}
+
+	void	Init();
+	void	Update();
+	void	Render();
+	void	DrawTitle();
+	void	DrawStageSelect();
+	void	DrawOption();
+};
+
 class cGame : public cBase
 {
 private:
@@ -106,7 +129,7 @@ public:
 		//stagepath = "data/map/stage3/";
 		stage	  = new cStageManager(stagepath);
 		character = new cCharacterManager(stagepath);
-		camera	  = new cCamera();
+		camera	  = new cCamera(stagepath);
 		gui       = new cGuiGame();
 		bghandle  = MakeScreen(stage->GetStageSizeX()*(int)bsize, stage->GetStageSizeY()*(int)bsize, true);
 		camera->SetStageSize(stage->GetStageSizeX(), stage->GetStageSizeY());
