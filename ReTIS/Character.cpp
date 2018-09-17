@@ -446,6 +446,7 @@ void	cPlayer::Update() {
 	if (pad_b[XINPUT_BUTTON_START] == 1 || key[KEY_INPUT_R] == 1) {
 		scene->IsPaused = !scene->IsPaused;
 	}
+
 	// ŒŠ‚É—Ž‚Á‚±‚¿‚½
 	if (pos.y >= 3520) {
 		IsOverFlag = true;
@@ -461,6 +462,10 @@ void	cPlayer::Update() {
 	// d—Í
 	Physical();
 	UpdateAnchor();
+
+	if (pos.x != old.x || pos.y != old.y) {
+		printf("\rPlayerPosition=(%f, %f)", pos.x, pos.y);
+	}
 
 	old = pos;	// ‰ß‹ŽÀ•W
 }
@@ -591,8 +596,16 @@ void	cCharacterManager::Render() {
 		if (movewall[i]		!= nullptr) movewall[i]		->RenderWall(wall[i] != nullptr?wall[i]->GetHp():movewall[i]->GetHp());
 		if (wall[i]			!= nullptr) wall[i]			->Render();
 		if (gear[i]			!= nullptr) gear[i]			->Render(gear_img);
+		if (dialogflag[i]	!= nullptr) dialogflag[i]	->Render();
 	}
 }
+
+void	cCharacterManager::OverRender() {
+	for (int i = 0; i < ENEMY_MAX; i++) {
+		if (dialogflag[i] != nullptr) dialogflag[i]->OverRender();
+	}
+}
+
 void	cCharacterManager::Update(int gettime) {
 	player->Update();
 	for (int i = 0; i < ENEMY_MAX; i++) {
@@ -614,6 +627,7 @@ void	cCharacterManager::Update(int gettime) {
 		//if (wall[i] != nullptr) wall[i]->Update(movewall[i]);
 		if (gear[i]			!= nullptr) gear[i]			->Update();
 		if (boss[i]			!= nullptr) boss[i]			->Update();
+		if (dialogflag[i]   != nullptr) dialogflag[i]	->Update();
 	}
 	DeleteDeathCharacters();
 	if (mp > 300) mp = 300;
@@ -871,6 +885,14 @@ void	cCharacterManager::LoadCharacters(string name) {
 			for (int i = 0; i < ENEMY_MAX; i++) {
 				if (gear[i] == nullptr) {
 					gear[i] = new cGear(stoi(str.at(1)), stoi(str.at(2)));
+					break;
+				}
+			}
+			break;
+		case eDialogFlag:
+			for (int i = 0; i < ENEMY_MAX; i++) {
+				if (dialogflag[i] == nullptr) {
+					dialogflag[i] = new cDialogManager(stoi(str.at(1)), stoi(str.at(2)), str.at(3));
 					break;
 				}
 			}

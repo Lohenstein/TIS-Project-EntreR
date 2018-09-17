@@ -28,6 +28,6 @@ public:
 		start = clock();
 	}
 	~cDialog() {
-		delete this;
+		//delete this;
 	}
 };

@@ -66,8 +66,9 @@ void	game_main(void)
 {
 	//SetupCamera_Ortho(3000.f);
 	//SetupCamera_Ortho(3000.f);
+
 	input(); // “ü—Í
-	// ˆ—
+	// ------ ˆ— ------
 	switch (gamemode)
 	{
 	case mode_title:
@@ -84,7 +85,7 @@ void	game_main(void)
 		break;
 	}
 
-	// •`‰æ
+	// ------ •`‰æ ------
 	switch (gamemode)
 	{
 	case mode_title:

@@ -86,7 +86,6 @@ private:
 	cCharacterManager *character;
 	cCamera *camera;
 	cGuiGame *gui;
-	cDialog *dialog;
 
 	int imghandle[10];
 	int bghandle;
@@ -109,7 +108,6 @@ public:
 		character = new cCharacterManager(stagepath);
 		camera	  = new cCamera();
 		gui       = new cGuiGame();
-		dialog	  = new cDialog("“Œ‹ž‚Í’EˆßŠ‚Ì‚æ‚¤‚È•Ï‚ÈL‚¢‚ª‚µ‚Ü‚·B\n’EˆßŠ‚Ì‚æ‚¤‚È‹‚³‚Å\n“Æ“Á‚ÈL‚¢");
 		bghandle  = MakeScreen(stage->GetStageSizeX()*(int)bsize, stage->GetStageSizeY()*(int)bsize, true);
 		camera->SetStageSize(stage->GetStageSizeX(), stage->GetStageSizeY());
 
