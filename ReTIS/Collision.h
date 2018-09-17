@@ -56,6 +56,7 @@ enum eObjectType {
 	Gear,			// Ž•ŽÔ
 	MoveWall,
 	WireAnchorWire,
+	DialogFlag,
 	NothingObject
 };
 

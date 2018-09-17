@@ -15,13 +15,14 @@
 #include <Windows.h>
 
 // ƒwƒbƒ_
+#include "Loader.h"
 #include "Easing.h"
 #include "Gui.h"
-#include "Dialog.h"
 #include "Camera.h"
 #include "Collision.h"
 #include "Input.h"
 #include "Bullet.h"
+#include "Dialog.h"
 #include "Character.h"
 #include "Entity.h"
 #include "Stage.h"

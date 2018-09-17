@@ -720,6 +720,32 @@ public:
 	void	Switchon() {}
 };
 
+class cDialogManager : public cEnemy {
+private:
+	cDialog *dialog;
+	string message;
+public:
+	cDialogManager(int x, int y, string str) {
+		size = { 96.f, 128.f, 0.f };
+		pos = { (float)x, (float)y, 0.f };
+		type = DialogFlag;
+		message = str;
+	}
+	void	HitAction(cObject *hit) {
+		dialog = new cDialog(message);
+	}
+	void	Render() {
+		DrawBoxAA(pos.x - GetSize().x / 2.f, pos.y - GetSize().y / 2.f,
+			pos.x + GetSize().x / 2.f, pos.y + GetSize().y / 2.f,
+			0xFFFFFF, false);
+	}
+	void	OverRender() {
+		if (dialog != nullptr) dialog->Render();
+	}
+	void	Update() {
+		if (dialog != nullptr) dialog->Update();
+	}
+};
 
 class cCharacterManager {
 protected:
@@ -750,6 +776,7 @@ public:
 	// cMoveWall::cWall				*wall[ENEMY_MAX];
 	// こっちのwallを読み込んでいる
 	cWall							*wall[ENEMY_MAX];
+	cDialogManager					*dialogflag[ENEMY_MAX];
 
 	// 画像のための配列
 	int		wireman_img[273];
@@ -788,7 +815,8 @@ public:
 
 	void	Update(int gettime);
 	void	Render();
-	void	PossessListener();
+	void	OverRender();
+	//void	PossessListener();
 	void	LoadCharacters(string name);
 	void	DeleteCharacters();
 	void	DeleteDeathCharacters();
@@ -851,28 +879,29 @@ public:
 		DeleteGraph(floorimg);
 	}
 
-	cObject *GetPlayer() { return (cObject*)player; }
-	cObject *GetAnchor() { return (cObject*)player->GetAnchor(); }
-	cObject *GetAnchorWire(int num) { return (cObject*)player->GetAnchorWire(num); }
-	cObject *GetClear() { return (cObject*)clear; }
-	cObject *GetEnemyJumpman(int num) { return (cObject*)jumpman[num]; }
-	cObject *GetEnemyHardBody(int num) { return (cObject*)hardbody[num]; }
-	cObject *GetEnemyFryingman(int num) { return (cObject*)fryingman[num]; }
-	cObject *GetEnemyGunman(int num) { return (cObject*)gunman[num]; }
-	cObject *GetEnemyBossmiddle(int num) { return (cObject*)bossmiddle[num]; }
-	cObject *GetCircularSaw(int num) { return (cObject*)circularsaw[num]; }
-	cObject *GetCannon(int num) { return (cObject*)cannon[num]; }
-	cObject *GetDropFloor(int num) { return (cObject*)dropfloor[num]; }
-	cObject *GetMoveFloor(int num) { return (cObject*)movefloor[num]; }
-	cObject *GetCoin(int num) { return (cObject*)coin[num]; }
-	cObject *GetEnemyJugem(int num) { return (cObject*)jugem[num]; }
-	cObject *GetEnemyBoss() { return (cObject*)boss; }
-	cObject *GetSpring(int num) { return (cObject*)spring[num]; }
-	cObject *GetCrumbleWall(int num) { return (cObject*)crumblewall[num]; }
-	cObject *GetGear(int num) { return (cObject*)gear[num]; }
-	cObject *GetMoveWall(int num) { return (cObject*)movewall[num]; }
-	cObject *GetWall(int num) { return (cObject*)wall[num]; }
-	int GetSwitchHp(int num) { return movewall[num]->GetHp(); }
+	cObject *GetPlayer()					{ return (cObject*)player; }
+	cObject *GetAnchor()					{ return (cObject*)player->GetAnchor(); }
+	cObject *GetAnchorWire(int num)			{ return (cObject*)player->GetAnchorWire(num); }
+	cObject *GetClear()						{ return (cObject*)clear; }
+	cObject *GetEnemyJumpman(int num)		{ return (cObject*)jumpman[num]; }
+	cObject *GetEnemyHardBody(int num)		{ return (cObject*)hardbody[num]; }
+	cObject *GetEnemyFryingman(int num)		{ return (cObject*)fryingman[num]; }
+	cObject *GetEnemyGunman(int num)		{ return (cObject*)gunman[num]; }
+	cObject *GetEnemyBossmiddle(int num)	{ return (cObject*)bossmiddle[num]; }
+	cObject *GetCircularSaw(int num)		{ return (cObject*)circularsaw[num]; }
+	cObject *GetCannon(int num)				{ return (cObject*)cannon[num]; }
+	cObject *GetDropFloor(int num)			{ return (cObject*)dropfloor[num]; }
+	cObject *GetMoveFloor(int num)			{ return (cObject*)movefloor[num]; }
+	cObject *GetCoin(int num)				{ return (cObject*)coin[num]; }
+	cObject *GetEnemyJugem(int num)			{ return (cObject*)jugem[num]; }
+	cObject *GetEnemyBoss()					{ return (cObject*)boss; }
+	cObject *GetSpring(int num)				{ return (cObject*)spring[num]; }
+	cObject *GetCrumbleWall(int num)		{ return (cObject*)crumblewall[num]; }
+	cObject *GetGear(int num)				{ return (cObject*)gear[num]; }
+	cObject *GetMoveWall(int num)			{ return (cObject*)movewall[num]; }
+	cObject *GetWall(int num)				{ return (cObject*)wall[num]; }
+	cObject *GetDialogFlag(int num)			{ return (cObject*)dialogflag[num]; }
+	int GetSwitchHp(int num)				{ return movewall[num]->GetHp(); }
 
 	bool	GetAddSwitch() { return player->addtimeswitch; }
 	bool	GetAddSwitchChange() { return player->addtimeswitch = false; }
@@ -900,4 +929,5 @@ enum character {
 	eCrumblewall,	// 17
 	eGear,			// 18
 	eMovewall,		// 19
+	eDialogFlag		// 20 ダイアログフラグ
 };

@@ -99,15 +99,10 @@ void	cGame::Collision() {
 			if (character->GetEnemyBossmiddle(j) != nullptr) CheckHitRectAndRect(character->GetCrumbleWall(i), character->GetEnemyBossmiddle(j));
 			}
 		}
-		if (character->GetCoin(i) != nullptr) {
-			CheckHitRectAndRect(character->GetPlayer(), character->GetCoin(i));
-		}
-		if (character->GetSpring(i) != nullptr) {
-			CheckHitRectAndRect(character->GetPlayer(), character->GetSpring(i));
-		}
-		if (character->GetMoveWall(i) != nullptr) {
-			CheckHitRectAndRect(character->GetPlayer(), character->GetMoveWall(i));
-		}
+		if (character->GetCoin(i)		!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetCoin(i));
+		if (character->GetSpring(i)		!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetSpring(i));
+		if (character->GetMoveWall(i)	!= nullptr) CheckHitRectAndRect(character->GetPlayer(), character->GetMoveWall(i));
+
 		if (character->GetWall(i) != nullptr) {
 			CheckHitRectAndRect(character->GetPlayer(), character->GetWall(i));
 			for (int j = 0; j < ENEMY_MAX; j++) {
@@ -116,7 +111,9 @@ void	cGame::Collision() {
 				if (character->GetEnemyGunman(j) != nullptr) CheckHitRectAndRect(character->GetWall(i), character->GetEnemyGunman(j));
 				if (character->GetEnemyBossmiddle(j) != nullptr) CheckHitRectAndRect(character->GetWall(i), character->GetEnemyBossmiddle(j));
 			}
-
+		}
+		if (character->GetDialogFlag(i) != nullptr) {
+			CheckHitRectAndRect(character->GetPlayer(), character->GetDialogFlag(i));
 		}
 	}
 
@@ -176,7 +173,6 @@ void	cGame::Update() {
 			camera->Update(FocusPos);
 		}
 		gui->SetHp(character->GetPlayerHp());
-		dialog->Update();
 		UpdateGui();
 		effect.Update();
 	}
@@ -203,8 +199,8 @@ void	cGame::Render() {
 	camera->Render(bghandle,stage->GetStageSizeX(),stage->GetStageSizeY());
 	SetupCamera_Ortho(-0.01f);
 	//character->BossRender();
-	dialog->Render();
 	gui->Render();
+	character->OverRender();
 	RenderGui();
 	//character->BossRender();
 
@@ -504,7 +500,7 @@ void	LoadStage(string str, bool reload) {
 
 	/*int load_num = GetASyncLoadNum();
 
-	while (GetASyncLoadNum() != 0 && !ScreenFlip() && !ProcessMessage() && !ClearDrawScreen()) {
+	while (!ScreenFlip() && !ProcessMessage() && !ClearDrawScreen()) {
 
 		DrawBox(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 0x000000, true);
 		// Now Loading•`‰æ
