@@ -21,8 +21,9 @@ void	cAnchor::Update() {
 }
 
 void	cAnchor::Render(VECTOR cpos) {
-	DrawCircleAA(GetPos().x, GetPos().y, 10.f, 10, 0xFF0000, true);
-	DrawLineAA(GetPos().x, GetPos().y, cpos.x, cpos.y, 0xFF00000);
+	// DrawCircleAA(GetPos().x, GetPos().y, 10.f, 10, 0xFF0000, true);
+	// DrawLineAA(GetPos().x, GetPos().y, cpos.x, cpos.y, 0xFF00000);
+	DrawRotaGraph((int)GetPos().x, (int)GetPos().y, 0.4f, GetRad() + (DX_PI_F / 2.f), anchorimg, TRUE, false);
 }
 
 void	cAnchorWire::HitAction(cObject *hit) {
@@ -40,12 +41,15 @@ void	cAnchorWire::Update(VECTOR a) {
 }
 
 void	cAnchorWire::Render() {
-	if (IsBended[num] == true) {
+	/*if (IsBended[num] == true) {
 		DrawCircleAA(GetPos().x, GetPos().y, 2.f, 10, 0x00FF00, true);
+
 	}
 	else {
 		DrawCircleAA(GetPos().x, GetPos().y, 2.f, 10, 0xFF0000, true);
-	}
+	}*/
+	SetTransColor(0, 255, 0);
+	DrawRotaGraph((int)GetPos().x, (int)GetPos().y, 0.08f, GetRad(), wireimg, TRUE, false);
 }
 
 void	cBullet::Update() {
@@ -62,8 +66,8 @@ void	cBullet::Update() {
 		flag = false;
 	}
 	else if (type == JugemBullet) {
-		pos.x += cos(rad) * speed;
-		pos.y += sin((direction ? rad -= 0.05 : rad += 0.05)) * speed;
+		//pos.x += cos(rad) * speed;
+		pos.y += sinf((direction ? rad -= 0.05f : rad += 0.05f)) * speed;
 
 		if (speed == 0)
 			pos.y -= 10000;
@@ -81,10 +85,10 @@ void	cBullet::Update() {
 void	cBullet::Render() {
 	switch (type) {
 	case PlayerBullet: 
-		DrawGraph(pos.x, pos.y, bullet_img[32 + (anim * 6)], true);
+		DrawGraph((int)pos.x, (int)pos.y, bullet_img[32 + (anim * 6)], true);
 		break;
 	default:
-		DrawGraph(pos.x, pos.y, bullet_img[34 + (anim * 6)], true);
+		DrawGraph((int)pos.x, (int)pos.y, bullet_img[34 + (anim * 6)], true);
 		break;
 	}
 }

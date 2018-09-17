@@ -15,11 +15,11 @@ void	RenderFPS();
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 
 	// ê›íË
+	SetupCamera_Ortho(0.f);
 	ChangeWindowMode(true);
 	SetGraphMode(WINDOW_SIZE_X, WINDOW_SIZE_Y, 32);
 	SetMainWindowText("EntreR - Demo Edition");
 	SetGraphDisplayArea(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y);
-
 	// èâä˙âª
 	if (DxLib_Init() == -1) {
 		return -1;
@@ -46,6 +46,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	IsQuit = false;
 
 	SetDrawScreen(DX_SCREEN_BACK);
+	
 
 	// ÉÅÉCÉìÉãÅ[Év
 	while (!ScreenFlip() && !ProcessMessage() && !ClearDrawScreen() && !IsQuit)

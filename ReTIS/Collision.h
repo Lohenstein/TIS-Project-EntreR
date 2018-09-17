@@ -20,16 +20,16 @@ public:
 	virtual void HitAction(cObject *hit) = 0;			// è’ìÀå„ÇÃèàóù
 	float GetRadrightbottom() { return cos(rad); }
 	float GetRadleftbottom() {
-		rad = d2r(angle * 2);
-		return sin(rad);
+		rad = (float)d2r(angle * 2);
+		return sinf(rad);
 	}
 	float GetRadlefttop() {
-		rad = d2r(angle * 3);
-		return sin(rad);
+		rad = (float)d2r(angle * 3);
+		return sinf(rad);
 	}
 	float GetRadrighttop() {
-		rad = d2r(angle * 4);
-		return cos(rad);
+		rad = (float)d2r(angle * 4);
+		return cosf(rad);
 	}
 };
 
@@ -62,6 +62,8 @@ enum eObjectType {
 extern void		CheckHitRectAndRect(cObject *obj1, cObject *obj2);
 extern void		CheckHitRectAndCircle(cObject *obj1, cObject *obj2);
 extern void		CheckHitRectAndRollingRect(cObject *obj1, cObject *obj2);
+extern bool		CheckHitMapTile(cObject *obj1, int x, int y);
+extern bool		CheckCollisionAroundMaptile(cObject *hit);
 //extern void		CheckHitRollingRectAndCircle(cObject *obj1, cObject *obj2);
 extern float	col_CheckRadian(VECTOR p1, VECTOR p2);
 extern int		col_HitRadian(VECTOR p1, VECTOR p2, float rad);

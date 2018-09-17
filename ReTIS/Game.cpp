@@ -64,6 +64,8 @@ void	game_init(void)
 *------------------------------------------------------------------------------*/
 void	game_main(void)
 {
+	//SetupCamera_Ortho(3000.f);
+	//SetupCamera_Ortho(3000.f);
 	input(); // “ü—Í
 	// ˆ—
 	switch (gamemode)

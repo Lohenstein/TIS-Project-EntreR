@@ -1,5 +1,6 @@
 #pragma once
 
+extern int	  anchorimg, wireimg;
 extern VECTOR FocusPos;
 extern VECTOR FocusOld;
 extern VECTOR FocusCam;
@@ -63,6 +64,7 @@ protected:
 public:
 	cAnchor		*anchor;
 	cAnchorWire *anchorwire[120];
+	VECTOR		bend_save[120];
 
 	float	rad2anchor, dis2anchor, wrad, wrad_old, swing;
 	bool	IsAnchored = false;
@@ -71,24 +73,27 @@ public:
 	bool	addtimeswitch = false;
 	int 	anchor_dir = 0;
 	int		save_speed;
+	float	save_distance;
 	VECTOR	savepos;
 	cPlayer(float x, float y, float w, float h, float s, bool p) {
-		pos = { x, y, 0.f };
-		size = { w, h, 0.f };
-		speed = s;
-		type = Player;
+		pos			= { x, y, 0.f };
+		size		= { w, h, 0.f };
+		speed		= s;
+		type		= Player;
 		IsClearFlag = false;
 		IsOverFlag  = false;
-		mp = 300;
+		mp			= 300;
+		count		= 0;
+		springon	= false;
 		coin = 0, ecoin = 0, rcoin = 0;
-		count = 0;
-		springon = false;
 		LoadDivGraph("data/img/amecha/walk.png", 30, 1, 30, 606, 551, img[0]);
 		LoadDivGraph("data/img/amecha/idol.png", 30, 1, 30, 606, 544, img[1]);
 		LoadDivGraph("data/img/amecha/jump.png", 30, 1, 30, 606, 558, img[2]);
 		LoadDivGraph("data/img/amecha/shot.png", 30, 1, 30, 606, 544, img[3]);
+		wireimg   = LoadGraph("data/img/parts/wire.png");
+		anchorimg = LoadGraph("data/img/parts/anchor.png");
 		for (int i = 0; i < 120; i++) {
-			IsBended[i] = false;
+			bend_save[i] = { -1.f, -1.f, -1.f };
 		}
 	}
 	~cPlayer() {
@@ -102,6 +107,7 @@ public:
 	void	DetachAnchor();
 	void	Render();
 	void	Update();
+	void	BendWire();
 	void	HitAction(cObject *hit);
 	/*void	HitCheck(cGame &main, cObject *anc) {
 		main.CollisionAroundMaptile(anc);
@@ -148,7 +154,7 @@ public:
 		speed = s;
 		type = Enemy;
 		landing = false;
-		hp = 2;
+		hp = 3;
 
 		move_flag = false;
 		jump_count = 0;
@@ -253,16 +259,16 @@ public:
 	float GetPosy() { return recty; }
 	float GetRadrightbottom()  { return cos(rad); }
 	float GetRadleftbottom() { 
-		rad = d2r(angle * 2);
-		return cos(rad);
+		rad = (float)d2r(angle * 2);
+		return cosf(rad);
 	}
 	float GetRadlefttop() {
-		rad = d2r(angle * 3);
-		return sin(rad);
+		rad = (float)d2r(angle * 3);
+		return sinf(rad);
 	}
 	float GetRadrighttop() {
-		rad = d2r(angle * 4);
-		return sin(rad);
+		rad = (float)d2r(angle * 4);
+		return sinf(rad);
 	}
 };
 
@@ -340,6 +346,7 @@ public:
 	void Update();
 	void MoveByAutomation();
 	void Render(int image[]);
+	
 };
 
 class cEnemyJugem :public cEnemy {
@@ -360,8 +367,10 @@ public:
 		size = { w, h, 0.f };
 		speed = s;
 		landing = false;
+		lefthit = false;
+		righthit = false;
 		type = Enemy;
-		hp = 1;
+		hp = 2;
 
 		move_number = 0;
 		move_radian = 0.f;
@@ -388,6 +397,7 @@ public:
 	short attack_count;
 	VECTOR attackpos[5];
 	VECTOR bulletsize;
+	VECTOR BossPos;
 	float lockon;
 	int rad;
 
@@ -408,11 +418,15 @@ public:
 		lockon = 0.f;
 		rad = 0;
 		bulletsize = {10,10,0};
-		
+		//BossPos = size;
+		//BossPos = VScale(pos, 0.1);
 	}
 	void Update();
 	void MoveByAutomation();
-	void Render(int image[280]);
+	void Render(int model,int attachs);
+	VECTOR GetBossPos() { return pos; }
+	void BossMovel() { pos.x += 10; }
+	void BossMover() { pos.y += 10; }
 };
 
 class cEnemyCircularSaw :public cEnemy {
@@ -431,8 +445,8 @@ public:
 		now_point = 0;
 		type = Enemy;
 
-		SetPoint(0, x1, y1);
-		SetPoint(1, x2, y2);
+		SetPoint(0, (float)x1, (float)y1);
+		SetPoint(1, (float)x2, (float)y2);
 		image_change = 0;
 	}
 	void	Update(float s, int p1, int p2);
@@ -487,8 +501,8 @@ public:
 		now_point = 0;
 		type = MoveFloor;
 
-		SetPoint(0, x1, y1);
-		SetPoint(1, x2, y2);
+		SetPoint(0, (float)x1, (float)y1);
+		SetPoint(1, (float)x2, (float)y2);
 	}
 	void	Render();
 	void	Update(float s, int p1, int p2);
@@ -507,7 +521,7 @@ public:
 	cDropFloor(int w, int h, int x, int y) {
 		flag = false;
 		size = { (float)w, (float)h, 0.f };
-		SetPoint(x, y);
+		SetPoint((float)x, (float)y);
 		time = 0;
 		type = DropFloor;
 	}
@@ -642,28 +656,27 @@ public:
 		sx = 250 / 2.f, sy = 250 / 2.f;
 		type = Gear;
 	}
-	void	Render();
+	void	Render(int img[]);
 	void	MoveByAutomation();
 	void	Update();
 	int		GetNum() { return num; }
-	void	HitAction(cObject *hit);
 };
 
-/*class cWall :public cEnemy {
+class cWall :public cEnemy {
 protected:
 	int count;
 public:
 	cWall() {
 		type = MapTile;
 		count = 10;
-		size = { 250,250,0 };
+		size = { 128,128,0 };
 		pos = { 0,0,0 };
 		hp = 5;
 	}
-	//void Update(bool flag,VECTOR wallpos);
+	void Update(bool flag,VECTOR wallpos);
 	//void Render();
-	void Update(cMoveWall *movewall);
-};*/
+	void Update();
+};
 
 class cMoveWall : public cEnemy {
 protected:
@@ -674,36 +687,22 @@ protected:
 	VECTOR wallpos;
 	int		image_change;
 public:
-	class cWall :public cEnemy {
-	protected:
-		int count;
-	public:
-		cWall() {
-			type = MapTile;
-			count = 10;
-			size = { 250,250,0 };
-			pos = { 600,600,0};
-			hp = 5;
-		}
-		void Update();
-		void Render();
-	};
-	cMoveWall(int x, int y,int sx,int sy) {
+	cMoveWall(int x, int y, int sx, int sy) {
 		pos = { (float)x, (float)y, 0.f };
 		wallpos = { (float)sx,(float)sy,0.f };
 		flag = false;
-		size = {300.f / 2.f, 300.f / 2.f, 0.f };
-		sx = 250 / 2.f, sy = 250 / 2.f;
+		size = { 300.f / 2.f, 300.f / 2.f, 0.f };
+		sx = (int)(250 / 2.f), sy = (int)(250 / 2.f);
 		type = NothingObject;
 		hp = 2;
-	
+
 		switch_num = 0;
 		wall_num = 0;
 		image_change = 0;
 	}
-	cWall wall;
+
 	void	RenderSwitch(int img[]);
-	void	RenderWall(int img[]);
+	void	RenderWall(int hp);
 	void	Update();
 	void	MoveByAutomation();
 	int 	GetHp() { return hp; }
@@ -727,7 +726,7 @@ public:
 	cEnemyJumpman					*jumpman[ENEMY_MAX];
 	cEnemyBossmiddle				*bossmiddle[ENEMY_MAX];
 	cEnemyJugem						*jugem[ENEMY_MAX];
-	cEnemyBoss						*boss;
+	cEnemyBoss						*boss[ENEMY_MAX];
 
 	// Entity
 	cEnemyCircularSaw				*circularsaw[ENEMY_MAX];
@@ -739,7 +738,9 @@ public:
 	cSpring							*spring[ENEMY_MAX];
 	cGear							*gear[ENEMY_MAX];
 	cMoveWall						*movewall[ENEMY_MAX];
-	cMoveWall::cWall				*wall[ENEMY_MAX];
+	// cMoveWall::cWall				*wall[ENEMY_MAX];
+	// こっちのwallを読み込んでいる
+	cWall							*wall[ENEMY_MAX];
 
 	int		wireman_img[273];
 	int		jumpman_img[120];
@@ -754,11 +755,24 @@ public:
 	int		spring_img[30];
 	int		floorimg;
 	int		boss_img[280];
-	int		jugem_img[75];
+	int		jugem_img[48];
 	int		allcoin_img[117];
 	int		chocolate_img[38];
 	int		watch_img[39];
 	int		switch_img[20];
+	int		gear_img[13];
+	int		boss_3d_down;
+	int		boss_3d_beam;
+	int		boss_3d_lockon;
+	int		boss_3d_barrage;
+	int		boss_3d_cleave;
+	int		boss_move_3d[5];
+	int		attachIndex = MV1AttachAnim(boss_3d_down, 0, -1, FALSE);
+	float	playtime = 0.f;
+
+	float angleY = 1.f;
+
+	VECTOR ScreenPos;
 
 	void	Update(int gettime);
 	void	Render();
@@ -766,18 +780,17 @@ public:
 	void	LoadCharacters(string name);
 	void	DeleteCharacters();
 	void	DeleteDeathCharacters();
+	void	BossRender();
 	cCharacterManager(string name) {
 		LoadCharacters(name);
 		LoadDivGraph("data/img/enemy/Jumpman.PNG", 120, 30, 4, 300, 300, jumpman_img);
-		//LoadDivGraph("data/img/enemy/Gunman.PNG", 24, 24, 1, 300, 300, gunman_imgdead);
-		//LoadDivGraph("data/img/enemy/GUNMAN2.PNG", 111, 37, 4, 300, 300, gunman_img);
 		LoadDivGraph("data/img/enemy/GUNMAN2.PNG", 148, 37, 4, 300, 300, gunman_img);
 		LoadDivGraph("data/img/enemy/hand.PNG", 1,1,1, 300, 300, gunman_hand);
 		LoadDivGraph("data/img/enemy/gunhand.PNG", 1,1,1, 300, 300, gunman_handg);
 		LoadDivGraph("data/img/enemy/BigGun.PNG", 19,19, 1, 300, 300, cannon_img);
 		LoadDivGraph("data/img/enemy/hardbody.PNG", 30, 15, 2, 300, 300, hardbody_img);
 		LoadDivGraph("data/img/enemy/Fryingman.PNG", 120, 40, 3, 300, 300, fryingman_img);
-		LoadDivGraph("data/img/enemy/Jugem.PNG", 75, 25, 3, 300, 300, jugem_img);
+		LoadDivGraph("data/img/enemy/Jugem.PNG", 48, 24, 2, 300, 300, jugem_img);
 		LoadDivGraph("data/img/enemy/Bossmiddle.PNG", 200, 50, 4, 300, 300, bossmiddle_img);
 		LoadDivGraph("data/img/enemy/Wireman.PNG", 273, 39, 7, 300, 300, wireman_img);
 		LoadDivGraph("data/img/enemy/CircularSaw.PNG", 5, 5, 1, 300, 300, circularsaw_img);
@@ -788,7 +801,17 @@ public:
 		LoadDivGraph("data/img/enemy/Chocolate.PNG", 38, 38, 1, 300, 300, chocolate_img);
 		LoadDivGraph("data/img/enemy/Watch.PNG", 39, 39, 1, 300, 300, watch_img);
 		LoadDivGraph("data/img/enemy/Switch.PNG", 20, 20, 1, 300, 300, switch_img);
-
+		LoadDivGraph("data/img/enemy/Gear.PNG", 13, 13, 1, 300, 300, gear_img);
+		boss_3d_down = MV1LoadModel("data/img/enemy/ボス_ダウン.mv1");
+		boss_3d_beam = MV1LoadModel("data/img/enemy/ボス_ビーム.mv1");
+		boss_3d_lockon = MV1LoadModel("data/img/enemy/ボス_自機狙い.mv1");
+		boss_3d_barrage = MV1LoadModel("data/img/enemy/ボス_弾幕.mv1");
+		boss_3d_cleave = MV1LoadModel("data/img/enemy/ボス_薙ぎ払い.mv1");
+		boss_move_3d[0] = MV1LoadModel("data/img/enemy/ボス_ダウン.mv1");
+		for (int i = 0; i < 4; i++) {
+			boss_move_3d[i] = MV1SetRotationXYZ(boss_move_3d[i], VGet(2.827435f, -3.979354f, 0));
+		}
+		MV1SetScale(boss_3d_down, VGet(0.5, 0.5, 0.5));
 	}
 	~cCharacterManager() {
 		DeleteCharacters();
@@ -806,6 +829,12 @@ public:
 		for (int i = 0; i < 30;  i++) { DeleteGraph(spring_img[i]); }
 		for (int i = 0; i < 38; i++) { DeleteGraph(chocolate_img[i]); }
 		for (int i = 0; i < 39; i++) { DeleteGraph(watch_img[i]); }
+		for (int i = 0; i < 13; i++) { DeleteGraph(gear_img[i]); }
+		MV1DeleteModel(boss_3d_down);
+		MV1DeleteModel(boss_3d_beam);
+		MV1DeleteModel(boss_3d_lockon);
+		MV1DeleteModel(boss_3d_barrage);
+		MV1DeleteModel(boss_3d_cleave);
 		DeleteGraph(floorimg);
 	}
 
@@ -857,5 +886,5 @@ enum character {
 	eSpring,		// 16
 	eCrumblewall,	// 17
 	eGear,			// 18
-	eMovewall		// 19
+	eMovewall,		// 19
 };

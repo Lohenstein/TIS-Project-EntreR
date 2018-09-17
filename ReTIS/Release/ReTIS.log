@@ -1,0 +1,146 @@
+﻿  Character.cpp
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\sal_supp.h(57): warning C4005: '__useHeader': マクロが再定義されました。
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\sal.h(2866): note: '__useHeader' の以前の定義を確認してください
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\specstrings_supp.h(77): warning C4005: '__on_failure': マクロが再定義されました。
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\sal.h(2876): note: '__on_failure' の以前の定義を確認してください
+c:\users\music\desktop\バックアップ\tis-project-entrer\retis\Camera.h(18): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
+c:\users\music\desktop\バックアップ\tis-project-entrer\retis\Collision.h(23): warning C4244: '=': 'double' から 'float' への変換です。データが失われる可能性があります。
+c:\users\music\desktop\バックアップ\tis-project-entrer\retis\Collision.h(27): warning C4244: '=': 'double' から 'float' への変換です。データが失われる可能性があります。
+c:\users\music\desktop\バックアップ\tis-project-entrer\retis\Collision.h(31): warning C4244: '=': 'double' から 'float' への変換です。データが失われる可能性があります。
+c:\users\music\desktop\バックアップ\tis-project-entrer\retis\Character.h(257): warning C4244: '=': 'double' から 'float' への変換です。データが失われる可能性があります。
+c:\users\music\desktop\バックアップ\tis-project-entrer\retis\Character.h(261): warning C4244: '=': 'double' から 'float' への変換です。データが失われる可能性があります。
+c:\users\music\desktop\バックアップ\tis-project-entrer\retis\Character.h(265): warning C4244: '=': 'double' から 'float' への変換です。データが失われる可能性があります。
+c:\users\music\desktop\バックアップ\tis-project-entrer\retis\Character.h(443): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+c:\users\music\desktop\バックアップ\tis-project-entrer\retis\Character.h(444): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+c:\users\music\desktop\バックアップ\tis-project-entrer\retis\Character.h(499): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+c:\users\music\desktop\バックアップ\tis-project-entrer\retis\Character.h(500): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+c:\users\music\desktop\バックアップ\tis-project-entrer\retis\Character.h(519): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+c:\users\music\desktop\バックアップ\tis-project-entrer\retis\Character.h(690): warning C4244: '=': 'float' から 'int' への変換です。データが失われる可能性があります。
+c:\users\music\desktop\バックアップ\tis-project-entrer\retis\Character.h(807): warning C4305: '引数': 'double' から 'float' へ切り詰めます。
+c:\users\music\desktop\バックアップ\tis-project-entrer\retis\Stage.h(50): warning C4244: '引数': 'const float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(238): warning C4101: 'bend_distance': ローカル変数は 1 度も使われていません。
+Character.cpp(332): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(336): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(451): warning C4244: '=': 'int' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(696): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(704): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(712): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(720): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(728): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(736): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(744): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(760): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(800): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(808): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(909): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(911): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1020): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1021): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1022): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1028): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1029): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1030): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1033): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1034): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1035): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1042): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1045): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1069): warning C4244: '=': 'double' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(1105): warning C4305: '=': 'double' から 'float' へ切り詰めます。
+Character.cpp(1129): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1185): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1321): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1323): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1341): warning C4244: '=': 'double' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(1380): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(1380): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(1389): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(1389): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(1391): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(1391): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(1412): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1415): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1476): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(1540): warning C4305: '引数': 'double' から 'float' へ切り詰めます。
+Character.cpp(1577): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(1578): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+Character.cpp(1605): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1625): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1626): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1636): warning C4244: '=': 'double' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1645): warning C4244: '=': 'double' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1711): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1714): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1717): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1720): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1784): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1799): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1825): warning C4244: '引数': 'float' から 'int' への変換です。データが失われる可能性があります。
+Character.cpp(1854): warning C4305: '引数': 'double' から 'float' へ切り詰めます。
+EffekseerForDXLib_vs2015_x86_d.lib(EffekseerForDXLib.obj) : warning LNK4075: /EDITANDCONTINUE は /OPT:ICF の指定によって無視されます。
+  コード生成しています。
+  8 of 884 functions ( 0.9%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    1 functions had inline decision re-evaluated but remain unchanged
+  コード生成が終了しました。
+Effekseer_vs2015_x86_d.lib(Effekseer.Color.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.Color.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.CriticalSection.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.CriticalSection.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.DefaultEffectLoader.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.DefaultEffectLoader.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.DefaultFile.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.DefaultFile.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.Effect.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.Effect.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.EffectNode.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.EffectNode.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.EffectNodeModel.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.EffectNodeModel.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.EffectNodeRibbon.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.EffectNodeRibbon.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.EffectNodeRing.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.EffectNodeRing.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.EffectNodeSprite.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.EffectNodeSprite.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.EffectNodeTrack.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.EffectNodeTrack.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.FCurves.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.FCurves.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.Instance.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.Instance.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.InstanceContainer.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.InstanceContainer.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.InstanceGlobal.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.InstanceGlobal.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.InstanceGroup.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.InstanceGroup.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.Manager.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.Manager.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.Matrix43.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.Matrix43.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.Matrix44.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.Matrix44.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.RectF.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.RectF.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.Setting.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.Setting.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.Server.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.Server.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.Socket.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.Socket.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.Thread.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.Thread.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.Vector2D.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.Vector2D.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Effekseer.Vector3D.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Effekseer.Vector3D.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Culling3D.Grid.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Culling3D.Grid.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Culling3D.Layer.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Culling3D.Layer.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Culling3D.Matrix44.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Culling3D.Matrix44.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Culling3D.ObjectInternal.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Culling3D.ObjectInternal.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Culling3D.ReferenceObject.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Culling3D.ReferenceObject.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Culling3D.Vector3DF.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Culling3D.Vector3DF.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+Effekseer_vs2015_x86_d.lib(Culling3D.WorldInternal.obj) : warning LNK4099: PDB 'effekseer.pdb' が 'Effekseer_vs2015_x86_d.lib(Culling3D.WorldInternal.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRendererDX9.DeviceObject.obj) : warning LNK4099: PDB 'effekseer_renderer_dx9.pdb' が 'EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRendererDX9.DeviceObject.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx9.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRendererDX9.IndexBuffer.obj) : warning LNK4099: PDB 'effekseer_renderer_dx9.pdb' が 'EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRendererDX9.IndexBuffer.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx9.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRendererDX9.ModelLoader.obj) : warning LNK4099: PDB 'effekseer_renderer_dx9.pdb' が 'EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRendererDX9.ModelLoader.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx9.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRendererDX9.ModelRenderer.obj) : warning LNK4099: PDB 'effekseer_renderer_dx9.pdb' が 'EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRendererDX9.ModelRenderer.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx9.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRendererDX9.Renderer.obj) : warning LNK4099: PDB 'effekseer_renderer_dx9.pdb' が 'EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRendererDX9.Renderer.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx9.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRendererDX9.RenderState.obj) : warning LNK4099: PDB 'effekseer_renderer_dx9.pdb' が 'EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRendererDX9.RenderState.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx9.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRendererDX9.Shader.obj) : warning LNK4099: PDB 'effekseer_renderer_dx9.pdb' が 'EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRendererDX9.Shader.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx9.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRendererDX9.TextureLoader.obj) : warning LNK4099: PDB 'effekseer_renderer_dx9.pdb' が 'EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRendererDX9.TextureLoader.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx9.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRendererDX9.VertexBuffer.obj) : warning LNK4099: PDB 'effekseer_renderer_dx9.pdb' が 'EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRendererDX9.VertexBuffer.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx9.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRenderer.IndexBufferBase.obj) : warning LNK4099: PDB 'effekseer_renderer_dx9.pdb' が 'EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRenderer.IndexBufferBase.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx9.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRenderer.ModelRendererBase.obj) : warning LNK4099: PDB 'effekseer_renderer_dx9.pdb' が 'EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRenderer.ModelRendererBase.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx9.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRenderer.RenderStateBase.obj) : warning LNK4099: PDB 'effekseer_renderer_dx9.pdb' が 'EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRenderer.RenderStateBase.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx9.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRenderer.VertexBufferBase.obj) : warning LNK4099: PDB 'effekseer_renderer_dx9.pdb' が 'EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRenderer.VertexBufferBase.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx9.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRenderer.DDSTextureLoader.obj) : warning LNK4099: PDB 'effekseer_renderer_dx9.pdb' が 'EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRenderer.DDSTextureLoader.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx9.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRenderer.DXTK.DDSTextureLoader.obj) : warning LNK4099: PDB 'effekseer_renderer_dx9.pdb' が 'EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRenderer.DXTK.DDSTextureLoader.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx9.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRenderer.PngTextureLoader.obj) : warning LNK4099: PDB 'effekseer_renderer_dx9.pdb' が 'EffekseerRendererDX9_vs2015_x86_d.lib(EffekseerRenderer.PngTextureLoader.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx9.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX11_vs2015_x86_d.lib(EffekseerRendererDX11.DeviceObject.obj) : warning LNK4099: PDB 'effekseer_renderer_dx11.pdb' が 'EffekseerRendererDX11_vs2015_x86_d.lib(EffekseerRendererDX11.DeviceObject.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx11.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX11_vs2015_x86_d.lib(EffekseerRendererDX11.IndexBuffer.obj) : warning LNK4099: PDB 'effekseer_renderer_dx11.pdb' が 'EffekseerRendererDX11_vs2015_x86_d.lib(EffekseerRendererDX11.IndexBuffer.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx11.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX11_vs2015_x86_d.lib(EffekseerRendererDX11.ModelLoader.obj) : warning LNK4099: PDB 'effekseer_renderer_dx11.pdb' が 'EffekseerRendererDX11_vs2015_x86_d.lib(EffekseerRendererDX11.ModelLoader.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx11.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX11_vs2015_x86_d.lib(EffekseerRendererDX11.ModelRenderer.obj) : warning LNK4099: PDB 'effekseer_renderer_dx11.pdb' が 'EffekseerRendererDX11_vs2015_x86_d.lib(EffekseerRendererDX11.ModelRenderer.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx11.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX11_vs2015_x86_d.lib(EffekseerRendererDX11.Renderer.obj) : warning LNK4099: PDB 'effekseer_renderer_dx11.pdb' が 'EffekseerRendererDX11_vs2015_x86_d.lib(EffekseerRendererDX11.Renderer.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx11.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX11_vs2015_x86_d.lib(EffekseerRendererDX11.RenderState.obj) : warning LNK4099: PDB 'effekseer_renderer_dx11.pdb' が 'EffekseerRendererDX11_vs2015_x86_d.lib(EffekseerRendererDX11.RenderState.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx11.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX11_vs2015_x86_d.lib(EffekseerRendererDX11.Shader.obj) : warning LNK4099: PDB 'effekseer_renderer_dx11.pdb' が 'EffekseerRendererDX11_vs2015_x86_d.lib(EffekseerRendererDX11.Shader.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx11.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX11_vs2015_x86_d.lib(EffekseerRendererDX11.TextureLoader.obj) : warning LNK4099: PDB 'effekseer_renderer_dx11.pdb' が 'EffekseerRendererDX11_vs2015_x86_d.lib(EffekseerRendererDX11.TextureLoader.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx11.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerRendererDX11_vs2015_x86_d.lib(EffekseerRendererDX11.VertexBuffer.obj) : warning LNK4099: PDB 'effekseer_renderer_dx11.pdb' が 'EffekseerRendererDX11_vs2015_x86_d.lib(EffekseerRendererDX11.VertexBuffer.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\effekseer_renderer_dx11.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+EffekseerForDXLib_vs2015_x86_d.lib(EffekseerForDXLib.obj) : warning LNK4099: PDB 'EffekseerForDXLib_vs2015.pdb' が 'EffekseerForDXLib_vs2015_x86_d.lib(EffekseerForDXLib.obj)' で、または 'C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\EffekseerForDXLib_vs2015.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+  ReTIS.vcxproj -> C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\ReTIS.exe
+  ReTIS.vcxproj -> C:\Users\music\Desktop\バックアップ\TIS-Project-EntreR\Release\ReTIS.pdb (Full PDB)
