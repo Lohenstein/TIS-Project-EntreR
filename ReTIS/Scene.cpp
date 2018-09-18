@@ -5,6 +5,8 @@ std::unique_ptr<cTitle> title;
 
 MenuMode	menumode;
 
+int totalranking[10];
+
 void	LoadStage(string str, bool reload);
 
 /*------------------------------------------------------------------------------*
@@ -152,6 +154,7 @@ void	cGame::Collision() {
 void	cGame::Update() {
 	if (IsClearFlag) {
 		UpdateResult();
+		RankingUpdate();
 	}
 	else if (IsOverFlag) {
 		UpdateOver();
@@ -207,6 +210,7 @@ void	cGame::Render() {
 	// クリア時
 	if (IsClearFlag) {
 		DrawResult();
+		RankingRender();
 		trans++;
 	}
 	// ゲームオーバー時
@@ -275,7 +279,7 @@ void	cGame::DrawResult() {
 	DrawGraph(0, 0, imghandle[4], false);
 	
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	int totalscore = ((60 * min + sec) * 30) + enemyscore + coin;
+	totalscore = ((60 * min + sec) * 30) + enemyscore + coin;
 
 	if (trans > 255) {
 		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Score:%dsec", time);
@@ -371,6 +375,25 @@ void	cGame::DrawPauseMenu() {
 		break;
 	default:
 		break;
+	}
+}
+void	cGame::RankingUpdate() {
+	if (hantei == false) {
+		for (int i = 0; i < 9; i++) {
+			if (totalranking[i] < totalscore) {
+				storagebox = totalranking[i];
+				totalranking[i] = totalscore;
+				totalscore = storagebox;
+			}
+		}
+	}
+	hantei = true;
+}
+void	cGame::RankingRender() {
+	for (int i = 0; i < 9; i++) {
+		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
+		DrawFormatStringToHandle(200, 50 + (i * 50), 0xFFFFFF, font_handle[FONT_POSSESSTIME], "%d",totalranking[i]);
+		//DrawFormatString(0, i * 20, 0xfffff, "%d", totalranking[i]);
 	}
 }
 /*------------------------------------------------------------------------------*
@@ -518,4 +541,42 @@ void	LoadStage(string str, bool reload) {
 
 	// ゲームモードをゲームにする
 	gamemode = Game::mode_game;
+}
+
+void	LoadRanking(string name,int number) {
+	string ranking1 = name + "rankingstage1.csv";
+	string ranking2 = name + "rankingstage1.csv";
+	string ranking3 = name + "rankingstage1.csv";
+	
+	ifstream ifs;
+	if (number == 1)
+		 ifs.open(ranking1.c_str());
+	else if (number == 2)
+		ifs.open(ranking2.c_str());
+	else if (number == 3)
+		ifs.open(ranking3.c_str());
+	string line;
+
+	vector<string> str = split(line, ',');
+
+	bool decisition;
+	int strage;
+
+	switch (number) {
+	case 1:
+		while (getline(ifs, line)) {
+
+			vector<string> str = split(line, ',');
+			for (int i = 0; i < 9; i++) {
+				stoi(str.at(i));
+			}
+			
+		}
+		break;
+	case 2:
+		break;
+	case 3:
+		break;
+	}
+	
 }

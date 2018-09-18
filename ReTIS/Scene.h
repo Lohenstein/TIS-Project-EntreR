@@ -1,6 +1,7 @@
 #pragma once
 
 using namespace std;
+extern int totalranking[10];
 
 enum TitleMenu {
 	TITLE_GAMESTART,
@@ -78,29 +79,6 @@ public:
 	void	DrawOption();
 };
 
-class cScore : public cBase
-{
-public:
-	int		titlebg;
-	int		menu_mode;
-
-	char *title_str[4] = { "GAME START", "STAGE SELECT", "OPTION", "QUIT GAME" };
-	char *stage_str[4] = { "SATO FACTORY", "SMALL FOREST FACTORY", "FUJI FACTORY", "BACK" };
-	char *option_str[2] = { "FULL/WINDOW", "BACK" };
-
-	cScore() {
-		titlebg = LoadGraph("data/img/wall/titlebg.png");
-		menumode = MENUMODE_MAINMENU;
-	}
-
-	void	Init();
-	void	Update();
-	void	Render();
-	void	DrawTitle();
-	void	DrawStageSelect();
-	void	DrawOption();
-};
-
 class cGame : public cBase
 {
 private:
@@ -113,13 +91,16 @@ private:
 	int imghandle[10];
 	int bghandle;
 	int time = 0;
-
+	int totalscore = 0;
+	int storagebox = 0;
+	
 protected:
 	// êßå¿éûä‘Ç∆Ç©
 	int min  = 5;
 	int sec  = 0;
 	int rectime = 0;
 	int trans = 0;
+	bool hantei = false;
 public:
 
 	bool IsPaused = false;
@@ -168,6 +149,8 @@ public:
 	void	UpdateResult();
 	void	DrawOver();
 	void	UpdateOver();
+	void	RankingUpdate();
+	void	RankingRender();
 
 	void	DrawPauseMenu();
 
