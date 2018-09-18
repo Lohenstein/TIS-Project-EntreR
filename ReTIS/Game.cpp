@@ -64,6 +64,7 @@ void	game_init(void)
 *------------------------------------------------------------------------------*/
 void	game_main(void)
 {
+	int totalranking[10];
 	//SetupCamera_Ortho(3000.f);
 	//SetupCamera_Ortho(3000.f);
 
