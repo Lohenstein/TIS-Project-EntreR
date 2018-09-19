@@ -111,6 +111,7 @@ public:
 		stage	  = new cStageManager(stagepath);
 		character = new cCharacterManager(stagepath);
 		camera	  = new cCamera(stagepath);
+		
 		gui       = new cGuiGame();
 		bghandle  = MakeScreen(stage->GetStageSizeX()*(int)bsize, stage->GetStageSizeY()*(int)bsize, true);
 		camera->SetStageSize(stage->GetStageSizeX(), stage->GetStageSizeY());

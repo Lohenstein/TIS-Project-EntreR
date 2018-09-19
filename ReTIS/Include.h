@@ -13,6 +13,7 @@
 #include <stdarg.h>
 #include <tchar.h>
 #include <Windows.h>
+#include <fstream>
 
 // ƒwƒbƒ_
 #include "Loader.h"
