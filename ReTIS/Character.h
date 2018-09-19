@@ -8,7 +8,7 @@ extern VECTOR MouseAdd;
 extern bool	  IsClearFlag, IsOverFlag, IsBended[120];
 extern int mp;
 
-extern int ncoin, ecoin, rcoin;
+extern int ncoin, ecoin, rcoin, score;
 extern int enemyscore;
 
 using namespace std;
@@ -90,6 +90,7 @@ public:
 		count		= 0;
 		springon	= false;
 		ncoin = 0, ecoin = 0, rcoin = 0;
+		score = 0;
 		LoadDivGraph("data/img/amecha/walk.png", 30, 1, 30, 606, 551, img[0]);
 		LoadDivGraph("data/img/amecha/idol.png", 30, 1, 30, 606, 544, img[1]);
 		LoadDivGraph("data/img/amecha/jump.png", 30, 1, 30, 606, 558, img[2]);

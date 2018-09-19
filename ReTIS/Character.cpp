@@ -3,7 +3,7 @@
 VECTOR	FocusPos, FocusOld, WirePos ,FocusCam, MouseAdd;
 bool	AnchorStretch = true;
 bool	IsClearFlag, IsOverFlag, IsBended[120];
-int		ncoin, ecoin, rcoin, tcoin;
+int		ncoin, ecoin, rcoin, tcoin, score;
 int		mp;
 int		anchorimg, wireimg;
 int		enemyscore;
@@ -438,7 +438,7 @@ void	cPlayer::Update() {
 	if ((key[KEY_INPUT_C] == 1 || pad_b[XINPUT_BUTTON_X] == 1) && mp >= 10) {
 		mp -= 10;
 		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, -stick_rad, PlayerBullet);
-		effect.Shot(pos, 10.f, 5, 2000);
+		//effect.Shot(pos, 60.f, 3, 60);
 		PlaySoundMem(sdplayershot, DX_PLAYTYPE_BACK, TRUE);
 	}
 	if (pad_b[XINPUT_BUTTON_Y] == 1) {
@@ -520,7 +520,10 @@ void	cPlayer::HitAction(cObject *hit) {
 		if (this->GetType() == Player) IsClearFlag = true;
 		break;
 	case NormalCoin:
-		if (this->GetType() == Player) ncoin++;
+		if (this->GetType() == Player) {
+			ncoin++;
+			score += 10;
+		}
 		break;
 	case EneCoin:
 		if (this->GetType() == Player) {
@@ -529,7 +532,10 @@ void	cPlayer::HitAction(cObject *hit) {
 		}
 		break;
 	case RareCoin:
-		if (this->GetType() == Player) rcoin++;
+		if (this->GetType() == Player) {
+			rcoin++;
+			score += 1000;
+		}
 		break;
 	case TimeCoin:
 		if (this->GetType() == Player) {
@@ -697,46 +703,51 @@ void	cCharacterManager::DeleteDeathCharacters() {
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (boss[i] != nullptr) {
 			if (boss[i]->GetHp() <= 0) {
+				effect.Shot(boss[i]->GetPos(), 6.f, 1, 60);
 				delete boss[i];
 				boss[i] = nullptr;
 			}
 		}
-
 	}
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (jumpman[i] != nullptr) {
 			if (jumpman[i]->GetHp() <= 0) {
+				effect.Shot(jumpman[i]->GetPos(), 6.f, 1, 60);
 				delete jumpman[i];
 				jumpman[i] = nullptr;
-				enemyscore += 400;
+				score += 400;
 			}
 		}
 		if (hardbody[i] != nullptr) {
 			if (hardbody[i]->GetHp() <= 0) {
+				effect.Shot(hardbody[i]->GetPos(), 6.f, 1, 60);
 				delete hardbody[i];
 				hardbody[i] = nullptr;
-				enemyscore += 600;
+				score += 600;
 			}
 		}
 		if (fryingman[i] != nullptr) {
 			if (fryingman[i]->GetHp() <= 0) {
+				effect.Shot(fryingman[i]->GetPos(), 6.f, 1, 60);
 				delete fryingman[i];
 				fryingman[i] = nullptr;
-				enemyscore += 200;
+				score += 200;
 			}
 		}
 		if (gunman[i] != nullptr) {
 			if (gunman[i]->GetHp() <= 0) {
+				effect.Shot(gunman[i]->GetPos(), 6.f, 1, 60);
 				delete gunman[i];
 				gunman[i] = nullptr;
-				enemyscore += 400;
+				score += 400;
 			}
 		}
 		if (bossmiddle[i] != nullptr) {
 			if (bossmiddle[i]->GetHp() <= 0) {
+				effect.Shot(bossmiddle[i]->GetPos(), 6.f, 1, 60);
 				delete bossmiddle[i];
 				bossmiddle[i] = nullptr;
-				enemyscore += 1000;
+				score += 1000;
 			}
 		}
 		if (coin[i] != nullptr) {
@@ -748,8 +759,10 @@ void	cCharacterManager::DeleteDeathCharacters() {
 		
 		if (jugem[i] != nullptr) {
 			if (jugem[i]->GetHp() <= 0) {
+				effect.Shot(jugem[i]->GetPos(), 6.f, 1, 60);
 				delete jugem[i];
 				jugem[i] = nullptr;
+				score += 500;
 			}
 		}
 		if (crumblewall[i] != nullptr) {

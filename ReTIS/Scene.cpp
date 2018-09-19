@@ -200,6 +200,11 @@ void	cGame::Render() {
 	SetDrawScreen(DX_SCREEN_BACK);
 	
 	camera->Render(bghandle,stage->GetStageSizeX(),stage->GetStageSizeY());
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 240);
+	DrawRotaGraph(WINDOW_SIZE_X / 2, -100, 0.7, PI / 2, imghandle[5], false, false);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	DrawFormatStringToHandle(1000, 25, 0xFFFFFF, font_handle[FONT_POSSESSTIME], "SCORE:%d", score);
 	SetupCamera_Ortho(-0.01f);
 	//character->BossRender();
 	gui->Render();
@@ -325,20 +330,14 @@ void	cGame::RenderGui() {
 	}
 	if (sec < 10) {
 		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_TIME], "0%d:0%d", min, sec);
-		DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 20, 0xFFFFFF, font_handle[FONT_TIME], "0%d:0%d", min, sec);
+		DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 15, 0xFFFFFF, font_handle[FONT_TIME], "0%d:0%d", min, sec);
 	}
 	else {
 		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_TIME], "0%d:%d", min, sec);
-		DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 20, 0xFFFFFF, font_handle[FONT_TIME], "0%d:%d", min, sec);
+		DrawFormatStringToHandle(WINDOW_SIZE_X / 2 - w / 2, 15, 0xFFFFFF, font_handle[FONT_TIME], "0%d:%d", min, sec);
 	}
 
-	DrawGraph(10, 70, imghandle[2], true);
-	if (mp >= 300) {
-		if (time % 3 != 0) DrawRectGraph(10, 70, 0, 0, mp, 16, imghandle[1], false, true);
-	}
-	else {
-		DrawRectGraph(10, 70, 0, 0, mp, 16, imghandle[1], false, true);
-	}
+	
 	if (min <= 0 && sec <= 0) IsOverFlag = true;
 }
 

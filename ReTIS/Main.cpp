@@ -14,12 +14,18 @@ void	RenderFPS();
 // スタート
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 
+	printf("***Starting Game***\n");
+
+	printf("Setup Window...");
 	// 設定
 	//SetupCamera_Ortho(0.f);
 	ChangeWindowMode(true);
 	SetGraphMode(WINDOW_SIZE_X, WINDOW_SIZE_Y, 32);
 	SetMainWindowText("EntreR - Demo Edition");
 	SetGraphDisplayArea(0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y);
+
+	printf("Success!\n");
+	printf("Initializing Libraries...");
 	// 初期化
 	if (DxLib_Init() == -1) {
 		return -1;
@@ -47,9 +53,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	SetDrawScreen(DX_SCREEN_BACK);
 	
+	printf("Success!\n");
+
 	// サウンドロード
 	SoundLoad();
 
+	printf("Setup Done!\n***Start Mainloop***\n");
 	// メインループ
 	while (!ScreenFlip() && !ProcessMessage() && !ClearDrawScreen() && !IsQuit)
 	{

@@ -122,6 +122,7 @@ public:
 		imghandle[2] = LoadGraph("data/img/hp/mpbarbg.png");
 		imghandle[3] = LoadGraph("data/img/wall/overbg.png");
 		imghandle[4] = LoadGraph("data/img/wall/resultbg.png");
+		imghandle[5] = LoadGraph("data/img/wall/choco_bg.png");
 	}
 	~cGame() { 
 		delete stage;
@@ -136,6 +137,7 @@ public:
 		gui		  = nullptr;
 		for (int i = 0; i < 10; i++) { DeleteGraph(imghandle[i]); }
 		DeleteGraph(bghandle);
+		score = 0;
 	}
 	void	Init();
 	void	Collision();

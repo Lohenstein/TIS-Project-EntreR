@@ -7,7 +7,7 @@ void	cGuiGame::Update() {
 void	cGuiGame::Render() {
 
 	const int hp_margin_x = 10;
-	const int hp_margin_y = 10;
+	const int hp_margin_y = 20;
 	const int hp_margin   = 60;
 
 	for (int i = 0; i < hp; i++) {

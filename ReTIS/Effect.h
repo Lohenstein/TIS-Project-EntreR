@@ -36,12 +36,12 @@ public:
 
 class cEffectManager {
 public:
-	cEffect *effect[20];
+	cEffect *effect[64];
 
 	void	DeleteEffect() {
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 64; i++) {
 			if (effect[i] != nullptr) {
-				if (effect[i]->GetLength() > 2000){
+				if (effect[i]->GetLength() > effect[i]->max){
 					delete effect[i];
 					effect[i] = nullptr;
 				}
@@ -50,7 +50,7 @@ public:
 	}
 
 	void	Shot(VECTOR pos, float zoom, int effect_num, int max) {
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 64; i++) {
 			if (effect[i] == nullptr) {
 				effect[i] = new cEffect(pos, zoom, effect_num, max);
 				break;
@@ -59,7 +59,7 @@ public:
 	}
 
 	void	Update() {
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 64; i++) {
 			if (effect[i] != nullptr) {
 				effect[i]->UpdateEffect();
 			}
