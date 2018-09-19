@@ -16,7 +16,7 @@ void SoundLoad() {
 	sdplayershot = LoadSoundMem("data/sound/shot4.mp3");
 	sdplayerjump = LoadSoundMem("data/sound/jump.mp3");
 	sdplayerjump = LoadSoundMem("data/sound/jump.mp3");
-	//sditemget = LoadSoundMem("data/sound/itemget.mp3");
+	//sditemget = LoadSoundMem("data/sound/itemget.mp3");//
 
 	// エネミーサウンド
 	sdenemyshot = LoadSoundMem("data/sound/shot1.mp3");
