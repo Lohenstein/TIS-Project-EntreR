@@ -8,7 +8,7 @@ extern VECTOR MouseAdd;
 extern bool	  IsClearFlag, IsOverFlag, IsBended[120];
 extern int mp;
 
-extern int coin, ecoin, rcoin;
+extern int ncoin, ecoin, rcoin;
 extern int enemyscore;
 
 using namespace std;
@@ -89,11 +89,12 @@ public:
 		mp			= 300;
 		count		= 0;
 		springon	= false;
-		coin = 0, ecoin = 0, rcoin = 0;
+		ncoin = 0, ecoin = 0, rcoin = 0;
 		LoadDivGraph("data/img/amecha/walk.png", 30, 1, 30, 606, 551, img[0]);
 		LoadDivGraph("data/img/amecha/idol.png", 30, 1, 30, 606, 544, img[1]);
 		LoadDivGraph("data/img/amecha/jump.png", 30, 1, 30, 606, 558, img[2]);
 		LoadDivGraph("data/img/amecha/shot.png", 30, 1, 30, 606, 544, img[3]);
+
 		wireimg   = LoadGraph("data/img/parts/wire.png");
 		anchorimg = LoadGraph("data/img/parts/anchor.png");
 		//walksd[0] = LoadSoundMem("data/sound/Footstep-high.wav");
@@ -115,6 +116,7 @@ public:
 	void	UpdateAnchor();
 	void	DetachAnchor();
 	void	Render();
+	void	OverRender(int coin,int rcoin) { DrawFormatString(0, 0, 0xffffff, "%d", coin + rcoin); }
 	void	Update();
 	void	BendWire();
 	void	HitAction(cObject *hit);
@@ -871,12 +873,12 @@ public:
 		for (int i = 0; i < 38; i++) { DeleteGraph(chocolate_img[i]); }
 		for (int i = 0; i < 39; i++) { DeleteGraph(watch_img[i]); }
 		for (int i = 0; i < 13; i++) { DeleteGraph(gear_img[i]); }
-		MV1DeleteModel(boss_3d_down);
-		MV1DeleteModel(boss_3d_beam);
-		MV1DeleteModel(boss_3d_lockon);
-		MV1DeleteModel(boss_3d_barrage);
-		MV1DeleteModel(boss_3d_cleave);
-		DeleteGraph(floorimg);
+		//MV1DeleteModel(boss_3d_down);
+		//MV1DeleteModel(boss_3d_beam);
+		//MV1DeleteModel(boss_3d_lockon);
+		//MV1DeleteModel(boss_3d_barrage);
+		//MV1DeleteModel(boss_3d_cleave);
+		//DeleteGraph(floorimg);
 	}
 
 	cObject *GetPlayer()					{ return (cObject*)player; }

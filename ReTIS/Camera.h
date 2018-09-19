@@ -43,7 +43,7 @@ public:
 	float DestinationX[10] = {0,0,0,0,0,0,0,0,0,0 }, DestinationY[10] = { 0,0,0,0,0,0,0,0,0,0 };
 
 	cCamera(string name) {
-			//AutoScrolConfig(name);
+		AutoScrolConfig(name);
 		bg = new cBackground();
 	};
 	~cCamera() {

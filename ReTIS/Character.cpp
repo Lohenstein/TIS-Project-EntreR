@@ -3,7 +3,7 @@
 VECTOR	FocusPos, FocusOld, WirePos ,FocusCam, MouseAdd;
 bool	AnchorStretch = true;
 bool	IsClearFlag, IsOverFlag, IsBended[120];
-int		coin, ecoin, rcoin, tcoin;
+int		ncoin, ecoin, rcoin, tcoin;
 int		mp;
 int		anchorimg, wireimg;
 int		enemyscore;
@@ -102,7 +102,7 @@ void	cCharacterBase::HitAction(cObject *hit) {
 		if (this->GetType() == Player) IsClearFlag = true;
 		break; 
 	case NormalCoin:
-		if (this->GetType() == Player) coin++;
+		if (this->GetType() == Player) ncoin++;
 		break;
 	case EneCoin:
 		if (this->GetType() == Player) ecoin++;
@@ -389,6 +389,7 @@ void	cPlayer::Render() {
 			//DrawFormatString(anchorwire[i]->GetPos().x, anchorwire[i]->GetPos().y, 0xFFFFFF, "%d", i);
 		}
 	}
+	
 }
 
 //  << XV >>
@@ -449,7 +450,7 @@ void	cPlayer::Update() {
 	}
 
 	// ŒŠ‚É—Ž‚Á‚±‚¿‚½
-	if (pos.y >= 3520) {
+	if (pos.y >= (stage_size_y * 32) + (30 * 32)) {
 		IsOverFlag = true;
 	}
 	// –³“GŽžŠÔ
@@ -519,7 +520,7 @@ void	cPlayer::HitAction(cObject *hit) {
 		if (this->GetType() == Player) IsClearFlag = true;
 		break;
 	case NormalCoin:
-		if (this->GetType() == Player) coin++;
+		if (this->GetType() == Player) ncoin++;
 		break;
 	case EneCoin:
 		if (this->GetType() == Player) {
@@ -614,6 +615,7 @@ void	cCharacterManager::Render() {
 }
 
 void	cCharacterManager::OverRender() {
+	player->OverRender(ncoin,rcoin);
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (dialogflag[i] != nullptr) dialogflag[i]->OverRender();
 	}

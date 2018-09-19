@@ -279,7 +279,7 @@ void	cGame::DrawResult() {
 	DrawGraph(0, 0, imghandle[4], false);
 	
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	totalscore = ((60 * min + sec) * 30) + enemyscore + coin;
+	totalscore = ((60 * min + sec) * 30) + enemyscore + ncoin;
 
 	if (trans > 255) {
 		w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Score:%dsec", time);
@@ -379,20 +379,36 @@ void	cGame::DrawPauseMenu() {
 }
 void	cGame::RankingUpdate() {
 	if (hantei == false) {
-		for (int i = 0; i < 9; i++) {
-			if (totalranking[i] < totalscore) {
-				storagebox = totalranking[i];
-				totalranking[i] = totalscore;
-				totalscore = storagebox;
+		string ranking = stagepath + "ranking.csv";
+		ifstream ifs; ifs.open(ranking.c_str());
+		string line;
+
+		string rankingofs = stagepath + "ranking.csv";
+		ofstream ofs; ofs.open(rankingofs.c_str());
+
+		while (getline(ifs, line)) {
+
+			vector<string> str = split(line, ',');
+			if (stoi(str.at(0)) < totalscore) {
+
+				storagebox = stoi(str.at(0));
+				ofs << totalscore << endl;
+
 			}
 		}
+		ifs.close();
+		ofs.close();
 	}
 	hantei = true;
 }
 void	cGame::RankingRender() {
+	string ranking = stagepath + "ranking.csv";
+	ifstream ifs; ifs.open(ranking.c_str());
+	string line;
+
 	for (int i = 0; i < 9; i++) {
 		int w = GetDrawFormatStringWidthToHandle(font_handle[FONT_POSSESSTIME], "Now Loading...");
-		DrawFormatStringToHandle(200, 50 + (i * 50), 0xFFFFFF, font_handle[FONT_POSSESSTIME], "%d",totalranking[i]);
+//		DrawFormatStringToHandle(200, 50 + (i * 50), 0xFFFFFF, font_handle[FONT_POSSESSTIME], "%d",get_at);
 		//DrawFormatString(0, i * 20, 0xfffff, "%d", totalranking[i]);
 	}
 }
