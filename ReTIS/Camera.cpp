@@ -6,6 +6,9 @@ double	camera_time_x, camera_time_y;
 bool	camera_flag_x, camera_flag_y;
 bool	camera_flag_half_x, camera_flag_half_y;
 
+float camera_px;
+float camera_py;
+
 void cCamera::Update(VECTOR focus) {
 
 	window.left   = (int)focus.x - WINDOW_SIZE_X / 2;

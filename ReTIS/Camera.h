@@ -1,5 +1,8 @@
 #pragma once
 
+extern float camera_px;
+extern float camera_py;
+
 using namespace std;
 
 typedef struct {
@@ -29,8 +32,6 @@ class cCamera {
 protected:
 	WINDOWRECT window;
 	float px, py;
-	float camera_px;
-	float camera_py;
 	int	  ox, oy;
 	int	  sx, sy;
 	float cloud[2] = {0.f, 4090.f};
