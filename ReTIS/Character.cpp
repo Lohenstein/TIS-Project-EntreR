@@ -438,7 +438,7 @@ void	cPlayer::Update() {
 	if ((key[KEY_INPUT_C] == 1 || pad_b[XINPUT_BUTTON_X] == 1) && mp >= 10) {
 		mp -= 10;
 		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, -stick_rad, PlayerBullet);
-		effect.Shot(pos, 10.f, 5);
+		effect.Shot(pos, 10.f, 5, 2000);
 		PlaySoundMem(sdplayershot, DX_PLAYTYPE_BACK, TRUE);
 	}
 	if (pad_b[XINPUT_BUTTON_Y] == 1) {

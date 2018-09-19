@@ -9,22 +9,24 @@ public:
 	float	x, y;
 	int		effect_hnd;
 	int		length = 0;
+	int		max;
 
-	cEffect(VECTOR pos, float zoom, int effect_num) {
+	cEffect(VECTOR pos, float zoom, int effect_num, int maxlength = 2000) {
 
-		effect_hnd = PlayEffekseer2DEffect(effects[effect_num]);
-		save_pos = pos;
+		effect_hnd	= PlayEffekseer2DEffect(effects[effect_num]);
+		save_pos	= pos;
+		max			= maxlength;
 
-		float x = pos.x - (FocusPos.x - (WINDOW_SIZE_X / 2.f));
-		float y = pos.y - (FocusPos.y - (WINDOW_SIZE_Y / 2.f));
+		x = pos.x - (camera_px);
+		y = pos.y - (camera_py);
 
 		SetScalePlayingEffekseer2DEffect(effect_hnd, zoom, zoom, zoom);
 		SetPosPlayingEffekseer2DEffect(effect_hnd, x, y, 0);
 	}
 	void	UpdateEffect() {
 
-		float x = save_pos.x - (FocusPos.x - (WINDOW_SIZE_X / 2.f));
-		float y = save_pos.y - (FocusPos.y - (WINDOW_SIZE_Y / 2.f));
+		x = save_pos.x - (camera_px);
+		y = save_pos.y - (camera_py);
 
 		SetPosPlayingEffekseer2DEffect(effect_hnd, x, y, 0);
 		length++;
@@ -47,10 +49,10 @@ public:
 		}
 	}
 
-	void	Shot(VECTOR pos, float zoom, int effect_num) {
+	void	Shot(VECTOR pos, float zoom, int effect_num, int max) {
 		for (int i = 0; i < 20; i++) {
 			if (effect[i] == nullptr) {
-				effect[i] = new cEffect(pos, zoom, effect_num);
+				effect[i] = new cEffect(pos, zoom, effect_num, max);
 				break;
 			}
 		}
