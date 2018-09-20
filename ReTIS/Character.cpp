@@ -438,7 +438,7 @@ void	cPlayer::Update() {
 	if ((key[KEY_INPUT_C] == 1 || pad_b[XINPUT_BUTTON_X] == 1) && mp >= 10) {
 		mp -= 10;
 		bullet.Shot(pos, { 3.f, 3.f, 0.f }, 20.f, -stick_rad, PlayerBullet);
-		//effect.Shot(pos, 60.f, 3, 60);
+		effect.Shot(pos.x, pos.y, 60.f, 3, 60);
 		PlaySoundMem(sdplayershot, DX_PLAYTYPE_BACK, TRUE);
 	}
 	if (pad_b[XINPUT_BUTTON_Y] == 1) {
@@ -703,7 +703,7 @@ void	cCharacterManager::DeleteDeathCharacters() {
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (boss[i] != nullptr) {
 			if (boss[i]->GetHp() <= 0) {
-				effect.Shot(boss[i]->GetPos(), 6.f, 1, 60);
+				effect.Shot(boss[i]->GetPos().x, boss[i]->GetPos().y, 6.f, 1, 60);
 				delete boss[i];
 				boss[i] = nullptr;
 			}
@@ -712,7 +712,7 @@ void	cCharacterManager::DeleteDeathCharacters() {
 	for (int i = 0; i < ENEMY_MAX; i++) {
 		if (jumpman[i] != nullptr) {
 			if (jumpman[i]->GetHp() <= 0) {
-				effect.Shot(jumpman[i]->GetPos(), 6.f, 1, 60);
+				effect.Shot(jumpman[i]->GetPos().x, jumpman[i]->GetPos().y, 6.f, 1, 60);
 				delete jumpman[i];
 				jumpman[i] = nullptr;
 				score += 400;
@@ -720,7 +720,7 @@ void	cCharacterManager::DeleteDeathCharacters() {
 		}
 		if (hardbody[i] != nullptr) {
 			if (hardbody[i]->GetHp() <= 0) {
-				effect.Shot(hardbody[i]->GetPos(), 6.f, 1, 60);
+				effect.Shot(hardbody[i]->GetPos().x, hardbody[i]->GetPos().y, 6.f, 1, 60);
 				delete hardbody[i];
 				hardbody[i] = nullptr;
 				score += 600;
@@ -728,7 +728,7 @@ void	cCharacterManager::DeleteDeathCharacters() {
 		}
 		if (fryingman[i] != nullptr) {
 			if (fryingman[i]->GetHp() <= 0) {
-				effect.Shot(fryingman[i]->GetPos(), 6.f, 1, 60);
+				effect.Shot(fryingman[i]->GetPos().x, fryingman[i]->GetPos().y, 6.f, 1, 60);
 				delete fryingman[i];
 				fryingman[i] = nullptr;
 				score += 200;
@@ -736,7 +736,7 @@ void	cCharacterManager::DeleteDeathCharacters() {
 		}
 		if (gunman[i] != nullptr) {
 			if (gunman[i]->GetHp() <= 0) {
-				effect.Shot(gunman[i]->GetPos(), 6.f, 1, 60);
+				effect.Shot(gunman[i]->GetPos().x, gunman[i]->GetPos().y, 6.f, 1, 60);
 				delete gunman[i];
 				gunman[i] = nullptr;
 				score += 400;
@@ -744,7 +744,7 @@ void	cCharacterManager::DeleteDeathCharacters() {
 		}
 		if (bossmiddle[i] != nullptr) {
 			if (bossmiddle[i]->GetHp() <= 0) {
-				effect.Shot(bossmiddle[i]->GetPos(), 6.f, 1, 60);
+				effect.Shot(bossmiddle[i]->GetPos().x, bossmiddle[i]->GetPos().y, 6.f, 1, 60);
 				delete bossmiddle[i];
 				bossmiddle[i] = nullptr;
 				score += 1000;
@@ -759,7 +759,7 @@ void	cCharacterManager::DeleteDeathCharacters() {
 		
 		if (jugem[i] != nullptr) {
 			if (jugem[i]->GetHp() <= 0) {
-				effect.Shot(jugem[i]->GetPos(), 6.f, 1, 60);
+				effect.Shot(jugem[i]->GetPos().x, jugem[i]->GetPos().y, 6.f, 1, 60);
 				delete jugem[i];
 				jugem[i] = nullptr;
 				score += 500;
